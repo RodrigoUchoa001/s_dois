@@ -1,6 +1,7 @@
 import { Heart, Pause, Play, SkipBack, SkipForward, EllipsisVertical, ChevronDown, Shuffle, Repeat } from "lucide-react"
 import { useState } from "react"
 import { couple } from "../../data/couple"
+import { CoupleCounter } from "../CoupleCounter/CoupleCounter"
 
 export function SpotifyHero() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -128,8 +129,23 @@ export function SpotifyHero() {
             <Repeat size={22} />
           </button>
         </div>
+            
+        <div className="mt-5" />
 
-        {/*  */}
+        {/* Contador de dias */}
+        <div className="flex flex-col bg-[#292929] rounded-xl">
+            <div className="relative w-full">
+                <img
+                    src={couple.song.cover}
+                    alt={`Capa da música ${couple.song.title}`}
+                    className="w-full object-cover rounded-t-xl h-72"
+                />
+                <p className="p-2 pl-4 absolute inset-0 font-bold text-xl text-white">Sobre o casal</p>   
+            </div>
+
+            <CoupleCounter />
+        </div>
+
       </div>
     </section>
   )
