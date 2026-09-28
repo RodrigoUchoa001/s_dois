@@ -133,12 +133,12 @@ export function SpotifyHero() {
         <div className="mt-5" />
 
         {/* Contador de dias */}
-        <div className="flex flex-col bg-[#292929] rounded-xl">
+        <div className="flex flex-col bg-[#292929] rounded-3xl">
             <div className="relative w-full">
                 <img
                     src={couple.song.cover}
                     alt={`Capa da música ${couple.song.title}`}
-                    className="w-full object-cover rounded-t-xl h-72"
+                    className="w-full object-cover rounded-t-3xl h-72"
                 />
                 <p className="p-2 pl-4 absolute inset-0 font-bold text-xl text-white">Sobre o casal</p>   
             </div>
