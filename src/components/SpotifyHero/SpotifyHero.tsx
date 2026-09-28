@@ -131,7 +131,7 @@ export function SpotifyHero() {
           </button>
         </div>
             
-        <div className="mt-5" />
+        <div className="mt-10" />
 
         {/* Contador de dias */}
         <div className="flex flex-col bg-[#292929] rounded-3xl">
