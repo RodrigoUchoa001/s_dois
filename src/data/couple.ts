@@ -1,7 +1,7 @@
 export const couple = {
     names: {
-        man: 'Rodrigo',
-        woman: 'Camila'
+        man: 'Fulano',
+        woman: 'Sicrano'
     },
     startDay: 17,
     startMonth: 7,
@@ -14,7 +14,7 @@ export const couple = {
     song: {
         title: "Always",
         artist: "Bon Jovi",
-        url: "https://www.youtube.com/watch?v=6BbH5lH2kxk",
+        url: "public/music/always.mp3",
         cover: "public/images/aaa.png",
     },
 
