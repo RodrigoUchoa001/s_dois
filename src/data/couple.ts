@@ -8,7 +8,8 @@ export const couple = {
     song: {
         title: "Always",
         artist: "Bon Jovi",
-        url: "https://www.youtube.com/watch?v=6BbH5lH2kxk"
+        url: "https://www.youtube.com/watch?v=6BbH5lH2kxk",
+        cover: "public/images/aaa.png",
     },
 
     message: `
