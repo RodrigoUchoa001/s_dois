@@ -1,4 +1,4 @@
-import { Heart, MoreHorizontal, Pause, Play, SkipBack, SkipForward, Volume2, EllipsisVertical, ChevronDown } from "lucide-react"
+import { Heart, Pause, Play, SkipBack, SkipForward, EllipsisVertical, ChevronDown, Shuffle, Repeat } from "lucide-react"
 import { useState } from "react"
 import { couple } from "../../data/couple"
 
@@ -86,7 +86,7 @@ export function SpotifyHero() {
             className="text-white/70 transition hover:text-white"
             aria-label="Mais opções"
           >
-            <MoreHorizontal size={24} />
+            <Shuffle size={24} />
           </button>
 
           <div className="flex items-center gap-7">
@@ -125,27 +125,11 @@ export function SpotifyHero() {
             className="text-white/70 transition hover:text-white"
             aria-label="Volume"
           >
-            <Volume2 size={22} />
+            <Repeat size={22} />
           </button>
         </div>
 
-        {/* Indicador de casal */}
-        <div className="mt-12 text-center">
-          <p className="text-sm text-white/50">
-            Uma música para
-          </p>
-
-          <p className="mt-1 text-lg font-medium">
-            {couple.names.man} & {couple.names.woman}
-          </p>
-        </div>
-
-        {/* Indicador de scroll */}
-        <div className="mt-12 flex flex-col items-center gap-2 text-white/40">
-          <span className="text-xs">role para continuar</span>
-
-          <div className="h-8 w-px bg-white/30" />
-        </div>
+        {/*  */}
       </div>
     </section>
   )
