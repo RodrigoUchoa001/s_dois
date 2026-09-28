@@ -3,7 +3,13 @@ export const couple = {
         man: 'Rodrigo',
         woman: 'Camila'
     },
-    startDate: "2026-07-17",
+    startDay: 17,
+    startMonth: 7,
+    startYear: 2026,
+
+    startHour: 18,
+    startMinute: 0,
+    startSecond: 0,
 
     song: {
         title: "Always",
