@@ -6,7 +6,8 @@ import { CoupleMessage } from "../CoupleMessage/CoupleMessage"
 import { MeetTheCouple } from "../MeetTheCouple/MeetTheCouple"
 
 export function SpotifyHero() {
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isliked, setIsLiked] = useState(false);
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-6 py-10 text-white">
@@ -65,8 +66,15 @@ export function SpotifyHero() {
             type="button"
             className="shrink-0 text-white/70 transition hover:text-white"
             aria-label="Adicionar aos favoritos"
+            onClick={() => setIsLiked((previous) => !previous)}
           >
-            <Heart size={25} />
+            {
+                isliked ? (
+                    <Heart size={25} className="text-green-600" />
+                ) : (
+                    <Heart size={25} />
+                )
+            }
           </button>
         </div>
 
