@@ -46,7 +46,7 @@ export function CoupleMessage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-[#3d7fca] px-6 py-10"
+                        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#3d7fca] px-6 py-10"
                     >
                         {/* Botão fechar */}
                         <button
@@ -63,13 +63,13 @@ export function CoupleMessage() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="w-full max-w-3xl"
+                            className="w-full max-w-3xl overflow-y-scroll scrollbar-none"
                         >
-                        <h2 className="text-3xl font-bold md:text-5xl">
+                        <h2 className="text-xl font-bold md:text-5xl text-center pt-10">
                             Mensagem especial
                         </h2>
 
-                        <div className="text-4xl font-bold mt-12 whitespace-pre-line leading-relaxed md:text-2xl">
+                        <div className="text-4xl font-bold mt-12 whitespace-pre-line leading-relaxed md:text-2xl p-2">
                             {couple.message}
                         </div>
                         </motion.div>
