@@ -3,7 +3,7 @@ import { useState } from "react"
 import { couple } from "../../data/couple"
 import { CoupleCounter } from "../CoupleCounter/CoupleCounter"
 import { CoupleMessage } from "../CoupleMessage/CoupleMessage"
-import { MeetTheCouple } from "../MeetTheCouple/MeetTheCouple"
+// import { MeetTheCouple } from "../MeetTheCouple/MeetTheCouple"
 
 export function SpotifyHero() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -162,7 +162,7 @@ export function SpotifyHero() {
               
         <div className="mt-5" />
 
-        <MeetTheCouple />
+        {/* <MeetTheCouple /> */}
       </div>
     </section>
   )
