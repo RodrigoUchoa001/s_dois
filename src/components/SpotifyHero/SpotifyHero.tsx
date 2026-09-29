@@ -4,6 +4,7 @@ import { couple } from "../../data/couple"
 import { CoupleCounter } from "../CoupleCounter/CoupleCounter"
 import { CoupleMessage } from "../CoupleMessage/CoupleMessage"
 import { MusicPlayer } from "../MusicPlayer/MusicPlayer"
+import { WrappedBox } from "../WrappedBox/WrappedBox"
 // import { MeetTheCouple } from "../MeetTheCouple/MeetTheCouple"
 
 export function SpotifyHero() {
@@ -104,6 +105,9 @@ export function SpotifyHero() {
         <div className="mt-5" />
 
         {/* <MeetTheCouple /> */}
+        <div className="mt-5" />
+
+        <WrappedBox />
       </div>
     </section>
   )
