@@ -31,7 +31,7 @@ export function CoupleMessage() {
                     <button
                     type="button"
                     onClick={() => setIsOpen(true)}
-                    className="rounded-full bg-white px-8 py-4 text-lg font-semibold text-[#292929] transition hover:scale-105"
+                    className="rounded-full w-full bg-white px-8 py-4 text-lg font-semibold text-[#292929] transition hover:scale-105"
                     >
                     Mostrar Mensagem
                     </button>
