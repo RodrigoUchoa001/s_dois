@@ -1,6 +1,8 @@
 import { Pause, Play, Repeat, Shuffle, SkipBack, SkipForward } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { couple } from "../../data/couple";
+import { AnimatePresence } from "motion/react";
+import { MusicIntro } from "../MusicIntro/MusicIntro";
 
 export interface props {
     isPlaying: boolean;
@@ -12,6 +14,8 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: props) {
     
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+
+    const [isIntroVisible, setIsIntroVisible] = useState(true);
 
     useEffect(() => {
         const audio = new Audio(couple.song.url);
@@ -159,6 +163,10 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: props) {
                     <Repeat size={22} />
                 </button>
             </div>
+            
+            <AnimatePresence>
+                {isIntroVisible && <MusicIntro onEnter={() => { setIsIntroVisible(false); togglePlay(); }} />}
+            </AnimatePresence>
         </>
     );
 }
