@@ -37,6 +37,12 @@ export function GalleryStory() {
             setDirection(-1);
             setCurrentPhoto((previous) => previous - 1);
         }
+
+        // Se estiver na primeira foto do grupo atual e houver um grupo anterior, vá para o grupo anterior e defina a foto atual como a última do grupo anterior
+        if (currentPhoto === 0 && currentGroup > 0) {
+            previousGroup();
+            setCurrentPhoto(gallery.photoStack[currentGroup - 1].images.length - 1);
+        }
     }
 
     /*
