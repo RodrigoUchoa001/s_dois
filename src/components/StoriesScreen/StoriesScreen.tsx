@@ -108,117 +108,117 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
     
     return (
         <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 px-4 py-6"
-                    >
-                        {/* Botão fechar */}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 px-4 py-6"
+        >
+            {/* Botão fechar */}
+            <button
+                type="button"
+                onClick={closeWrapped}
+                className="absolute right-5 top-5 z-50 rounded-full p-2 text-white transition hover:bg-white/10"
+                aria-label="Fechar Wrapped"
+            >
+                <X size={32} />
+            </button>
+
+            {/* Story */}
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    scale: 0.95,
+                }}
+                animate={{
+                    opacity: 1,
+                    scale: 1,
+                }}
+                exit={{
+                    opacity: 0,
+                    scale: 0.95,
+                }}
+                transition={{
+                    duration: 0.25,
+                }}
+                className="relative aspect-9/16 w-full max-w-97.5 overflow-hidden rounded-3xl bg-linear-to-br from-[#151515] via-[#24152f] to-[#111111] text-white shadow-2xl"
+            >
+                {/* Barras de progresso */}
+                <div className="absolute left-3 right-3 top-3 z-20 flex gap-1">
+                    {Array.from({
+                        length: totalStories,
+                    }).map((_, index) => (
+                        <div
+                            key={index}
+                            className="h-1 flex-1 overflow-hidden rounded-full bg-white/30"
+                        >
+                            {index < currentStory && (
+                                <div className="h-full w-full bg-white" />
+                            )}
+
+                            {index === currentStory && (
+                                <motion.div
+                                    key={currentStory}
+                                    initial={{ width: "0%" }}
+                                    animate={{ width: "100%" }}
+                                    transition={{
+                                        duration:
+                                            storyDuration / 1000,
+                                        ease: "linear",
+                                    }}
+                                    onAnimationComplete={() => {
+                                        nextStory();
+                                    }}
+                                    className="h-full bg-white"
+                                />
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Conteúdo da story */}
+                <AnimatePresence mode="wait">
+                    {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
+                    {currentStory === 1 && <GalleryStory />}
+                </AnimatePresence>
+                
+                {/* Botões de trocar entre stories não pode ocupar a tela toda no story de galeria de fotos */}
+                {currentStory !== 1 && (
+                    <>
                         <button
                             type="button"
-                            onClick={closeWrapped}
-                            className="absolute right-5 top-5 z-50 rounded-full p-2 text-white transition hover:bg-white/10"
-                            aria-label="Fechar Wrapped"
-                        >
-                            <X size={32} />
-                        </button>
+                            onClick={previousStory}
+                            className="absolute left-0 top-0 z-10 h-full w-1/3"
+                            aria-label="Story anterior"
+                        />
 
-                        {/* Story */}
-                        <motion.div
-                            initial={{
-                                opacity: 0,
-                                scale: 0.95,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                scale: 1,
-                            }}
-                            exit={{
-                                opacity: 0,
-                                scale: 0.95,
-                            }}
-                            transition={{
-                                duration: 0.25,
-                            }}
-                            className="relative aspect-9/16 w-full max-w-97.5 overflow-hidden rounded-3xl bg-linear-to-br from-[#151515] via-[#24152f] to-[#111111] text-white shadow-2xl"
-                        >
-                            {/* Barras de progresso */}
-                            <div className="absolute left-3 right-3 top-3 z-20 flex gap-1">
-                                {Array.from({
-                                    length: totalStories,
-                                }).map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className="h-1 flex-1 overflow-hidden rounded-full bg-white/30"
-                                    >
-                                        {index < currentStory && (
-                                            <div className="h-full w-full bg-white" />
-                                        )}
+                        <button
+                            type="button"
+                            onClick={nextStory}
+                            className="absolute right-0 top-0 z-10 h-full w-1/3"
+                            aria-label="Próxima story"
+                        />
+                    </>
+                )}
 
-                                        {index === currentStory && (
-                                            <motion.div
-                                                key={currentStory}
-                                                initial={{ width: "0%" }}
-                                                animate={{ width: "100%" }}
-                                                transition={{
-                                                    duration:
-                                                        storyDuration / 1000,
-                                                    ease: "linear",
-                                                }}
-                                                onAnimationComplete={() => {
-                                                    nextStory();
-                                                }}
-                                                className="h-full bg-white"
-                                            />
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+                {/* Não atrapalha os botões de mudar entre grupos de fotos */}
+                {currentStory == 1 && (
+                    <>
+                        <button
+                            type="button"
+                            onClick={previousStory}
+                            className="absolute left-0 top-0 z-10 h-[90%] w-1/3"
+                            aria-label="Story anterior"
+                        />
 
-                            {/* Conteúdo da story */}
-                            <AnimatePresence mode="wait">
-                                {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
-                                {currentStory === 1 && <GalleryStory />}
-                            </AnimatePresence>
-                            
-                            {/* Botões de trocar entre stories não pode ocupar a tela toda no story de galeria de fotos */}
-                            {currentStory !== 1 && (
-                                <>
-                                    <button
-                                        type="button"
-                                        onClick={previousStory}
-                                        className="absolute left-0 top-0 z-10 h-full w-1/3"
-                                        aria-label="Story anterior"
-                                    />
-
-                                    <button
-                                        type="button"
-                                        onClick={nextStory}
-                                        className="absolute right-0 top-0 z-10 h-full w-1/3"
-                                        aria-label="Próxima story"
-                                    />
-                                </>
-                            )}
-
-                            {/* Não atrapalha os botões de mudar entre grupos de fotos */}
-                            {currentStory == 1 && (
-                                <>
-                                    <button
-                                        type="button"
-                                        onClick={previousStory}
-                                        className="absolute left-0 top-0 z-10 h-[90%] w-1/3"
-                                        aria-label="Story anterior"
-                                    />
-
-                                    <button
-                                        type="button"
-                                        onClick={nextStory}
-                                        className="absolute right-0 top-0 z-10 h-[90%] w-1/3"
-                                        aria-label="Próxima story"
-                                    />
-                                </>
-                            )}
-                        </motion.div>
-                    </motion.div>
+                        <button
+                            type="button"
+                            onClick={nextStory}
+                            className="absolute right-0 top-0 z-10 h-[90%] w-1/3"
+                            aria-label="Próxima story"
+                        />
+                    </>
+                )}
+            </motion.div>
+        </motion.div>
     )
 }
