@@ -14,8 +14,8 @@ export const couple = {
     song: {
         title: "Always",
         artist: "Bon Jovi",
-        url: "public/music/always.mp3",
-        cover: "public/images/aaa.png",
+        url: "/music/always.mp3",
+        cover: "/images/aaa.png",
     },
 
     message: `
@@ -26,35 +26,36 @@ export const couple = {
     wrapped: {
         // etapas: minutos juntos, galeria de imagens, mapa estelar do inicio do namoro
         minutesTogether: {
-            message: "Cada minuto é mais um pedacinho da história que estamos construindo juntos.",
+            message: "Cada minuto é mais um pedacinho da história que estamos construindo juntos (as vezes, um pedacinho é meio tenso kkkkkkkkkkkkkkkkkk)",
         },
         gallery: {  
             photoStack: [
                 {
-                    title: "Nosso Primeiro Encontro",
+                    title: "Nosso Primeiro Encontro ❤️",
                     description: "Aquele dia inesquecível em que nos conhecemos e tudo começou.",
                     images: [
-                        "public/images/aaa.png",
-                        "public/images/aaa.png",
-                        "public/images/aaa.png",
+                        "/images/aaa.png",
+                        "/images/aaa.png",
+                        "/images/aaa.png",
                     ],
                 },
                 {
                     title: "Momentos Felizes",
                     description: "Alguns dos momentos mais felizes que compartilhamos juntos.",
                     images: [
-                        "public/images/aaa.png",
-                        "public/images/aaa.png",
-                        "public/images/aaa.png",
+                        "/images/aaa.png",
+                        "/images/aaa.png",
+                        "/images/aaa.png",
+                        "/images/aaa.png",
                     ],
                 },
                 {
                     title: "Viagens Inesquecíveis",
                     description: "As aventuras que vivemos juntos em nossas viagens.",
                     images: [
-                        "public/images/aaa.png",
-                        "public/images/aaa.png",
-                        "public/images/aaa.png",
+                        "/images/aaa.png",
+                        "/images/aaa.png",
+                        "/images/aaa.png",
                     ],
                 },
             ],
