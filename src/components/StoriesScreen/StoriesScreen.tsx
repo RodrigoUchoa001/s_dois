@@ -4,6 +4,7 @@ import { couple } from "../../data/couple";
 import { X } from "lucide-react";
 import { getMinutesTogether } from "../../utils/date";
 import { MinutesTogetherStory } from "../MinutesTogetherStory/MinutesTogetherStory";
+import { GalleryStory } from "../GalleryStory/GalleryStory";
 
 function useAnimatedNumber(target: number, duration = 1500) {
     const [value, setValue] = useState(0);
@@ -177,6 +178,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                             {/* Conteúdo da story */}
                             <AnimatePresence mode="wait">
                                 {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
+                                {currentStory === 1 && <GalleryStory />}
                             </AnimatePresence>
 
                             {/* Área de navegação esquerda */}
