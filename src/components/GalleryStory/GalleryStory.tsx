@@ -24,6 +24,9 @@ export function GalleryStory() {
             setDirection(1);
             setCurrentPhoto((previous) => previous + 1);
         }
+        if (currentPhoto === totalPhotos - 1 && currentGroup < totalGroups - 1) {
+            nextGroup();
+        }
     }
 
     /*
@@ -238,7 +241,7 @@ export function GalleryStory() {
                 <button
                     type="button"
                     onClick={nextGroup}
-                    disabled={currentGroup === totalGroups - 1}
+                    disabled={currentPhoto === totalPhotos - 1 && currentGroup === totalGroups - 1}
                     className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-20"
                     aria-label="Próximo grupo"
                 >
