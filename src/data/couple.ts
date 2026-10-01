@@ -29,34 +29,32 @@ export const couple = {
             message: "Cada minuto é mais um pedacinho da história que estamos construindo juntos.",
         },
         gallery: {  
-            title: "Nossos momentos",
-            message: "Cada foto é um capítulo da nossa história, repleta de amor e felicidade.",
             photoStack: [
                 {
                     title: "Nosso Primeiro Encontro",
                     description: "Aquele dia inesquecível em que nos conhecemos e tudo começou.",
                     images: [
-                        "public/images/photo1.jpg",
-                        "public/images/photo2.jpg",
-                        "public/images/photo3.jpg",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
                     ],
                 },
                 {
                     title: "Momentos Felizes",
                     description: "Alguns dos momentos mais felizes que compartilhamos juntos.",
                     images: [
-                        "public/images/photo4.jpg",
-                        "public/images/photo5.jpg",
-                        "public/images/photo6.jpg",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
                     ],
                 },
                 {
                     title: "Viagens Inesquecíveis",
                     description: "As aventuras que vivemos juntos em nossas viagens.",
                     images: [
-                        "public/images/photo7.jpg",
-                        "public/images/photo8.jpg",
-                        "public/images/photo9.jpg",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
                     ],
                 },
             ],
