@@ -67,6 +67,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
 
     /*
      * Avanço automático
+     * TODO: avanço automatico n mostrar o segundo story, corrigir
      */
     useEffect(() => {
         if (!isOpen) return;
@@ -219,6 +220,8 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                     </>
                 )}
             </motion.div>
+            {/* fechar ao clicar fora do story */}
+            <div className="absolute inset-0 -z-10" onClick={closeWrapped} /> 
         </motion.div>
     )
 }
