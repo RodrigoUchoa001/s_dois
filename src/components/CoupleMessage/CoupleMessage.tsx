@@ -1,11 +1,26 @@
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { couple } from "../../data/couple";
 
 export function CoupleMessage() {
     const [isOpen, setIsOpen] = useState(false);
+
+    // fechar com ESC
+    useEffect(() => {
+        function handleKeyDown(event: KeyboardEvent) {
+            if (event.key === "Escape") {
+                setIsOpen(false);
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
 
     return (
         <>
