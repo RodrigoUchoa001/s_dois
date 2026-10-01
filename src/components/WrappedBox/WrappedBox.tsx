@@ -2,13 +2,46 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
+import { couple } from "../../data/couple";
+
 import { getMinutesTogether } from "../../utils/date";
+
+function useAnimatedNumber(target: number, duration = 1500) {
+    const [value, setValue] = useState(0);
+
+    useEffect(() => {
+        let animationFrame: number;
+        const startTime = performance.now();
+
+        function animate(currentTime: number) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease out: começa rápido e desacelera no final
+            const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+            setValue(Math.floor(target * easedProgress));
+
+            if (progress < 1) {
+                animationFrame = requestAnimationFrame(animate);
+            }
+        }
+
+        animationFrame = requestAnimationFrame(animate);
+
+        return () => {
+            cancelAnimationFrame(animationFrame);
+        };
+    }, [target, duration]);
+
+    return value;
+}
 
 export function WrappedBox() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentStory, setCurrentStory] = useState(0);
 
-    const totalStories = 1;
+    const totalStories = couple.wrapped ? Object.keys(couple.wrapped).length : 0;
     const storyDuration = 5000;
 
     /*
@@ -85,6 +118,7 @@ export function WrappedBox() {
     }, [isOpen, currentStory]);
 
     const minutesTogether = getMinutesTogether();
+    const animatedMinutes = useAnimatedNumber(minutesTogether, 1800);
 
     return (
         <>
@@ -148,7 +182,7 @@ export function WrappedBox() {
                             transition={{
                                 duration: 0.25,
                             }}
-                            className="relative aspect-9/16 w-full max-w-97.5 overflow-hidden rounded-3xl bg-[#222222] text-white shadow-2xl"
+                            className="relative aspect-9/16 w-full max-w-97.5 overflow-hidden rounded-3xl bg-linear-to-br from-[#151515] via-[#24152f] to-[#111111] text-white shadow-2xl"
                         >
                             {/* Barras de progresso */}
                             <div className="absolute left-3 right-3 top-3 z-20 flex gap-1">
@@ -190,45 +224,110 @@ export function WrappedBox() {
                                         key="minutes"
                                         initial={{
                                             opacity: 0,
-                                            x: 30,
+                                            scale: 1.05,
                                         }}
                                         animate={{
                                             opacity: 1,
-                                            x: 0,
+                                            scale: 1,
                                         }}
                                         exit={{
                                             opacity: 0,
-                                            x: -30,
+                                            scale: 0.95,
                                         }}
-                                        className="flex h-full flex-col items-center justify-center px-8 text-center"
+                                        transition={{
+                                            duration: 0.5,
+                                        }}
+                                        className="relative flex h-full flex-col items-center justify-center overflow-hidden px-8 text-center"
                                     >
-                                        <p className="text-lg font-medium text-white/60">
-                                            Até agora, vocês já passaram
-                                        </p>
+                                        {/* Elementos decorativos */}
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0 }}
+                                            animate={{ opacity: 0.15, scale: 1 }}
+                                            transition={{ duration: 1 }}
+                                            className="absolute -left-24 top-20 h-64 w-64 rounded-full bg-purple-500 blur-3xl"
+                                        />
 
-                                        <motion.p
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{
-                                                delay: 0.2,
-                                                duration: 0.5,
-                                            }}
-                                            className="mt-4 text-6xl font-bold tracking-tight"
-                                        >
-                                            {minutesTogether.toLocaleString(
-                                                "pt-BR"
-                                            )}
-                                        </motion.p>
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0 }}
+                                            animate={{ opacity: 0.15, scale: 1 }}
+                                            transition={{ duration: 1, delay: 0.2 }}
+                                            className="absolute -right-24 bottom-20 h-72 w-72 rounded-full bg-pink-500 blur-3xl"
+                                        />
 
-                                        <p className="mt-2 text-2xl font-semibold">
-                                            minutos juntos
-                                        </p>
+                                        {/* Conteúdo */}
+                                        <div className="relative z-10">
+                                            <motion.p
+                                                initial={{ opacity: 0, y: 15 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.2 }}
+                                                className="text-lg font-medium text-white/60"
+                                            >
+                                                Até agora, vocês já passaram
+                                            </motion.p>
 
-                                        <p className="mt-8 max-w-xs text-sm leading-relaxed text-white/50">
-                                            Cada minuto é mais um pedacinho da
-                                            história que vocês estão
-                                            construindo.
-                                        </p>
+                                            {/* Número */}
+                                            <motion.div
+                                                initial={{
+                                                    opacity: 0,
+                                                    scale: 0.7,
+                                                }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    scale: 1,
+                                                }}
+                                                transition={{
+                                                    delay: 0.35,
+                                                    duration: 0.6,
+                                                    type: "spring",
+                                                    stiffness: 120,
+                                                }}
+                                                className="mt-6"
+                                            >
+                                                <span className="block text-7xl font-black tracking-tighter md:text-8xl">
+                                                    {animatedMinutes.toLocaleString("pt-BR")}
+                                                </span>
+
+                                                <span className="mt-2 block text-2xl font-semibold text-white/80">
+                                                    minutos juntos
+                                                </span>
+                                            </motion.div>
+
+                                            {/* Separador */}
+                                            <motion.div
+                                                initial={{
+                                                    opacity: 0,
+                                                    scaleX: 0,
+                                                }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    scaleX: 1,
+                                                }}
+                                                transition={{
+                                                    delay: 0.8,
+                                                    duration: 0.5,
+                                                }}
+                                                className="mx-auto mt-8 h-px w-24 bg-white/30"
+                                            />
+
+                                            {/* Mensagem */}
+                                            <motion.p
+                                                initial={{
+                                                    opacity: 0,
+                                                    y: 15,
+                                                }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    y: 0,
+                                                }}
+                                                transition={{
+                                                    delay: 1,
+                                                    duration: 0.5,
+                                                }}
+                                                className="mx-auto mt-6 max-w-xs text-sm leading-relaxed text-white/50"
+                                            >
+                                                {couple.wrapped.minutesTogether.message}
+                                            </motion.p>
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
