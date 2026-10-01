@@ -45,7 +45,7 @@ export function MinutesTogetherStory({ animatedMinutes }: { animatedMinutes: num
                     transition={{ delay: 0.2 }}
                     className="text-lg font-medium text-white/60"
                 >
-                    Até agora, vocês já passaram
+                    Até agora, nós passamos
                 </motion.p>
 
                 {/* Número */}
