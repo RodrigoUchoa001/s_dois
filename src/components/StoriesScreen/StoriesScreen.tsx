@@ -180,22 +180,44 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                                 {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
                                 {currentStory === 1 && <GalleryStory />}
                             </AnimatePresence>
+                            
+                            {/* Botões de trocar entre stories não pode ocupar a tela toda no story de galeria de fotos */}
+                            {currentStory !== 1 && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={previousStory}
+                                        className="absolute left-0 top-0 z-10 h-full w-1/3"
+                                        aria-label="Story anterior"
+                                    />
 
-                            {/* Área de navegação esquerda */}
-                            <button
-                                type="button"
-                                onClick={previousStory}
-                                className="absolute left-0 top-0 z-10 h-full w-1/3"
-                                aria-label="Story anterior"
-                            />
+                                    <button
+                                        type="button"
+                                        onClick={nextStory}
+                                        className="absolute right-0 top-0 z-10 h-full w-1/3"
+                                        aria-label="Próxima story"
+                                    />
+                                </>
+                            )}
 
-                            {/* Área de navegação direita */}
-                            <button
-                                type="button"
-                                onClick={nextStory}
-                                className="absolute right-0 top-0 z-10 h-full w-1/3"
-                                aria-label="Próxima story"
-                            />
+                            {/* Não atrapalha os botões de mudar entre grupos de fotos */}
+                            {currentStory == 1 && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={previousStory}
+                                        className="absolute left-0 top-0 z-10 h-[90%] w-1/3"
+                                        aria-label="Story anterior"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={nextStory}
+                                        className="absolute right-0 top-0 z-10 h-[90%] w-1/3"
+                                        aria-label="Próxima story"
+                                    />
+                                </>
+                            )}
                         </motion.div>
                     </motion.div>
     )
