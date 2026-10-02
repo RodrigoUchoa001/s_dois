@@ -1,46 +1,15 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { couple } from "../../data/couple";
 import { X } from "lucide-react";
-import { getMinutesTogether } from "../../utils/date";
+import { getMinutesTogether, useAnimatedNumber } from "../../utils/date";
 import { MinutesTogetherStory } from "../MinutesTogetherStory/MinutesTogetherStory";
 import { GalleryStory } from "../GalleryStory/GalleryStory";
-
-function useAnimatedNumber(target: number, duration = 1500) {
-    const [value, setValue] = useState(0);
-
-    useEffect(() => {
-        let animationFrame: number;
-        const startTime = performance.now();
-
-        function animate(currentTime: number) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
-            // Ease out: começa rápido e desacelera no final
-            const easedProgress = 1 - Math.pow(1 - progress, 3);
-
-            setValue(Math.floor(target * easedProgress));
-
-            if (progress < 1) {
-                animationFrame = requestAnimationFrame(animate);
-            }
-        }
-
-        animationFrame = requestAnimationFrame(animate);
-
-        return () => {
-            cancelAnimationFrame(animationFrame);
-        };
-    }, [target, duration]);
-
-    return value;
-}
+import { WeInNumbersStory } from "../WeInNumbersStory/WeInNumbersStory";
 
 export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, closeWrapped: () => void }) {
     const [currentStory, setCurrentStory] = useState(0);
 
-    const totalStories = couple.wrapped ? Object.keys(couple.wrapped).length : 0;
+    const totalStories = 3;
     const storyDuration = 5000;
 
     
@@ -179,11 +148,12 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                 {/* Conteúdo da story */}
                 <AnimatePresence mode="wait">
                     {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
-                    {currentStory === 1 && <GalleryStory />}
+                    {currentStory === 1 && <WeInNumbersStory />}
+                    {currentStory === 2 && <GalleryStory />}
                 </AnimatePresence>
                 
                 {/* Botões de trocar entre stories não pode ocupar a tela toda no story de galeria de fotos */}
-                {currentStory !== 1 && (
+                {currentStory !== 2 && (
                     <>
                         <button
                             type="button"
@@ -204,7 +174,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                 )}
 
                 {/* Não atrapalha os botões de mudar entre grupos de fotos */}
-                {currentStory == 1 && (
+                {currentStory == 2 && (
                     <>
                         <button
                             type="button"
