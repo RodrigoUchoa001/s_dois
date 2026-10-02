@@ -188,6 +188,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                         <button
                             type="button"
                             onClick={previousStory}
+                            onKeyDown={(event) => event.key === "ArrowLeft" && previousStory()}
                             className="absolute left-0 top-0 z-10 h-full w-1/3"
                             aria-label="Story anterior"
                         />
@@ -195,6 +196,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                         <button
                             type="button"
                             onClick={nextStory}
+                            onKeyDown={(event) => event.key === "ArrowRight" && nextStory()}
                             className="absolute right-0 top-0 z-10 h-full w-1/3"
                             aria-label="Próxima story"
                         />
@@ -207,6 +209,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                         <button
                             type="button"
                             onClick={previousStory}
+                            onKeyDown={(event) => event.key === "ArrowLeft" && previousStory()}
                             className="absolute left-0 top-0 z-10 h-[90%] w-1/3"
                             aria-label="Story anterior"
                         />
@@ -214,6 +217,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                         <button
                             type="button"
                             onClick={nextStory}
+                            onKeyDown={(event) => event.key === "ArrowRight" && nextStory()}
                             className="absolute right-0 top-0 z-10 h-[90%] w-1/3"
                             aria-label="Próxima story"
                         />
