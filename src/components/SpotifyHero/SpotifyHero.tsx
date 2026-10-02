@@ -1,4 +1,4 @@
-import { Heart, EllipsisVertical, ChevronDown } from "lucide-react"
+import { Heart, EllipsisVertical, ChevronDown, CircleCheck } from "lucide-react"
 import { useState } from "react"
 import { couple } from "../../data/couple"
 import { CoupleCounter } from "../CoupleCounter/CoupleCounter"
@@ -72,7 +72,7 @@ export function SpotifyHero() {
           >
             {
                 isliked ? (
-                    <Heart size={25} className="text-green-600" />
+                    <CircleCheck size={25} className="text-green-600" />
                 ) : (
                     <Heart size={25} />
                 )
