@@ -14,8 +14,8 @@ export const couple = {
     song: {
         title: "Always",
         artist: "Bon Jovi",
-        url: "/music/always.mp3",
-        cover: "/images/aaa.png",
+        url: "public/music/always.mp3",
+        cover: "public/images/aaa.png",
     },
 
     message: `
@@ -34,28 +34,28 @@ export const couple = {
                     title: "Nosso Primeiro Encontro ❤️",
                     description: "Aquele dia inesquecível em que nos conhecemos e tudo começou.",
                     images: [
-                        "/images/aaa.png",
-                        "/images/aaa.png",
-                        "/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
                     ],
                 },
                 {
                     title: "Momentos Felizes",
                     description: "Alguns dos momentos mais felizes que compartilhamos juntos.",
                     images: [
-                        "/images/aaa.png",
-                        "/images/aaa.png",
-                        "/images/aaa.png",
-                        "/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
                     ],
                 },
                 {
                     title: "Viagens Inesquecíveis",
                     description: "As aventuras que vivemos juntos em nossas viagens.",
                     images: [
-                        "/images/aaa.png",
-                        "/images/aaa.png",
-                        "/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
+                        "public/images/aaa.png",
                     ],
                 },
             ],
