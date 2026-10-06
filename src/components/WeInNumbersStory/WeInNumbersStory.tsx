@@ -4,17 +4,31 @@ import { useAnimatedNumber } from "../../utils/date";
 
 function getStyledContent({quantity, description}: {quantity: number, description: string}) {
     return (
-        <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="font-bold text-white p-2 flex gap-2 items-center"
-        >
-            <div className="text-4xl font-bold text-[#111111] bg-white p-1 w-fit h-fit rounded-sm flex">
-                {(quantity > 1000000) ? Math.floor(quantity / 1000000).toString() + "MI" : quantity}
+        <>
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                <div className="h-px bg-white w-full" />
+            </motion.div>
+            <div className="flex items-center">
+                <motion.h1
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="font-bold text-white p-2 flex gap-2 items-center"
+                >
+                    <div className="text-4xl font-bold text-[#111111] bg-white p-1 w-fit h-fit rounded-sm flex">
+                        {(quantity > 1000000) ? Math.floor(quantity / 1000000).toString() + "MI" : quantity}
+                    </div>
+                </motion.h1>
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="text-xl font-medium text-white"
+                >
+                    {description}
+                </motion.p>
             </div>
-            {description}
-        </motion.h1>
+        </>
     );
 }
 
@@ -57,22 +71,13 @@ export function WeInNumbersStory() {
 
                 <div>
                     {getStyledContent({quantity: animatedDays, description: "dias juntos"})}
-                    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                        <div className="h-px bg-white w-full" />
-                    </motion.div>
                     {getStyledContent({quantity: animatedWeekends, description: "fins de semana juntos"})}
-                    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                        <div className="h-px bg-white w-full" />
-                    </motion.div>
                     {getStyledContent({quantity: animatedFullMoonDays, description: "luas cheias juntos"})}
-                    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                        <div className="h-px bg-white w-full" />
-                    </motion.div>
                     {getStyledContent({quantity: animatedSeasons, description: "estações juntos"})}
+                    {getStyledContent({quantity: animatedHeartbeats, description: "batidas do coração enquanto isso"})}
                     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                         <div className="h-px bg-white w-full" />
                     </motion.div>
-                    {getStyledContent({quantity: animatedHeartbeats, description: "batidas do coração enquanto isso"})}
                 </div>
             </div>
             
