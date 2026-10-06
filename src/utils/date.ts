@@ -104,3 +104,91 @@ export function getMusicPlayedTimes() {
     const musicTimeInSeconds = 5 * 60 + 53; // 5 minutos e 53 segundos
     return Math.floor(getMinutesTogether() / musicTimeInSeconds);
 }
+
+export function getMoonPhase(
+    day: number,
+    month: number,
+    year: number
+) {
+    const date = new Date(
+        year,
+        month - 1,
+        day,
+        12,
+        0,
+        0
+    );
+
+    /*
+     * Data de referência de uma Lua Nova.
+     */
+    const knownNewMoon =
+        new Date("2000-01-06T18:14:00Z");
+
+    const synodicMonth = 29.530588853;
+
+    const difference =
+        date.getTime() -
+        knownNewMoon.getTime();
+
+    const days =
+        difference / (1000 * 60 * 60 * 24);
+
+    let phase =
+        (days % synodicMonth) /
+        synodicMonth;
+
+    if (phase < 0) {
+        phase += 1;
+    }
+
+    const illumination =
+        (1 -
+            Math.cos(
+                phase * Math.PI * 2
+            )) /
+        2;
+
+    return {
+        phase,
+        illumination,
+    };
+}
+
+export function getMoonPhaseName(
+    phase: number
+) {
+    if (phase < 0.0625) {
+        return "NOVA";
+    }
+
+    if (phase < 0.1875) {
+        return "CRESCENTE";
+    }
+
+    if (phase < 0.3125) {
+        return "CRESCENTE";
+    }
+
+    if (phase < 0.4375) {
+        return "CRESCENTE";
+    }
+
+    if (phase < 0.5625) {
+        return "CHEIA";
+    }
+
+    if (phase < 0.6875) {
+        return "MINGUANTE";
+    }
+
+    if (phase < 0.8125) {
+        return "MINGUANTE";
+    }
+
+    if (phase < 0.9375) {
+        return "MINGUANTE";
+    }
+
+    return "NOVA";
+}
