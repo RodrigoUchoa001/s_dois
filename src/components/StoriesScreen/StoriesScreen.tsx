@@ -5,11 +5,12 @@ import { getMinutesTogether, useAnimatedNumber } from "../../utils/date";
 import { MinutesTogetherStory } from "../MinutesTogetherStory/MinutesTogetherStory";
 import { GalleryStory } from "../GalleryStory/GalleryStory";
 import { WeInNumbersStory } from "../WeInNumbersStory/WeInNumbersStory";
+import { OurMusicStory } from "../OurMusicStory/OurMusicStory";
 
 export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, closeWrapped: () => void }) {
     const [currentStory, setCurrentStory] = useState(0);
 
-    const totalStories = 3;
+    const totalStories = 4;
     const storyDuration = 5000;
 
     
@@ -137,6 +138,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                     {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
                     {currentStory === 1 && <WeInNumbersStory />}
                     {currentStory === 2 && <GalleryStory />}
+                    {currentStory === 3 && <OurMusicStory />}
                 </AnimatePresence>
                 
                 {/* Botões de trocar entre stories não pode ocupar a tela toda no story de galeria de fotos */}
