@@ -6,11 +6,12 @@ import { MinutesTogetherStory } from "../MinutesTogetherStory/MinutesTogetherSto
 import { GalleryStory } from "../GalleryStory/GalleryStory";
 import { WeInNumbersStory } from "../WeInNumbersStory/WeInNumbersStory";
 import { OurMusicStory } from "../OurMusicStory/OurMusicStory";
+import { MoonStory } from "../MoonStory/MoonStory";
 
 export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, closeWrapped: () => void }) {
     const [currentStory, setCurrentStory] = useState(0);
 
-    const totalStories = 4;
+    const totalStories = 5;
     const storyDuration = 5000;
 
     
@@ -140,6 +141,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                         {currentStory === 1 && <WeInNumbersStory />}
                         {currentStory === 2 && <GalleryStory />}
                         {currentStory === 3 && <OurMusicStory />}
+                        {currentStory === 4 && <MoonStory />}
                     </AnimatePresence>
                 </div>
                 
