@@ -32,12 +32,20 @@ export function getWeekendsTogether() {
     return differenceInDays(now, startDate) / 7;
 }
 
+// próxima primeira lua cheia depois do início do namoro: 29 de julho de 2026
+// então, calcula quantas luas cheias se passaram desde então, considerando que cada ciclo lunar dura aproximadamente 29,53 dias.
 export function getFullMoonDaysTogether() {
-    const startDate = getCoupleStartDate();
     const now = new Date();
 
-    // Cada ciclo lunar dura aproximadamente 29,53 dias. 
-    return Math.floor(differenceInDays(now, startDate) / 29.53);
+    let fullMoonDays = 1;
+    const fullMoonDay = new Date(2026, 7, 29); // 29 de julho de 2026
+    
+    while (fullMoonDay <= now) {
+        fullMoonDays++;
+        fullMoonDay.setDate(fullMoonDay.getDate() + 29.53);
+    }
+
+    return fullMoonDays;
 }
 
 export function getSeasonsTogether() {
