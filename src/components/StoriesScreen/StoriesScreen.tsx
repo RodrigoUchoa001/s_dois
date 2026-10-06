@@ -136,7 +136,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                 </div>
 
                 {/* Conteúdo da story */}
-                <div className="absolute inset-0 flex items-center justify-center pt-2">
+                <div className="absolute inset-0 flex items-center justify-center">
                     <AnimatePresence mode="wait">
                         {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
                         {currentStory === 1 && <WeInNumbersStory />}
