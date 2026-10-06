@@ -15,7 +15,7 @@ export function OurMusicStory() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
         >
-            <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-2 pt-4">
+            <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-2">
                 <motion.p
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}

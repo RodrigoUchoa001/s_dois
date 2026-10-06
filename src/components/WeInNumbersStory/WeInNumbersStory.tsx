@@ -59,7 +59,7 @@ export function WeInNumbersStory() {
             }}
             className="relative flex h-full w-full flex-col overflow-hidden px-8 p-2"
         >
-            <div className="relative z-10 flex h-full flex-col justify-between gap-4 pt-4">
+            <div className="relative z-10 flex h-full flex-col justify-between gap-4">
                 <motion.p
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
