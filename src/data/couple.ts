@@ -15,7 +15,7 @@ export const couple = {
         title: "Always",
         artist: "Bon Jovi",
         url: "public/music/always.mp3",
-        cover: "public/images/aaa.png",
+        cover: "public/images/music_cover.jpg",
     },
 
     message: `
