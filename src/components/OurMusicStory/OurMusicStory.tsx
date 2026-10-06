@@ -29,46 +29,42 @@ export function OurMusicStory() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="flex flex-col items-center justify-center gap-4"
+                    className="flex flex-col justify-center gap-4"
                 >
                     <img
                         src={couple.song.cover}
                         alt={couple.song.title}
                         className="h-64 w-64 rounded-lg object-cover"
                     />
-                    <motion.h2
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                        className="text-2xl font-bold text-white"
-                    >
-                        {couple.song.title.toUpperCase()}
-                    </motion.h2>
-                    <motion.p
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8 }}
-                        className="text-lg font-medium text-white"
-                    >
-                        {couple.song.artist}
-                    </motion.p>
+                    <div className="flex flex-col justify-center">
+                        <motion.h2
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                            className="text-2xl font-bold text-white"
+                        >
+                            {couple.song.title.toUpperCase()}
+                        </motion.h2>
+                        <motion.p
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.8 }}
+                            className="text-lg font-medium text-white"
+                        >
+                            {couple.song.artist}
+                        </motion.p>
+                    </div>
                 </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1 }}
-                    className="flex flex-col items-center justify-center gap-4"
-                >
-
-                </motion.div>
+            
+                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }} className="h-px w-[90%] bg-white" />
             </div>
-            <div className="flex flex-col items-center justify-center gap-4 p-6">
+
+            <div className="flex flex-col items-center justify-center gap-4 px-6">
                 <motion.p
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1 }}
-                    className="text-sm font-medium text-white"
+                    transition={{ delay: 1.2 }}
+                    className="font-medium text-white"
                 >
                     Se tocasse no repeat desde o primeiro dia, já teria tocado
                 </motion.p>
@@ -76,7 +72,7 @@ export function OurMusicStory() {
                     <motion.div
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1.2 }}
+                        transition={{ delay: 1.4 }}
                     >
                         <OdometerCounter value={playedTimes} />
                     </motion.div>
