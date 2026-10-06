@@ -94,11 +94,11 @@ export function SeasonStory() {
                     </h1>
 
                     <p className="mt-7 max-w-[350px] text-xl font-medium leading-tight text-[#0b1535]">
-                        Vocês começaram no{" "}
+                        Começamos no{" "}
                         <span className="font-bold">
                             {data.shortName}
                         </span>{" "}
-                        e, desde então, já viram{" "}
+                        e, desde então, já vimos{" "}
                         <span className="font-bold">
                             {seasonsTogether} estações
                         </span>{" "}
