@@ -133,6 +133,9 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                     ))}
                 </div>
 
+                {/* spacer */}
+                <div className="h-4" />
+
                 {/* Conteúdo da story */}
                 <AnimatePresence mode="wait">
                     {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
