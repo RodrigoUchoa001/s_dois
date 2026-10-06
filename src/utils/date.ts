@@ -91,3 +91,8 @@ export function getMonthName(monthNumber: number): string {
     date.setUTCMonth(monthNumber - 1);
     return date.toLocaleString("pt-BR", { month: "long" });
 }
+
+export function getMusicPlayedTimes() {
+    const musicTimeInSeconds = 5 * 60 + 53; // 5 minutos e 53 segundos
+    return Math.floor(getMinutesTogether() / musicTimeInSeconds);
+}
