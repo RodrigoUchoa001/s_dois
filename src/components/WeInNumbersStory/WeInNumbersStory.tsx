@@ -64,7 +64,7 @@ export function WeInNumbersStory() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-xl font-medium text-white/60"
+                    className="text-xl font-medium text-white/60 pt-4"
                 >
                     O nosso amor, traduzido em números
                 </motion.p>
