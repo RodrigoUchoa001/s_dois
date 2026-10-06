@@ -85,3 +85,9 @@ export function useAnimatedNumber(target: number, duration = 1500) {
 
     return value;
 }
+
+export function getMonthName(monthNumber: number): string {
+    const date = new Date(0);
+    date.setUTCMonth(monthNumber - 1);
+    return date.toLocaleString("pt-BR", { month: "long" });
+}
