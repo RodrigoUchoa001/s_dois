@@ -46,7 +46,7 @@ export function MinutesTogetherStory({ animatedMinutes }: { animatedMinutes: num
                     transition={{ delay: 0.2 }}
                     className="text-lg font-medium text-white/60"
                 >
-                    Desde {couple.startDay} de {getMonthName(couple.startMonth)} de {couple.startYear}, nós já dividimos
+                    Desde {couple.startDay} de {getMonthName(couple.startMonth + 1)} de {couple.startYear}, nós já dividimos
                 </motion.p>
 
                 {/* Número */}
