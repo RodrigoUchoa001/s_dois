@@ -35,20 +35,6 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
     }
 
     /*
-     * Avanço automático
-     * TODO: avanço automatico n mostrar o segundo story, corrigir
-     */
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const timer = setTimeout(() => {
-            nextStory();
-        }, storyDuration);
-
-        return () => clearTimeout(timer);
-    }, [isOpen, currentStory]);
-
-    /*
      * Fechar com ESC
      */
     useEffect(() => {
@@ -136,6 +122,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                                         ease: "linear",
                                     }}
                                     onAnimationComplete={() => {
+                                        // Avanço automático
                                         nextStory();
                                     }}
                                     className="h-full bg-white"
