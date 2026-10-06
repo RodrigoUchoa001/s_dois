@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { couple } from "../../data/couple";
+import { getMonthName } from "../../utils/date";
 
 export function MinutesTogetherStory({ animatedMinutes }: { animatedMinutes: number }) {
     return (
@@ -45,7 +46,7 @@ export function MinutesTogetherStory({ animatedMinutes }: { animatedMinutes: num
                     transition={{ delay: 0.2 }}
                     className="text-lg font-medium text-white/60"
                 >
-                    Até agora, nós passamos
+                    Desde {couple.startDay} de {getMonthName(couple.startMonth)} de {couple.startYear}, nós ja dividimos
                 </motion.p>
 
                 {/* Número */}
