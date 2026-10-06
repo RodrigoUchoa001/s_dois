@@ -133,16 +133,15 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                     ))}
                 </div>
 
-                {/* spacer */}
-                <div className="h-4" />
-
                 {/* Conteúdo da story */}
-                <AnimatePresence mode="wait">
-                    {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
-                    {currentStory === 1 && <WeInNumbersStory />}
-                    {currentStory === 2 && <GalleryStory />}
-                    {currentStory === 3 && <OurMusicStory />}
-                </AnimatePresence>
+                <div className="absolute inset-0 flex items-center justify-center pt-2">
+                    <AnimatePresence mode="wait">
+                        {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
+                        {currentStory === 1 && <WeInNumbersStory />}
+                        {currentStory === 2 && <GalleryStory />}
+                        {currentStory === 3 && <OurMusicStory />}
+                    </AnimatePresence>
+                </div>
                 
                 {/* Botões de trocar entre stories não pode ocupar a tela toda no story de galeria de fotos */}
                 {currentStory !== 2 && (
