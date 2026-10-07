@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInMinutes } from "date-fns";
+import { differenceInDays, differenceInMinutes, differenceInSeconds } from "date-fns";
 import { couple } from "../data/couple";
 import { useEffect, useState } from "react";
 
@@ -10,11 +10,15 @@ export function getCoupleStartDate() {
     );
 }
 
-export function getMinutesTogether() {
+export function getSecondsTogether() {
     const startDate = getCoupleStartDate();
     const now = new Date();
 
-    return differenceInMinutes(now, startDate);
+    return differenceInSeconds(now, startDate);
+}
+
+export function getMinutesTogether() {
+    return getSecondsTogether() / 60;
 }
 
 // PARA WE IN NUMBERS STORY
@@ -110,7 +114,7 @@ export function getMonthName(monthNumber: number): string {
 
 export function getMusicPlayedTimes() {
     const musicTimeInSeconds = 5 * 60 + 53; // 5 minutos e 53 segundos
-    return Math.floor(getMinutesTogether() / musicTimeInSeconds);
+    return Math.floor(getSecondsTogether() / musicTimeInSeconds);
 }
 
 export function getMoonPhase(
