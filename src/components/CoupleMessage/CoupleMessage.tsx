@@ -42,11 +42,11 @@ export function CoupleMessage() {
                 </div>
 
                 {/* Botão */}
-                <div className="mt-auto pt-10">
+                <div className="mt-auto pt-10 flex flex-col items-center">
                     <button
                     type="button"
                     onClick={() => setIsOpen(true)}
-                    className="rounded-full w-full bg-white px-8 py-4 text-lg font-semibold text-[#292929] transition hover:scale-105"
+                    className="rounded-full w-[80%] bg-white px-8 py-4 text-lg font-semibold text-[#292929] transition hover:scale-105"
                     >
                     Mostrar Mensagem
                     </button>
@@ -67,7 +67,7 @@ export function CoupleMessage() {
                         <button
                             type="button"
                             onClick={() => setIsOpen(false)}
-                            className="absolute right-6 top-6 rounded-full p-2 text-white transition hover:bg-white/10"
+                            className="absolute right-6 top-6 rounded-full p-2  text-white transition hover:bg-white/10"
                             aria-label="Fechar mensagem"
                         >
                             <X size={32} />
