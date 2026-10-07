@@ -366,7 +366,7 @@ export function WeInNumbersStory() {
                     }}
                     className="mt-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-[#fff3c7]/30"
                 >
-                    E ainda estamos contando...
+                    E contando...
                 </motion.p>
             </div>
         </motion.div>
