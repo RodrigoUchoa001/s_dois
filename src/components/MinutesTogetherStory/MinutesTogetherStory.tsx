@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { Heart, Sparkles } from "lucide-react";
 import { couple } from "../../data/couple";
 import { getMonthName } from "../../utils/date";
+import { SideRibbon } from "../SideRibbon/SideRibbon";
 
 export function MinutesTogetherStory({
     animatedMinutes,
@@ -106,37 +107,7 @@ export function MinutesTogetherStory({
                 FAIXA LATERAL
             ====================================================== */}
 
-            <div className="absolute right-0 top-0 z-9 h-full w-10 overflow-hidden border-l-2 border-[#fff3c7]/20 bg-[#8064ff]">
-                <motion.div
-                    animate={{
-                        y: ["0%", "-50%"],
-                    }}
-                    transition={{
-                        duration: 9,
-                        ease: "linear",
-                        repeat: Infinity,
-                    }}
-                    className="absolute left-0 top-0 flex w-full flex-col items-center"
-                >
-                    {/* Repetimos para criar um loop contínuo */}
-                    {[...Array(12)].map((_, index) => (
-                        <div
-                            key={index}
-                            className="flex h-32 w-full shrink-0 items-center justify-center"
-                        >
-                            <span
-                                className="whitespace-nowrap text-[11px] font-black uppercase tracking-[0.2em] text-[#fff3c7]"
-                                style={{
-                                    writingMode: "vertical-rl",
-                                    transform: "rotate(180deg)",
-                                }}
-                            >
-                                minutos juntos
-                            </span>
-                        </div>
-                    ))}
-                </motion.div>
-            </div>
+            <SideRibbon text="MINUTOS JUNTOS" />
 
             {/* =====================================================
                 CONTEÚDO PRINCIPAL
