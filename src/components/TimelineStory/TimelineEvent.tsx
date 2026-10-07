@@ -150,10 +150,6 @@ function EventCard({
 
                 {/* Card */}
                 <motion.div
-                    whileHover={{
-                        y: -5,
-                        rotate: index % 2 === 0 ? -1 : 1,
-                    }}
                     transition={{
                         type: "spring",
                         stiffness: 300,
@@ -164,7 +160,7 @@ function EventCard({
                     <motion.button
                         type="button"
                         onClick={() => setIsImageOpen(true)}
-                        className={`relative overflow-hidden bg-[#222] aspect-[${event.imageAspect}]`}
+                        className={`relative overflow-hidden bg-[#222] aspect-[${event.imageAspect}] z-11`} // z-11 pq os botoes de passar stories estão no z-10
                         aria-label={`Abrir imagem: ${event.imageDescription}`}
                     >
                         <motion.img
