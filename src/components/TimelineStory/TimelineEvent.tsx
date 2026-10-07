@@ -9,6 +9,7 @@ type TimelineEventData = {
     };
 
     image: string;
+    imageAspect: string;
     imageDescription: string;
     eventDescription: string;
 };
@@ -157,7 +158,7 @@ function EventCard({
                 className="overflow-hidden rounded-[24px] border-[3px] border-[#111a35] bg-[#111a35] shadow-[7px_7px_0_#8da2c4]"
             >
                 {/* Imagem */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-[#222]">
+                <div className={`relative overflow-hidden bg-[#222] aspect-[${event.imageAspect}]`}>
                     <img
                         src={event.image}
                         alt={event.imageDescription}
