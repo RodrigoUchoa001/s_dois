@@ -100,7 +100,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                 transition={{
                     duration: 0.25,
                 }}
-                className="relative aspect-9/16 w-full max-w-97.5 overflow-hidden rounded-3xl bg-linear-to-br from-[#151515] via-[#24152f] to-[#111111] text-white shadow-2xl"
+                className="relative aspect-9/16 w-full max-w-97.5 overflow-hidden rounded-3xl bg-[#0b0b2b] text-white shadow-2xl"
             >
                 {/* Barras de progresso */}
                 <div className="absolute left-3 right-3 top-3 z-20 flex gap-1">
