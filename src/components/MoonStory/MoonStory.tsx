@@ -1,6 +1,8 @@
 import { motion } from "motion/react";
+import { Heart, Sparkles } from "lucide-react";
 import { couple } from "../../data/couple";
 import { getMoonPhase, getMoonPhaseName } from "../../utils/date";
+import { SideRibbon } from "../SideRibbon/SideRibbon";
 
 export function MoonStory() {
     const moon = getMoonPhase(
@@ -16,22 +18,56 @@ export function MoonStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="relative flex h-full w-full flex-col overflow-hidden bg-[#080923] px-6 pb-6 pt-16 text-white"
+            className="relative flex h-full w-full flex-col overflow-hidden bg-[#0b0b2b] px-6 pb-6 pt-12 text-[#fff3c7]"
         >
-            {/* Estrelas */}
+            {/* Decoração */}
             <Stars />
 
+            <motion.div
+                className="pointer-events-none absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-[#8064ff]/10 blur-3xl"
+                animate={{
+                    scale: [1, 1.15, 1],
+                    opacity: [0.5, 0.8, 0.5],
+                }}
+                transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                }}
+            />
+
+            {/* Faixa lateral */}
+            <SideRibbon text="Nossa lua" />
+
             {/* Conteúdo */}
-            <div className="relative z-10 flex h-full flex-col">
+            <div className="relative z-10 flex h-full flex-col pr-6">
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex items-center gap-2"
+                >
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8064ff] text-[#fff3c7] shadow-[4px_4px_0_#5b45c7]">
+                        <Heart size={17} fill="currentColor" />
+                    </div>
+
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-[#a875ff]">
+                        Naquela noite
+                    </span>
+                </motion.div>
+
                 {/* Título */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ delay: 0.15, duration: 0.5 }}
                 >
-
-                    <h1 className="mt-5 max-w-[340px] text-4xl font-black leading-[0.95] tracking-tight">
-                        Naquela noite, a lua estava
+                    <h1 className="mt-5 max-w-[330px] text-4xl font-black uppercase leading-[0.9] tracking-tight">
+                        A lua estava
+                        <span className="block text-[#a875ff]">
+                            assim.
+                        </span>
                     </h1>
                 </motion.div>
 
@@ -54,7 +90,39 @@ export function MoonStory() {
                             type: "spring",
                             stiffness: 80,
                         }}
+                        className="relative"
                     >
+                        {/* Estrelas decorativas próximas */}
+                        <motion.div
+                            animate={{
+                                rotate: [0, 10, 0],
+                                scale: [1, 1.15, 1],
+                            }}
+                            transition={{
+                                duration: 3,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                            }}
+                            className="absolute -left-5 top-8 text-[#a875ff]"
+                        >
+                            <Sparkles size={22} />
+                        </motion.div>
+
+                        <motion.div
+                            animate={{
+                                rotate: [0, -10, 0],
+                                scale: [1, 1.15, 1],
+                            }}
+                            transition={{
+                                duration: 3.5,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                            }}
+                            className="absolute -right-4 bottom-12 text-[#fff3c7]"
+                        >
+                            <Sparkles size={16} />
+                        </motion.div>
+
                         <Moon phase={moon.phase} />
                     </motion.div>
                 </div>
@@ -68,15 +136,47 @@ export function MoonStory() {
                         duration: 0.5,
                     }}
                 >
-                    <h2 className="text-4xl font-black uppercase tracking-tight text-[#fff0bd]">
-                        {phaseName}
-                    </h2>
+                    {/* Card da fase */}
+                    <div className="rounded-3xl border-2 border-[#fff3c7]/20 bg-[#151541] p-5 shadow-[6px_6px_0_#8064ff]">
+                        <div className="flex items-end justify-between gap-4">
+                            <div>
+                                <p className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#a875ff]">
+                                    Fase da lua
+                                </p>
 
-                    <p className="mt-2 text-base font-medium text-white/80">
-                        {Math.round(moon.illumination * 100)}% iluminada
-                        <span className="mx-2 text-white/30">·</span>
-                        vista do hemisfério sul
-                    </p>
+                                <h2 className="text-3xl font-black uppercase leading-none tracking-tight text-[#fff3c7]">
+                                    {phaseName}
+                                </h2>
+                            </div>
+
+                            <div className="shrink-0 rounded-2xl bg-[#8064ff] px-3 py-2 text-center shadow-[3px_3px_0_#5b45c7]">
+                                <span className="block text-xl font-black leading-none">
+                                    {Math.round(
+                                        moon.illumination * 100
+                                    )}
+                                    %
+                                </span>
+
+                                <span className="text-[8px] font-black uppercase tracking-wider">
+                                    iluminada
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="mt-3 flex items-center gap-2 text-xs font-medium text-[#fff3c7]/60">
+                            <span>Vista do hemisfério sul</span>
+
+                            <span className="text-[#a875ff]">✦</span>
+
+                            <span>
+                                {couple.startDay}/
+                                {String(
+                                    couple.startMonth + 1
+                                ).padStart(2, "0")}
+                                /{couple.startYear}
+                            </span>
+                        </div>
+                    </div>
 
                     {/* Fases */}
                     <MoonPhases currentPhase={moon.phase} />
@@ -103,15 +203,25 @@ function Moon({ phase }: { phase: number }) {
 
     return (
         <div className="relative h-64 w-64">
-            {/* Brilho ao redor da Lua */}
-            <div className="absolute inset-[-25px] rounded-full bg-[#fff1bd]/10 blur-2xl" />
+            {/* Glow externo */}
+            <motion.div
+                animate={{
+                    scale: [1, 1.08, 1],
+                    opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                }}
+                className="absolute inset-[-30px] rounded-full bg-[#fff3c7]/10 blur-3xl"
+            />
 
             <svg
                 viewBox="0 0 256 256"
-                className="relative h-full w-full"
+                className="relative h-full w-full drop-shadow-[0_0_25px_rgba(255,243,199,0.25)]"
             >
                 <defs>
-                    {/* Gradiente da Lua */}
                     <radialGradient
                         id="moonGradient"
                         cx="35%"
@@ -119,7 +229,7 @@ function Moon({ phase }: { phase: number }) {
                     >
                         <stop
                             offset="0%"
-                            stopColor="#fff9df"
+                            stopColor="#fffbea"
                         />
 
                         <stop
@@ -128,12 +238,6 @@ function Moon({ phase }: { phase: number }) {
                         />
                     </radialGradient>
 
-                    {/* 
-                     * ESSA É A PARTE IMPORTANTE.
-                     *
-                     * Tudo que estiver dentro desse clipPath
-                     * ficará limitado ao círculo da Lua.
-                     */}
                     <clipPath id="moonClip">
                         <circle
                             cx="128"
@@ -143,7 +247,7 @@ function Moon({ phase }: { phase: number }) {
                     </clipPath>
                 </defs>
 
-                {/* Lua inteira */}
+                {/* Corpo da lua */}
                 <circle
                     cx="128"
                     cy="128"
@@ -151,9 +255,8 @@ function Moon({ phase }: { phase: number }) {
                     fill="url(#moonGradient)"
                 />
 
-                {/* Elementos da Lua + sombra */}
+                {/* Crateras + sombra */}
                 <g clipPath="url(#moonClip)">
-                    {/* Crateras */}
                     <circle
                         cx="85"
                         cy="80"
@@ -195,17 +298,16 @@ function Moon({ phase }: { phase: number }) {
                     />
 
                     {/* Sombra da fase */}
-                    {phase > 0.02 &&
-                        phase < 0.98 && (
-                            <ellipse
-                                cx={128 + shadowOffset}
-                                cy="128"
-                                rx="112"
-                                ry="112"
-                                fill="#080923"
-                                opacity="0.96"
-                            />
-                        )}
+                    {phase > 0.02 && phase < 0.98 && (
+                        <ellipse
+                            cx={128 + shadowOffset}
+                            cy="128"
+                            rx="112"
+                            ry="112"
+                            fill="#0b0b2b"
+                            opacity="0.96"
+                        />
+                    )}
                 </g>
             </svg>
         </div>
@@ -229,7 +331,7 @@ function MoonPhases({
     ];
 
     return (
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-5 flex items-center justify-between rounded-2xl border border-[#fff3c7]/10 bg-[#151541]/70 px-3 py-3">
             {phases.map((phase, index) => {
                 const distance = Math.abs(
                     phase - currentPhase
@@ -239,16 +341,29 @@ function MoonPhases({
                     distance < 0.0625;
 
                 return (
-                    <div
+                    <motion.div
                         key={index}
+                        initial={{
+                            opacity: 0,
+                            scale: 0.7,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                        }}
+                        transition={{
+                            delay: 0.75 + index * 0.05,
+                        }}
                         className={`relative flex h-9 w-9 items-center justify-center rounded-full ${
                             isCurrent
-                                ? "bg-[#fff0bd]/20 ring-2 ring-[#fff0bd]"
+                                ? "bg-[#8064ff] shadow-[3px_3px_0_#5b45c7]"
                                 : ""
                         }`}
                     >
-                        <MiniMoon phase={phase} />
-                    </div>
+                        <MiniMoon
+                            phase={phase}
+                        />
+                    </motion.div>
                 );
             })}
         </div>
@@ -263,24 +378,25 @@ function MiniMoon({
     const illumination =
         (1 - Math.cos(phase * Math.PI * 2)) / 2;
 
-    const isFull = phase >= 0.47 && phase <= 0.53;
+    const isFull =
+        phase >= 0.47 && phase <= 0.53;
 
     if (isFull) {
         return (
-            <div className="h-7 w-7 rounded-full bg-[#fff0bd]" />
+            <div className="h-6 w-6 rounded-full bg-[#fff3c7] shadow-[0_0_8px_rgba(255,243,199,0.4)]" />
         );
     }
 
     if (phase < 0.03 || phase > 0.97) {
         return (
-            <div className="h-7 w-7 rounded-full bg-[#272946]" />
+            <div className="h-6 w-6 rounded-full bg-[#272746]" />
         );
     }
 
     return (
-        <div className="relative h-7 w-7 overflow-hidden rounded-full bg-[#272946]">
+        <div className="relative h-6 w-6 overflow-hidden rounded-full bg-[#272746]">
             <div
-                className="absolute inset-y-0 bg-[#c6c6d4]"
+                className="absolute inset-y-0 bg-[#fff3c7]"
                 style={{
                     width: `${illumination * 100}%`,
                     left:
@@ -324,12 +440,11 @@ function Stars() {
                         scale: [0.8, 1.1, 0.8],
                     }}
                     transition={{
-                        duration:
-                            2 + index * 0.3,
+                        duration: 2 + index * 0.3,
                         repeat: Infinity,
                         ease: "easeInOut",
                     }}
-                    className="absolute rounded-full bg-[#fff0bd]"
+                    className="absolute rounded-full bg-[#fff3c7]"
                     style={{
                         left: star.left,
                         top: star.top,
