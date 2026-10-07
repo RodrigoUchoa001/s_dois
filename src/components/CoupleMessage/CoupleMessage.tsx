@@ -29,14 +29,14 @@ export function CoupleMessage() {
                 layout
                 className="overflow-hidden rounded-3xl bg-[#3d7fca] p-8 text-white shadow-xl"
             >
-                <div className="flex min-h-100 flex-col">
-                <h2 className="text-2xl font-bold">
+                <div className="flex flex-col">
+                <h2 className="text-xl font-bold">
                     Mensagem especial
                 </h2>
 
                 {/* Prévia */}
                 <div className="mt-10">
-                    <p className="text-4xl font-bold leading-tight *:whitespace-pre-line line-clamp-4">
+                    <p className="text-2xl font-bold leading-tight *:whitespace-pre-line line-clamp-4">
                     {couple.message}
                     </p>
                 </div>
@@ -84,7 +84,7 @@ export function CoupleMessage() {
                             Mensagem especial
                         </h2>
 
-                        <div className="text-4xl font-bold mt-12 whitespace-pre-line leading-relaxed md:text-2xl p-2">
+                        <div className="text-3xl font-bold mt-12 whitespace-pre-line leading-relaxed md:text-2xl p-2">
                             {couple.message}
                         </div>
                         </motion.div>
