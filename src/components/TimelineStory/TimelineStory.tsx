@@ -10,7 +10,7 @@ export function TimelineStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="relative h-full w-full overflow-y-auto bg-[#dce9ff] px-4 py-10"
+            className="relative h-full w-full overflow-y-auto bg-[#dce9ff] px-4 py-10 scrollbar-none"
         >
             {/* Cabeçalho */}
             <motion.div
