@@ -14,7 +14,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
     const [currentStory, setCurrentStory] = useState(0);
 
     const totalStories = 7;
-    const storyDuration = 5000;
+    const storyDuration = 8000;
 
     
     const minutesTogether = getMinutesTogether();
