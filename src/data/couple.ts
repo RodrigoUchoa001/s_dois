@@ -59,6 +59,73 @@ export const couple = {
                     ],
                 },
             ],
+        },
+        timeline: {
+            // "events.length momentos"
+            title: "Nossa jornada",
+            description: "Os momentos que nos trouxeram até aqui",
+            events: [
+                {
+                    date: {
+                        day: 17,
+                        month: 7,
+                        year: 2026,
+                    },
+                    image: "public/images/music_cover.jpg",
+                    imageAspect: "3/4",
+                    imageDescription: "Nosso primeiro encontro",
+                    eventDescription: "Aquele dia inesquecível em que nos conhecemos e tudo commencemos.",
+                    
+                },
+                {
+                    date: {
+                        day: 17,
+                        month: 7,
+                        year: 2026,
+                    },
+                    image: "public/images/music_cover.jpg",
+                    imageAspect: "4/3",
+                    imageDescription: "Nosso primeiro encontro",
+                    eventDescription: "Aquele dia inesquecível em que nos conhecemos e tudo commencemos.",
+                    
+                },
+                {
+                    date: {
+                        day: 17,
+                        month: 7,
+                        year: 2026,
+                    },
+                    image: "public/images/music_cover.jpg",
+                    imageAspect: "4/3",
+                    imageDescription: "Nosso primeiro encontro",
+                    eventDescription: "Aquele dia inesquecível em que nos conhecemos e tudo commencemos.",
+                    
+                },
+                {
+                    date: {
+                        day: 17,
+                        month: 7,
+                        year: 2026,
+                    },
+                    image: "public/images/music_cover.jpg",
+                    imageAspect: "3/4",
+                    imageDescription: "Nosso primeiro encontro",
+                    eventDescription: "Aquele dia inesquecível em que nos conhecemos e tudo commencemos.",
+                    
+                },
+                {
+                    date: {
+                        day: 17,
+                        month: 7,
+                        year: 2026,
+                    },
+                    image: "public/images/music_cover.jpg",
+                    imageAspect: "4/3",
+                    imageDescription: "Nosso primeiro encontro",
+                    eventDescription: "Aquele dia inesquecível em que nos conhecemos e tudo commencemos.",
+                    
+                },
+            ],
         }
     }
 };
