@@ -27,7 +27,8 @@ export function CoupleMessage() {
             {/* Card da mensagem */}
             <motion.div
                 layout
-                className="overflow-hidden rounded-3xl bg-[#3d7fca] p-8 text-white shadow-xl"
+                className="overflow-hidden rounded-3xl bg-[#3d7fca] p-8 text-white shadow-xl cursor-pointer"
+                onClick={() => setIsOpen(true)}
             >
                 <div className="flex flex-col">
                 <h2 className="text-xl font-bold">
@@ -46,7 +47,7 @@ export function CoupleMessage() {
                     <button
                     type="button"
                     onClick={() => setIsOpen(true)}
-                    className="rounded-full w-[80%] bg-white px-8 py-4 text-lg font-semibold text-[#292929] transition hover:scale-105"
+                    className="rounded-full w-[80%] bg-white px-8 py-4 text-lg font-semibold text-[#292929] transition hover:scale-105 cursor-pointer"
                     >
                     Mostrar Mensagem
                     </button>

@@ -20,7 +20,7 @@ export function WrappedBox() {
             {/* Card */}
             <motion.div
                 layout
-                className="relative overflow-hidden rounded-3xl bg-[#111111] p-8 text-center text-white shadow-xl"
+                className="relative overflow-hidden rounded-3xl bg-[#111111] p-8 text-center text-white shadow-xl cursor-pointer"
                 onClick={openWrapped}
             >
                 {/* Faixa lateral */}
@@ -40,7 +40,7 @@ export function WrappedBox() {
                     <button
                         type="button"
                         onClick={openWrapped}
-                        className="rounded-full bg-[#fff3c7] px-8 py-4 text-lg w-[80%] font-semibold text-[#292929] transition hover:scale-105"
+                        className="rounded-full bg-[#fff3c7] px-8 py-4 text-lg w-[80%] font-semibold text-[#292929] transition hover:scale-105 cursor-pointer"
                     >
                         Mostrar Wrapped
                     </button>
