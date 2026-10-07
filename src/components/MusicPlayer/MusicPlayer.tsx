@@ -1,17 +1,27 @@
-import { Pause, Play, Repeat, Shuffle, SkipBack, SkipForward } from "lucide-react";
+import {
+    Pause,
+    Play,
+    Repeat,
+    Shuffle,
+    SkipBack,
+    SkipForward,
+} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+
 import { couple } from "../../data/couple";
-import { AnimatePresence } from "motion/react";
 import { MusicIntro } from "../MusicIntro/MusicIntro";
 
-export interface props {
+export interface Props {
     isPlaying: boolean;
-    setIsPlaying: (value: boolean | ((prevState: boolean) => boolean)) => void;
+    setIsPlaying: (
+        value: boolean | ((prevState: boolean) => boolean)
+    ) => void;
 }
 
-export function MusicPlayer({ isPlaying, setIsPlaying }: props) {
+export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    
+
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
@@ -43,10 +53,13 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: props) {
             audio.pause();
 
             audio.removeEventListener("timeupdate", handleTimeUpdate);
-            audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+            audio.removeEventListener(
+                "loadedmetadata",
+                handleLoadedMetadata
+            );
             audio.removeEventListener("ended", handleEnded);
         };
-    }, []);
+    }, [setIsPlaying]);
 
     const togglePlay = async () => {
         const audio = audioRef.current;
@@ -62,11 +75,9 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: props) {
         }
     };
 
-    // progress bar percentage
-    const progress = duration > 0
-        ? (currentTime / duration) * 100
-        : 0;
-    
+    const progress =
+        duration > 0 ? (currentTime / duration) * 100 : 0;
+
     const handleProgressClick = (
         event: React.MouseEvent<HTMLDivElement>
     ) => {
@@ -95,77 +106,150 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: props) {
     return (
         <>
             {/* Barra de progresso */}
-            <div className="mt-7">
-                <div 
-                    className="h-1 w-full overflow-hidden rounded-full bg-white/20"
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className="mt-7"
+            >
+                <div
+                    className="group relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-[#fff3c7]/10"
                     onClick={handleProgressClick}
+                    role="slider"
+                    aria-label="Progresso da música"
+                    aria-valuemin={0}
+                    aria-valuemax={duration}
+                    aria-valuenow={currentTime}
                 >
-                    <div 
-                        className="h-full rounded-full bg-white transition-[width] duration-100"
+                    <div
+                        className="h-full rounded-full bg-[#a875ff] transition-[width] duration-100"
+                        style={{
+                            width: `${progress}%`,
+                        }}
+                    />
+
+                    {/* brilho no progresso */}
+                    <div
+                        className="absolute inset-y-0 left-0 rounded-full bg-[#c7a5ff]/50 blur-sm"
                         style={{
                             width: `${progress}%`,
                         }}
                     />
                 </div>
 
-                <div className="mt-2 flex justify-between text-xs text-white/50">
+                <div className="mt-2 flex justify-between font-mono text-[10px] font-bold tracking-wide text-[#fff3c7]/35">
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                 </div>
-                </div>  
+            </motion.div>
 
-                {/* Controles */}
-                <div className="mt-5 flex items-center justify-between">
-                <button
+            {/* Controles */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25, duration: 0.4 }}
+                className="mt-5 flex items-center justify-between"
+            >
+                <motion.button
                     type="button"
-                    className="text-white/70 transition hover:text-white"
-                    aria-label="Mais opções"
+                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.08 }}
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[#fff3c7]/45 transition hover:bg-[#fff3c7]/5 hover:text-[#fff3c7]"
+                    aria-label="Embaralhar"
                 >
-                    <Shuffle size={24} />
-                </button>
+                    <Shuffle size={21} />
+                </motion.button>
 
                 <div className="flex items-center gap-7">
-                    <button
+                    <motion.button
                         type="button"
-                        className="text-white transition hover:scale-110"
+                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.08 }}
+                        className="text-[#fff3c7]/70 transition hover:text-[#fff3c7]"
                         aria-label="Música anterior"
                     >
-                    <SkipBack size={30} fill="currentColor" />
-                    </button>
+                        <SkipBack size={28} fill="currentColor" />
+                    </motion.button>
 
-                    <button
+                    <motion.button
                         type="button"
                         onClick={togglePlay}
-                        className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-black transition hover:scale-105"
-                        aria-label={isPlaying ? "Pausar" : "Reproduzir"}
+                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.05 }}
+                        className="relative flex h-16 w-16 items-center justify-center rounded-full bg-[#a875ff] text-[#fff3c7] shadow-[0_8px_30px_rgba(168,117,255,0.35)]"
+                        aria-label={
+                            isPlaying ? "Pausar" : "Reproduzir"
+                        }
                     >
-                    {isPlaying ? (
-                        <Pause size={28} fill="currentColor" />
-                    ) : (
-                        <Play size={28} fill="currentColor" />
-                    )}
-                    </button>
+                        <motion.div
+                            className="absolute inset-0 rounded-full border border-[#fff3c7]/20"
+                            animate={
+                                isPlaying
+                                    ? {
+                                          scale: [1, 1.12, 1],
+                                          opacity: [0.5, 0, 0.5],
+                                      }
+                                    : {
+                                          scale: 1,
+                                          opacity: 0,
+                                      }
+                            }
+                            transition={{
+                                duration: 2,
+                                repeat: isPlaying ? Infinity : 0,
+                                ease: "easeOut",
+                            }}
+                        />
 
-                    <button
+                        {isPlaying ? (
+                            <Pause
+                                size={27}
+                                fill="currentColor"
+                            />
+                        ) : (
+                            <Play
+                                size={27}
+                                fill="currentColor"
+                                className="ml-1"
+                            />
+                        )}
+                    </motion.button>
+
+                    <motion.button
                         type="button"
-                        className="text-white transition hover:scale-110"
+                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.08 }}
+                        className="text-[#fff3c7]/70 transition hover:text-[#fff3c7]"
                         aria-label="Próxima música"
                     >
-                    <SkipForward size={30} fill="currentColor" />
-                    </button>
+                        <SkipForward
+                            size={28}
+                            fill="currentColor"
+                        />
+                    </motion.button>
                 </div>
 
-                <button
+                <motion.button
                     type="button"
-                    className="text-white/70 transition hover:text-white"
-                    aria-label="Volume"
+                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.08 }}
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[#fff3c7]/45 transition hover:bg-[#fff3c7]/5 hover:text-[#fff3c7]"
+                    aria-label="Repetir"
                 >
-                    <Repeat size={22} />
-                </button>
-            </div>
-            
+                    <Repeat size={21} />
+                </motion.button>
+            </motion.div>
+
+            {/* Introdução em tela inteira */}
             <AnimatePresence>
-                {isIntroVisible && <MusicIntro onEnter={() => { setIsIntroVisible(false); togglePlay(); }} />}
+                {isIntroVisible && (
+                    <MusicIntro
+                        onEnter={() => {
+                            setIsIntroVisible(false);
+                            togglePlay();
+                        }}
+                    />
+                )}
             </AnimatePresence>
         </>
     );
