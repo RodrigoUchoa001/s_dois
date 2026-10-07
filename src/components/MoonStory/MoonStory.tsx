@@ -1,8 +1,9 @@
 import { motion } from "motion/react";
-import { Heart, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { couple } from "../../data/couple";
 import { getMoonPhase, getMoonPhaseName } from "../../utils/date";
 import { SideRibbon } from "../SideRibbon/SideRibbon";
+import { StoryHeader } from "../StoryHeader/StoryHeader";
 
 export function MoonStory() {
     const moon = getMoonPhase(
@@ -18,7 +19,7 @@ export function MoonStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="relative flex h-full w-full flex-col overflow-hidden bg-[#0b0b2b] px-6 pb-6 pt-12 text-[#fff3c7]"
+            className="relative flex h-full w-full flex-col overflow-hidden bg-[#0b0b2b] px-7 pb-8 pr-14 pt-8 text-[#fff3c7]"
         >
             {/* Decoração */}
             <Stars />
@@ -42,20 +43,7 @@ export function MoonStory() {
             {/* Conteúdo */}
             <div className="relative z-10 flex h-full flex-col pr-6">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex items-center gap-2"
-                >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8064ff] text-[#fff3c7] shadow-[4px_4px_0_#5b45c7]">
-                        <Heart size={17} fill="currentColor" />
-                    </div>
-
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-[#a875ff]">
-                        Naquela noite
-                    </span>
-                </motion.div>
+                <StoryHeader text={"Naquela noite"} />
 
                 {/* Título */}
                 <motion.div

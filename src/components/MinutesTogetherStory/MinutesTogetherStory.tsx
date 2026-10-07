@@ -3,6 +3,7 @@ import { Heart, Sparkles } from "lucide-react";
 import { couple } from "../../data/couple";
 import { getMonthName } from "../../utils/date";
 import { SideRibbon } from "../SideRibbon/SideRibbon";
+import { StoryHeader } from "../StoryHeader/StoryHeader";
 
 export function MinutesTogetherStory({
     animatedMinutes,
@@ -115,32 +116,7 @@ export function MinutesTogetherStory({
 
             <div className="relative z-10 flex h-full w-full flex-col px-7 pb-10 pr-14 pt-8">
                 {/* Pequeno cabeçalho */}
-                <motion.div
-                    initial={{
-                        opacity: 0,
-                        y: -15,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        delay: 0.15,
-                    }}
-                    className="flex items-center gap-3"
-                >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff3c7] text-[#0b0b2b]">
-                        <Heart
-                            size={18}
-                            fill="currentColor"
-                            strokeWidth={2.5}
-                        />
-                    </div>
-
-                    <p className="text-xs font-black uppercase tracking-[0.22em]">
-                        Nosso tempo
-                    </p>
-                </motion.div>
+                <StoryHeader text="Nosso tempo" />
 
                 {/* =================================================
                     TEXTO
