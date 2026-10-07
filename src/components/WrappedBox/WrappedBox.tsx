@@ -24,8 +24,8 @@ export function WrappedBox() {
                 onClick={openWrapped}
             >
                 {/* Faixa lateral */}
-                <div className="absolute right-0 top-12 h-full">
-                    <SideRibbon text="Wrapped" rotation={45} />
+                <div className="absolute right-0 top-15 h-full">
+                    <SideRibbon text="Wrapped" rotation={45} textDirection="rl" />
                 </div>
 
                 <h2 className="text-2xl font-bold text-[#fff3c7]">
