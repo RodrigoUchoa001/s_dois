@@ -3,11 +3,13 @@ import { motion } from "motion/react";
 interface SideRibbonProps {
     text: string;
     rotation?: number;
+    textDirection?: string;
 }
 
 export function SideRibbon({
     text,
     rotation = 0,
+    textDirection = "lr",
 }: SideRibbonProps) {
     return (
         <div className="absolute right-0 top-0 h-full w-10">
@@ -19,7 +21,7 @@ export function SideRibbon({
             >
                 <motion.div
                     animate={{
-                        y: ["0%", "-50%"],
+                        y: textDirection === "lr" ? ["0%", "-50%"] : ["-50%", "0%"],
                     }}
                     transition={{
                         duration: 9,
