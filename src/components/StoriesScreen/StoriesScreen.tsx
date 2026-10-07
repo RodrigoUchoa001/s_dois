@@ -127,7 +127,9 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                                     }}
                                     onAnimationComplete={() => {
                                         // Avanço automático
-                                        nextStory();
+                                        if (currentStory !== 4) {
+                                            nextStory();
+                                        }
                                     }}
                                     className="h-full bg-white"
                                 />
