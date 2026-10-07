@@ -18,7 +18,10 @@ export function getSecondsTogether() {
 }
 
 export function getMinutesTogether() {
-    return getSecondsTogether() / 60;
+    const startDate = getCoupleStartDate();
+    const now = new Date();
+
+    return differenceInMinutes(now, startDate);
 }
 
 // PARA WE IN NUMBERS STORY
