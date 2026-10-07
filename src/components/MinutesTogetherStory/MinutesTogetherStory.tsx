@@ -1,117 +1,332 @@
 import { motion } from "motion/react";
+import { Heart, Sparkles } from "lucide-react";
 import { couple } from "../../data/couple";
 import { getMonthName } from "../../utils/date";
 
-export function MinutesTogetherStory({ animatedMinutes }: { animatedMinutes: number }) {
+export function MinutesTogetherStory({
+    animatedMinutes,
+}: {
+    animatedMinutes: number;
+}) {
     return (
         <motion.div
             key="minutes"
             initial={{
                 opacity: 0,
-                scale: 1.05,
             }}
             animate={{
                 opacity: 1,
-                scale: 1,
             }}
             exit={{
                 opacity: 0,
-                scale: 0.95,
             }}
             transition={{
                 duration: 0.5,
             }}
-            className="relative flex h-full flex-col items-center justify-center overflow-hidden px-8 text-center"
+            className="relative h-full w-full overflow-hidden bg-[#0b0b2b] text-[#fff3c7]"
         >
-            {/* Elementos decorativos */}
+            {/* =====================================================
+                DECORAÇÃO DE FUNDO
+            ====================================================== */}
+
+            {/* Glow superior esquerdo */}
             <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 0.15, scale: 1 }}
-                transition={{ duration: 1 }}
-                className="absolute -left-24 top-20 h-64 w-64 rounded-full bg-purple-500 blur-3xl"
+                initial={{
+                    opacity: 0,
+                    scale: 0.5,
+                }}
+                animate={{
+                    opacity: 0.2,
+                    scale: 1,
+                }}
+                transition={{
+                    duration: 1.2,
+                }}
+                className="absolute -left-32 -top-32 h-72 w-72 rounded-full bg-[#8064ff] blur-[100px]"
             />
 
+            {/* Glow inferior */}
             <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 0.15, scale: 1 }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="absolute -right-24 bottom-20 h-72 w-72 rounded-full bg-pink-500 blur-3xl"
+                initial={{
+                    opacity: 0,
+                    scale: 0.5,
+                }}
+                animate={{
+                    opacity: 0.15,
+                    scale: 1,
+                }}
+                transition={{
+                    duration: 1.2,
+                    delay: 0.2,
+                }}
+                className="absolute -bottom-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-[#8064ff] blur-[110px]"
             />
 
-            {/* Conteúdo */}
-            <div className="relative z-10">
-                <motion.p
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-lg font-medium text-white/60"
-                >
-                    Desde {couple.startDay} de {getMonthName(couple.startMonth + 1)} de {couple.startYear}, nós já dividimos
-                </motion.p>
-
-                {/* Número */}
-                <motion.div
-                    initial={{
-                        opacity: 0,
-                        scale: 0.7,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        scale: 1,
-                    }}
-                    transition={{
-                        delay: 0.35,
-                        duration: 0.6,
-                        type: "spring",
-                        stiffness: 120,
-                    }}
-                    className="mt-6"
-                >
-                    <span className="block text-7xl font-black tracking-tighter md:text-8xl">
-                        {animatedMinutes.toLocaleString("pt-BR")}
-                    </span>
-
-                    <span className="mt-2 block text-2xl font-semibold text-white/80">
-                        minutos juntos
-                    </span>
-                </motion.div>
-
-                {/* Separador */}
-                <motion.div
-                    initial={{
-                        opacity: 0,
-                        scaleX: 0,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        scaleX: 1,
-                    }}
-                    transition={{
-                        delay: 0.8,
-                        duration: 0.5,
-                    }}
-                    className="mx-auto mt-8 h-px w-24 bg-white/30"
+            {/* Estrelas */}
+            <motion.div
+                initial={{ opacity: 0, rotate: -20 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                transition={{ delay: 0.8 }}
+                className="absolute left-[12%] top-[14%]"
+            >
+                <Sparkles
+                    size={18}
+                    fill="#fff3c7"
+                    className="text-[#fff3c7]"
                 />
+            </motion.div>
 
-                {/* Mensagem */}
-                <motion.p
+            <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1 }}
+                className="absolute right-[25%] top-[12%]"
+            >
+                <Sparkles
+                    size={11}
+                    fill="#a875ff"
+                    className="text-[#a875ff]"
+                />
+            </motion.div>
+
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.2 }}
+                className="absolute bottom-[25%] left-[15%]"
+            >
+                <Sparkles
+                    size={12}
+                    fill="#a875ff"
+                    className="text-[#a875ff]"
+                />
+            </motion.div>
+
+            {/* =====================================================
+                FAIXA LATERAL
+            ====================================================== */}
+
+            <div className="absolute right-0 top-0 z-9 h-full w-10 overflow-hidden border-l-2 border-[#fff3c7]/20 bg-[#8064ff]">
+                <motion.div
+                    animate={{
+                        y: ["0%", "-50%"],
+                    }}
+                    transition={{
+                        duration: 9,
+                        ease: "linear",
+                        repeat: Infinity,
+                    }}
+                    className="absolute left-0 top-0 flex w-full flex-col items-center"
+                >
+                    {/* Repetimos para criar um loop contínuo */}
+                    {[...Array(12)].map((_, index) => (
+                        <div
+                            key={index}
+                            className="flex h-32 w-full shrink-0 items-center justify-center"
+                        >
+                            <span
+                                className="whitespace-nowrap text-[11px] font-black uppercase tracking-[0.2em] text-[#fff3c7]"
+                                style={{
+                                    writingMode: "vertical-rl",
+                                    transform: "rotate(180deg)",
+                                }}
+                            >
+                                minutos juntos
+                            </span>
+                        </div>
+                    ))}
+                </motion.div>
+            </div>
+
+            {/* =====================================================
+                CONTEÚDO PRINCIPAL
+            ====================================================== */}
+
+            <div className="relative z-10 flex h-full w-full flex-col px-7 pb-10 pr-14 pt-8">
+                {/* Pequeno cabeçalho */}
+                <motion.div
                     initial={{
                         opacity: 0,
-                        y: 15,
+                        y: -15,
                     }}
                     animate={{
                         opacity: 1,
                         y: 0,
                     }}
                     transition={{
-                        delay: 1,
+                        delay: 0.15,
+                    }}
+                    className="flex items-center gap-3"
+                >
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff3c7] text-[#0b0b2b]">
+                        <Heart
+                            size={18}
+                            fill="currentColor"
+                            strokeWidth={2.5}
+                        />
+                    </div>
+
+                    <p className="text-xs font-black uppercase tracking-[0.22em]">
+                        Nosso tempo
+                    </p>
+                </motion.div>
+
+                {/* =================================================
+                    TEXTO
+                ================================================= */}
+
+                <motion.div
+                    initial={{
+                        opacity: 0,
+                        y: 25,
+                    }}
+                    animate={{
+                        opacity: 1,
+                        y: 0,
+                    }}
+                    transition={{
+                        delay: 0.3,
+                        duration: 0.6,
+                    }}
+                    className="mt-12"
+                >
+                    <p className="max-w-xs text-base font-medium leading-relaxed text-[#fff3c7]/65">
+                        Desde{" "}
+                        <span className="font-bold text-[#fff3c7]">
+                            {couple.startDay} de{" "}
+                            {getMonthName(couple.startMonth + 1)} de{" "}
+                            {couple.startYear}
+                        </span>
+                        , nós já dividimos
+                    </p>
+                </motion.div>
+
+                {/* =================================================
+                    NÚMERO PRINCIPAL
+                ================================================= */}
+
+                <motion.div
+                    initial={{
+                        opacity: 0,
+                        scale: 0.75,
+                        y: 30,
+                    }}
+                    animate={{
+                        opacity: 1,
+                        scale: 1,
+                        y: 0,
+                    }}
+                    transition={{
+                        delay: 0.45,
+                        duration: 0.8,
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 14,
+                    }}
+                    className="mt-5"
+                >
+                    <motion.div
+                        animate={{
+                            rotate: [-1, 1, -1],
+                        }}
+                        transition={{
+                            duration: 5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                        className="origin-left"
+                    >
+                        <span className="block text-[clamp(4.5rem,19vw,4rem)] font-black leading-[0.8] tracking-[-0.07em] text-[#fff3c7]">
+                            {animatedMinutes.toLocaleString("pt-BR")}
+                        </span>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{
+                            opacity: 0,
+                            x: -15,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            x: 0,
+                        }}
+                        transition={{
+                            delay: 0.9,
+                        }}
+                        className="mt-5 flex items-center gap-3"
+                    >
+                        <div className="h-[3px] w-10 bg-[#a875ff]" />
+
+                        <span className="text-xl font-black uppercase tracking-[0.12em] text-[#a875ff]">
+                            minutos juntos
+                        </span>
+                    </motion.div>
+                </motion.div>
+
+                {/* =================================================
+                    MENSAGEM
+                ================================================= */}
+
+                <motion.div
+                    initial={{
+                        opacity: 0,
+                        y: 20,
+                    }}
+                    animate={{
+                        opacity: 1,
+                        y: 0,
+                    }}
+                    transition={{
+                        delay: 1.1,
                         duration: 0.5,
                     }}
-                    className="mx-auto mt-6 max-w-xs text-sm leading-relaxed text-white/50"
+                    className="mt-auto"
                 >
-                    {couple.wrapped.minutesTogether.message}
-                </motion.p>
+                    <div className="relative max-w-sm rounded-[28px] border-2 border-[#fff3c7]/10 bg-white/[0.04] p-5 backdrop-blur-sm">
+                        {/* coração decorativo */}
+                        <Heart
+                            size={16}
+                            fill="#a875ff"
+                            className="absolute -right-2 -top-2 rotate-12 text-[#a875ff]"
+                        />
+
+                        <p className="text-sm font-medium leading-relaxed text-[#fff3c7]/65">
+                            {couple.wrapped.minutesTogether.message}
+                        </p>
+                    </div>
+                </motion.div>
             </div>
+
+            {/* =====================================================
+                ELEMENTO DECORATIVO GRANDE
+            ====================================================== */}
+
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    scale: 0,
+                }}
+                animate={{
+                    opacity: 1,
+                    scale: 1,
+                }}
+                transition={{
+                    delay: 0.7,
+                    duration: 0.7,
+                    type: "spring",
+                }}
+                className="pointer-events-none absolute bottom-[13%] right-[13%] z-0"
+            >
+                <div className="relative h-20 w-20 rotate-12 rounded-[24px] border-2 border-[#a875ff]/40">
+                    <div className="absolute inset-3 rounded-[16px] bg-[#a875ff]/10" />
+
+                    <Heart
+                        size={30}
+                        fill="#a875ff"
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#a875ff]"
+                    />
+                </div>
+            </motion.div>
         </motion.div>
     );
 }
