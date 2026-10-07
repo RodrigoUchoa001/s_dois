@@ -10,6 +10,38 @@ type Props = {
     season: Season;
 };
 
+const illustrationColors = {
+    outline: "#fff3c7",
+    spring: {
+        main: "#a8d99f",
+        light: "#c4e8ba",
+        flower: "#f19ab4",
+        center: "#ffd66b",
+        accent: "#a875ff",
+    },
+    summer: {
+        sun: "#ffd96a",
+        sea: "#6eb9df",
+        wave: "#dff6ff",
+        umbrella: "#ff866e",
+        buoy: "#ff9cae",
+        accent: "#ff9d5c",
+    },
+    autumn: {
+        orange: "#e58b42",
+        red: "#d96d32",
+        yellow: "#eda84d",
+        leaf: "#df7c38",
+        accent: "#d98255",
+    },
+    winter: {
+        snow: "#dcecff",
+        snowLight: "#f2f7ff",
+        shadow: "#8296b7",
+        accent: "#7d8cff",
+    },
+};
+
 export function SeasonIllustration({
     season,
 }: Props) {
@@ -33,17 +65,21 @@ export function SeasonIllustration({
             className="relative flex w-full items-center justify-center"
         >
             {season === "spring" && <Spring />}
-
             {season === "summer" && <Summer />}
-
             {season === "autumn" && <Autumn />}
-
             {season === "winter" && <Winter />}
         </motion.div>
     );
 }
 
+/* ================================================================
+   PRIMAVERA
+================================================================ */
+
 function Spring() {
+    const colors = illustrationColors.spring;
+    const outline = illustrationColors.outline;
+
     return (
         <svg
             viewBox="0 0 400 320"
@@ -55,15 +91,15 @@ function Spring() {
                 cy="290"
                 rx="105"
                 ry="14"
-                fill="#789b7d"
-                opacity="0.25"
+                fill={colors.accent}
+                opacity="0.15"
             />
 
             {/* Tronco */}
             <path
                 d="M190 270 C190 220 185 180 200 135"
                 fill="none"
-                stroke="#10213b"
+                stroke={outline}
                 strokeWidth="14"
                 strokeLinecap="round"
             />
@@ -72,7 +108,7 @@ function Spring() {
             <path
                 d="M195 190 L145 145"
                 fill="none"
-                stroke="#10213b"
+                stroke={outline}
                 strokeWidth="12"
                 strokeLinecap="round"
             />
@@ -80,7 +116,7 @@ function Spring() {
             <path
                 d="M198 175 L250 130"
                 fill="none"
-                stroke="#10213b"
+                stroke={outline}
                 strokeWidth="12"
                 strokeLinecap="round"
             />
@@ -90,27 +126,27 @@ function Spring() {
                 cx="125"
                 cy="125"
                 r="55"
-                fill="#b9dfb7"
-                stroke="#10213b"
-                strokeWidth="8"
+                fill={colors.main}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             <circle
                 cx="205"
                 cy="95"
                 r="65"
-                fill="#c9e8c0"
-                stroke="#10213b"
-                strokeWidth="8"
+                fill={colors.light}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             <circle
                 cx="280"
                 cy="135"
                 r="55"
-                fill="#acd8ad"
-                stroke="#10213b"
-                strokeWidth="8"
+                fill={colors.main}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             {/* Flores */}
@@ -125,14 +161,14 @@ function Spring() {
                 cx="70"
                 cy="190"
                 r="5"
-                fill="#e79ab5"
+                fill={colors.flower}
             />
 
             <circle
                 cx="320"
                 cy="80"
                 r="5"
-                fill="#e79ab5"
+                fill={colors.flower}
             />
         </svg>
     );
@@ -145,47 +181,56 @@ function Flower({
     x: number;
     y: number;
 }) {
+    const colors = illustrationColors.spring;
+
     return (
         <g transform={`translate(${x} ${y})`}>
             <circle
                 cx="-8"
                 cy="0"
                 r="7"
-                fill="#f19ab4"
+                fill={colors.flower}
             />
 
             <circle
                 cx="8"
                 cy="0"
                 r="7"
-                fill="#f19ab4"
+                fill={colors.flower}
             />
 
             <circle
                 cx="0"
                 cy="-8"
                 r="7"
-                fill="#f19ab4"
+                fill={colors.flower}
             />
 
             <circle
                 cx="0"
                 cy="8"
                 r="7"
-                fill="#f19ab4"
+                fill={colors.flower}
             />
 
             <circle
                 cx="0"
                 cy="0"
                 r="5"
-                fill="#ffd66b"
+                fill={colors.center}
             />
         </g>
     );
 }
 
+/* ================================================================
+   VERÃO
+================================================================ */
+
 function Summer() {
+    const colors = illustrationColors.summer;
+    const outline = illustrationColors.outline;
+
     return (
         <svg
             viewBox="0 0 400 320"
@@ -196,56 +241,91 @@ function Summer() {
                 cx="200"
                 cy="120"
                 r="72"
-                fill="#ffd96a"
-                stroke="#10213b"
-                strokeWidth="9"
+                fill={colors.sun}
+                stroke={outline}
+                strokeWidth="8"
             />
 
             {/* Raios */}
             <g
-                stroke="#10213b"
+                stroke={outline}
                 strokeWidth="8"
                 strokeLinecap="round"
             >
-                <line x1="200" y1="25" x2="200" y2="5" />
-                <line x1="105" y1="120" x2="80" y2="120" />
-                <line x1="295" y1="120" x2="320" y2="120" />
-                <line x1="135" y1="55" x2="115" y2="35" />
-                <line x1="265" y1="55" x2="285" y2="35" />
+                <line
+                    x1="200"
+                    y1="25"
+                    x2="200"
+                    y2="5"
+                />
+
+                <line
+                    x1="105"
+                    y1="120"
+                    x2="80"
+                    y2="120"
+                />
+
+                <line
+                    x1="295"
+                    y1="120"
+                    x2="320"
+                    y2="120"
+                />
+
+                <line
+                    x1="135"
+                    y1="55"
+                    x2="115"
+                    y2="35"
+                />
+
+                <line
+                    x1="265"
+                    y1="55"
+                    x2="285"
+                    y2="35"
+                />
             </g>
 
             {/* Mar */}
             <path
-                d="M30 220
-                   C65 190 100 250 135 220
-                   C170 190 205 250 240 220
-                   C275 190 310 250 350 215
-                   L350 290
-                   L30 290 Z"
-                fill="#8bc8e8"
-                stroke="#10213b"
+                d="
+                    M30 220
+                    C65 190 100 250 135 220
+                    C170 190 205 250 240 220
+                    C275 190 310 250 350 215
+                    L350 290
+                    L30 290 Z
+                "
+                fill={colors.sea}
+                stroke={outline}
                 strokeWidth="8"
             />
 
             {/* Segunda onda */}
             <path
-                d="M35 250
-                   C70 220 105 280 140 250
-                   C175 220 210 280 245 250
-                   C280 220 315 275 350 245"
+                d="
+                    M35 250
+                    C70 220 105 280 140 250
+                    C175 220 210 280 245 250
+                    C280 220 315 275 350 245
+                "
                 fill="none"
-                stroke="#ffffff"
-                strokeWidth="10"
+                stroke={colors.wave}
+                strokeWidth="9"
                 strokeLinecap="round"
             />
 
             {/* Guarda-sol */}
             <path
-                d="M85 205
-                   Q135 150 185 205 Z"
-                fill="#ff866e"
-                stroke="#10213b"
-                strokeWidth="8"
+                d="
+                    M85 205
+                    Q135 150 185 205 Z
+                "
+                fill={colors.umbrella}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             <line
@@ -253,8 +333,8 @@ function Summer() {
                 y1="205"
                 x2="135"
                 y2="275"
-                stroke="#10213b"
-                strokeWidth="8"
+                stroke={outline}
+                strokeWidth="7"
                 strokeLinecap="round"
             />
 
@@ -263,22 +343,29 @@ function Summer() {
                 cx="290"
                 cy="225"
                 r="27"
-                fill="#ff9cae"
-                stroke="#10213b"
-                strokeWidth="8"
+                fill={colors.buoy}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             <circle
                 cx="290"
                 cy="225"
                 r="10"
-                fill="#fff0c9"
+                fill="#fff3c7"
             />
         </svg>
     );
 }
 
+/* ================================================================
+   OUTONO
+================================================================ */
+
 function Autumn() {
+    const colors = illustrationColors.autumn;
+    const outline = illustrationColors.outline;
+
     return (
         <svg
             viewBox="0 0 400 320"
@@ -290,17 +377,19 @@ function Autumn() {
                 cy="290"
                 rx="115"
                 ry="15"
-                fill="#9b6849"
-                opacity="0.25"
+                fill={colors.accent}
+                opacity="0.15"
             />
 
             {/* Tronco */}
             <path
-                d="M200 280
-                   C195 225 205 170 200 110"
+                d="
+                    M200 280
+                    C195 225 205 170 200 110
+                "
                 fill="none"
-                stroke="#10213b"
-                strokeWidth="18"
+                stroke={outline}
+                strokeWidth="17"
                 strokeLinecap="round"
             />
 
@@ -308,16 +397,16 @@ function Autumn() {
             <path
                 d="M200 175 L135 115"
                 fill="none"
-                stroke="#10213b"
-                strokeWidth="13"
+                stroke={outline}
+                strokeWidth="12"
                 strokeLinecap="round"
             />
 
             <path
                 d="M200 160 L270 105"
                 fill="none"
-                stroke="#10213b"
-                strokeWidth="13"
+                stroke={outline}
+                strokeWidth="12"
                 strokeLinecap="round"
             />
 
@@ -326,27 +415,27 @@ function Autumn() {
                 cx="125"
                 cy="100"
                 r="48"
-                fill="#e58b42"
-                stroke="#10213b"
-                strokeWidth="8"
+                fill={colors.orange}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             <circle
                 cx="200"
                 cy="70"
                 r="58"
-                fill="#d96d32"
-                stroke="#10213b"
-                strokeWidth="8"
+                fill={colors.red}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             <circle
                 cx="275"
                 cy="105"
                 r="48"
-                fill="#eda84d"
-                stroke="#10213b"
-                strokeWidth="8"
+                fill={colors.yellow}
+                stroke={outline}
+                strokeWidth="7"
             />
 
             {/* Folhas caindo */}
@@ -386,17 +475,22 @@ function Leaf({
     y: number;
     rotation: number;
 }) {
+    const colors = illustrationColors.autumn;
+    const outline = illustrationColors.outline;
+
     return (
         <g
             transform={`translate(${x} ${y}) rotate(${rotation})`}
         >
             <path
-                d="M0 -18
-                   C20 -10 20 10 0 18
-                   C-20 10 -20 -10 0 -18 Z"
-                fill="#df7c38"
-                stroke="#10213b"
-                strokeWidth="5"
+                d="
+                    M0 -18
+                    C20 -10 20 10 0 18
+                    C-20 10 -20 -10 0 -18 Z
+                "
+                fill={colors.leaf}
+                stroke={outline}
+                strokeWidth="4"
             />
 
             <line
@@ -404,14 +498,21 @@ function Leaf({
                 y1="-13"
                 x2="0"
                 y2="13"
-                stroke="#10213b"
-                strokeWidth="3"
+                stroke={outline}
+                strokeWidth="2.5"
             />
         </g>
     );
 }
 
+/* ================================================================
+   INVERNO
+================================================================ */
+
 function Winter() {
+    const colors = illustrationColors.winter;
+    // const outline = illustrationColors.outline;
+
     return (
         <svg
             viewBox="0 0 400 320"
@@ -422,46 +523,61 @@ function Winter() {
                 cx="70"
                 cy="80"
                 r="5"
-                fill="#ffffff"
-                stroke="#10213b"
-                strokeWidth="3"
+                fill={colors.snow}
+                opacity="0.9"
             />
 
             <circle
                 cx="325"
                 cy="65"
                 r="5"
-                fill="#ffffff"
-                stroke="#10213b"
-                strokeWidth="3"
+                fill={colors.snow}
+                opacity="0.9"
             />
 
             <circle
                 cx="320"
                 cy="245"
                 r="5"
-                fill="#ffffff"
-                stroke="#10213b"
-                strokeWidth="3"
+                fill={colors.snow}
+                opacity="0.9"
             />
 
             {/* Floco principal */}
             <Snowflake />
 
-            {/* Sombras */}
+            {/* Sombra */}
             <ellipse
                 cx="200"
                 cy="285"
                 rx="90"
                 ry="12"
-                fill="#8296b7"
-                opacity="0.3"
+                fill={colors.shadow}
+                opacity="0.2"
+            />
+
+            {/* Pequeno brilho */}
+            <circle
+                cx="110"
+                cy="135"
+                r="4"
+                fill={colors.accent}
+            />
+
+            <circle
+                cx="295"
+                cy="150"
+                r="4"
+                fill={colors.accent}
             />
         </svg>
     );
 }
 
 function Snowflake() {
+    const colors = illustrationColors.winter;
+    const outline = illustrationColors.outline;
+
     const branches = Array.from({
         length: 6,
     });
@@ -469,8 +585,8 @@ function Snowflake() {
     return (
         <g
             transform="translate(200 160)"
-            stroke="#10213b"
-            strokeWidth="9"
+            stroke={outline}
+            strokeWidth="8"
             strokeLinecap="round"
             strokeLinejoin="round"
         >
@@ -487,7 +603,7 @@ function Snowflake() {
                         y2="-105"
                     />
 
-                    {/* Ramificação esquerda */}
+                    {/* Ramificação interna */}
                     <line
                         x1="0"
                         y1="-55"
@@ -529,9 +645,20 @@ function Snowflake() {
                     -24,14
                     -24,-14
                 "
-                fill="#ffffff"
+                fill={colors.snow}
+                stroke={outline}
+                strokeWidth="4"
+            />
+
+            {/* Núcleo */}
+            <circle
+                cx="0"
+                cy="0"
+                r="7"
+                fill={colors.accent}
+                stroke={outline}
+                strokeWidth="3"
             />
         </g>
     );
 }
-
