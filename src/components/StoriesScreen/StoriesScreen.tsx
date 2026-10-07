@@ -8,11 +8,12 @@ import { WeInNumbersStory } from "../WeInNumbersStory/WeInNumbersStory";
 import { OurMusicStory } from "../OurMusicStory/OurMusicStory";
 import { MoonStory } from "../MoonStory/MoonStory";
 import { SeasonStory } from "../SeasonStory/SeasonStory";
+import { TimelineStory } from "../TimelineStory/TimelineStory";
 
 export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, closeWrapped: () => void }) {
     const [currentStory, setCurrentStory] = useState(0);
 
-    const totalStories = 6;
+    const totalStories = 7;
     const storyDuration = 5000;
 
     
@@ -140,15 +141,16 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                     <AnimatePresence mode="wait">
                         {currentStory === 0 && <MinutesTogetherStory animatedMinutes={animatedMinutes} />}
                         {currentStory === 1 && <WeInNumbersStory />}
-                        {currentStory === 2 && <GalleryStory />}
-                        {currentStory === 3 && <OurMusicStory />}
-                        {currentStory === 4 && <MoonStory />}
-                        {currentStory === 5 && <SeasonStory />}
+                        {currentStory === 2 && <MoonStory />}
+                        {currentStory === 3 && <SeasonStory />}
+                        {currentStory === 4 && <GalleryStory />}
+                        {currentStory === 5 && <OurMusicStory />}
+                        {currentStory === 6 && <TimelineStory />}
                     </AnimatePresence>
                 </div>
                 
                 {/* Botões de trocar entre stories não pode ocupar a tela toda no story de galeria de fotos */}
-                {currentStory !== 2 && (
+                {currentStory !== 4 && (
                     <>
                         <button
                             type="button"
@@ -169,7 +171,7 @@ export function StoriesScreen( { isOpen, closeWrapped }: { isOpen: boolean, clos
                 )}
 
                 {/* Não atrapalha os botões de mudar entre grupos de fotos */}
-                {currentStory == 2 && (
+                {currentStory == 4 && (
                     <>
                         <button
                             type="button"
