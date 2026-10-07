@@ -48,11 +48,19 @@ export function getFullMoonDaysTogether() {
     return fullMoonDays;
 }
 
+// próxima primeira mudança de estação depois do início do namoro: 21 de junho de 2026
 export function getSeasonsTogether() {
-    const startDate = getCoupleStartDate();
     const now = new Date();
+
+    let seasonsPassed = 1;
+    const startDate = new Date(2026, 6, 21); // 21 de junho de 2026
+
+    while (startDate <= now) {
+        seasonsPassed++;
+        startDate.setMonth(startDate.getMonth() + 3);
+    }
     
-    return Math.floor(differenceInDays(now, startDate) / 90);
+    return seasonsPassed;
 }
 
 export function getHeartbeatsTogether() {
