@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { couple } from "../../data/couple";
 import { TimelineEvent } from "./TimelineEvent";
+import { SideRibbon } from "../SideRibbon/SideRibbon";
 
 export function TimelineStory() {
     const timeline = couple.wrapped.timeline;
@@ -31,6 +32,10 @@ export function TimelineStory() {
                     {timeline.description}
                 </p>
             </motion.div>
+
+            <div className="absolute right-0 -top-60 h-full">
+                <SideRibbon text="Wrapped" rotation={135} />
+            </div>
 
             {/* Timeline */}
             <div className="relative mx-auto w-full max-w-3xl pb-20">
