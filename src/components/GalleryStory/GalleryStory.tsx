@@ -18,6 +18,7 @@ export function GalleryStory() {
     const [currentGroup, setCurrentGroup] = useState(0);
     const [currentPhoto, setCurrentPhoto] = useState(0);
     const [direction, setDirection] = useState(1);
+    const [showSwipeHint, setShowSwipeHint] = useState(true);
 
     const group = gallery.photoStack[currentGroup];
 
@@ -301,6 +302,7 @@ export function GalleryStory() {
                                 right: 0,
                             }}
                             dragElastic={0.9}
+                            onDragStart={() => setShowSwipeHint(false)}
                             onDragEnd={handleDragEnd}
                             className="absolute z-20 w-[76%] cursor-grab overflow-hidden rounded-[26px] border-2 border-[#fff3c7]/10 bg-white/[0.04] p-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-sm active:cursor-grabbing"
                             style={{
@@ -327,6 +329,36 @@ export function GalleryStory() {
                                 </div>
                             </div>
                         </motion.div>
+                    </AnimatePresence>
+                    <AnimatePresence>
+                        {showSwipeHint && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 8 }}
+                                transition={{
+                                    delay: 1.4,
+                                    duration: 0.4,
+                                }}
+                                className="pointer-events-none absolute bottom-[7%] left-1/2 z-30 -translate-x-1/2"
+                            >
+                                <div className="flex items-center gap-2 rounded-full border border-[#fff3c7]/10 bg-[#0b0b2b]/75 px-4 py-2 backdrop-blur-md">
+                                    <ChevronLeft
+                                        size={15}
+                                        className="text-[#a875ff]"
+                                    />
+
+                                    <span className="whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.12em] text-[#fff3c7]/70">
+                                        Deslize para ver mais
+                                    </span>
+
+                                    <ChevronRight
+                                        size={15}
+                                        className="text-[#a875ff]"
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
                     </AnimatePresence>
                 </div>
 
