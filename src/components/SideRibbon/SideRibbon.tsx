@@ -2,11 +2,21 @@ import { motion } from "motion/react";
 
 interface SideRibbonProps {
     text: string;
+    rotation?: number;
 }
 
-export function SideRibbon({ text }: SideRibbonProps) {
+export function SideRibbon({
+    text,
+    rotation = 0,
+}: SideRibbonProps) {
     return (
-        <div className="absolute right-0 top-0 z-9 h-full w-10 overflow-hidden border-l-2 border-[#fff3c7]/20 bg-[#8064ff]">
+        <div className="absolute right-0 top-0 h-full w-10">
+            <div
+                className="absolute inset-0 origin-center overflow-hidden border-l-2 border-[#fff3c7]/20 bg-[#8064ff]"
+                style={{
+                    transform: `rotate(${rotation}deg)`,
+                }}
+            >
                 <motion.div
                     animate={{
                         y: ["0%", "-50%"],
@@ -36,5 +46,6 @@ export function SideRibbon({ text }: SideRibbonProps) {
                     ))}
                 </motion.div>
             </div>
+        </div>
     );
 }
