@@ -34,28 +34,58 @@ export const couple = {
                     title: "Nosso Primeiro Encontro ❤️",
                     description: "Aquele dia inesquecível em que nos conhecemos e tudo começou.",
                     images: [
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "4/3",
+                        },
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
                     ],
                 },
                 {
                     title: "Momentos Felizes",
                     description: "Alguns dos momentos mais felizes que compartilhamos juntos.",
                     images: [
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
                     ],
                 },
                 {
                     title: "Viagens Inesquecíveis",
                     description: "As aventuras que vivemos juntos em nossas viagens.",
                     images: [
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
-                        `${import.meta.env.BASE_URL}images/aaa.png`,
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
+                        {
+                            src: `${import.meta.env.BASE_URL}images/aaa.png`,
+                            imageAspect: "3/4",
+                        },
                     ],
                 },
             ],
