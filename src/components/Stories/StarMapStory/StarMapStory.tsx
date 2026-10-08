@@ -848,59 +848,6 @@ export function StarMapStory() {
 
 
                 {/* =================================================
-                    DATA
-                ================================================= */}
-
-                <div
-                    className="
-                        mb-6
-                        flex
-                        items-center
-                        gap-2
-                    "
-                >
-                    <Clock3
-                        size={15}
-                        strokeWidth={3}
-                        className="
-                            text-[#a875ff]
-                        "
-                    />
-
-                    <AnimatePresence
-                        mode="wait"
-                    >
-                        <motion.span
-                            key={formatDate(
-                                displayDate,
-                            )}
-                            initial={{
-                                opacity: 0,
-                                y: 8,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                y: 0,
-                            }}
-                            exit={{
-                                opacity: 0,
-                                y: -8,
-                            }}
-                            className="
-                                text-sm
-                                font-black
-                                tracking-wider
-                            "
-                        >
-                            {formatDate(
-                                displayDate,
-                            )}
-                        </motion.span>
-                    </AnimatePresence>
-                </div>
-
-
-                {/* =================================================
                     MAPA
                 ================================================= */}
 
@@ -1061,7 +1008,19 @@ export function StarMapStory() {
                                             text-[#fff3c7]/40
                                         "
                                     >
-                                        Horário
+                                        Data e hora
+                                    </p>
+
+                                    <p
+                                        className="
+                                            mt-1
+                                            text-lg
+                                            font-black
+                                        "
+                                    >
+                                        {formatDate(
+                                            startDate,
+                                        )}
                                     </p>
 
                                     <p
