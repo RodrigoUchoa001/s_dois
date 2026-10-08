@@ -130,7 +130,7 @@ export function BeginningStory() {
                 initial={{ opacity: 0, rotate: -30, scale: 0 }}
                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
                 transition={{ delay: 1, type: "spring" }}
-                className="absolute left-[10%] top-[42%]"
+                className="absolute left-[5%] top-[38%]"
             >
                 <Sparkles
                     size={15}
