@@ -10,7 +10,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 import { couple } from "../../data/couple";
-import { MusicIntro } from "../MusicIntro/MusicIntro";
+import { MusicIntro } from "./MusicIntro";
 
 export interface Props {
     isPlaying: boolean;
