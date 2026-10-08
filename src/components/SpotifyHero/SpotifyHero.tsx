@@ -9,10 +9,10 @@ import { motion } from "motion/react";
 import { useState } from "react";
 
 import { couple } from "../../data/couple";
-import { CoupleCounter } from "../CoupleCounter/CoupleCounter";
-import { CoupleMessage } from "../CoupleMessage/CoupleMessage";
+import { CoupleCounter } from "./CoupleCounter";
+import { CoupleMessage } from "./CoupleMessage";
 import { MusicPlayer } from "../MusicPlayer/MusicPlayer";
-import { WrappedBox } from "../WrappedBox/WrappedBox";
+import { WrappedBox } from "./WrappedBox";
 
 export function SpotifyHero() {
     const [isPlaying, setIsPlaying] = useState(false);
