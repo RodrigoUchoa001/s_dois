@@ -2,7 +2,6 @@ import { motion } from "motion/react";
 import { CalendarDays, Sparkles } from "lucide-react";
 import { couple } from "../../data/couple";
 import { TimelineEvent } from "./TimelineEvent";
-import { SideRibbon } from "../SideRibbon/SideRibbon";
 import { StoryHeader } from "../StoryHeader/StoryHeader";
 
 export function TimelineStory() {
@@ -70,7 +69,6 @@ export function TimelineStory() {
                 />
             </motion.div>
             
-            <SideRibbon text="NOSSA HISTÓRIA" rotation={135} textDirection="rl" />
 
             <div className="relative">
                 <StoryHeader text="Nossa história" />
