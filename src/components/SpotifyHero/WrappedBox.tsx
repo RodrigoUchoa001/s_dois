@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { Sparkles, Timer } from "lucide-react";
 import { useState } from "react";
 
-import { StoriesScreen } from "../StoriesScreen/StoriesScreen";
+import { StoriesScreen } from "../Stories/StoriesScreen";
 import { SideRibbon } from "../SideRibbon/SideRibbon";
 
 export function WrappedBox() {

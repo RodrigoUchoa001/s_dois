@@ -8,13 +8,13 @@ import {
     useAnimatedNumber,
 } from "../../utils/date";
 
-import { MinutesTogetherStory } from "../MinutesTogetherStory/MinutesTogetherStory";
-import { GalleryStory } from "../GalleryStory/GalleryStory";
-import { WeInNumbersStory } from "../WeInNumbersStory/WeInNumbersStory";
-import { OurMusicStory } from "../OurMusicStory/OurMusicStory";
-import { MoonStory } from "../MoonStory/MoonStory";
-import { SeasonStory } from "../SeasonStory/SeasonStory";
-import { TimelineStory } from "../TimelineStory/TimelineStory";
+import { MinutesTogetherStory } from "./MinutesTogetherStory";
+import { WeInNumbersStory } from "./WeInNumbersStory";
+import { OurMusicStory } from "./OurMusicStory";
+import { MoonStory } from "./MoonStory";
+import { SeasonStory } from "./SeasonStory/SeasonStory";
+import { TimelineStory } from "./TimelineStory/TimelineStory";
+import { GalleryStory } from "./GalleryStory";
 
 interface StoriesScreenProps {
     isOpen: boolean;

@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
 import { Heart, Sparkles } from "lucide-react";
-import { couple } from "../../data/couple";
-import { SideRibbon } from "../SideRibbon/SideRibbon";
-import { StoryHeader } from "../StoryHeader/StoryHeader";
+import { couple } from "../../../data/couple";
+import { SideRibbon } from "../../SideRibbon/SideRibbon";
+import { StoryHeader } from "../../StoryHeader/StoryHeader";
 import { SeasonIllustration } from "./SeasonIlustration";
 
 type Season = "spring" | "summer" | "autumn" | "winter";
