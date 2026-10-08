@@ -159,7 +159,7 @@ export function MoonStory() {
                             <span>
                                 {couple.startDay}/
                                 {String(
-                                    couple.startMonth + 1
+                                    couple.startMonth
                                 ).padStart(2, "0")}
                                 /{couple.startYear}
                             </span>
