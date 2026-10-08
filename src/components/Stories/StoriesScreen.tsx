@@ -28,7 +28,7 @@ export function StoriesScreen({
 }: StoriesScreenProps) {
     const [currentStory, setCurrentStory] = useState(0);
 
-    const totalStories = 7;
+    const totalStories = 8;
     const storyDuration = 8000;
 
     const minutesTogether = getMinutesTogether();
@@ -120,7 +120,7 @@ export function StoriesScreen({
                     className="relative h-[100dvh] w-full overflow-hidden bg-[#0b0b2b] text-[#fff3c7] shadow-2xl sm:h-[min(100dvh,860px)] sm:aspect-[9/16] sm:w-auto sm:max-w-[calc(100vw-48px)] sm:rounded-[32px] sm:border-2 sm:border-[#fff3c7]/10"
                 >
                     {/* Barras de progresso */}
-                    <div className="absolute left-3 right-3 top-3 z-30 flex gap-1.5">
+                    <div className="absolute left-3 right-3 top-3 z-50 flex gap-1.5">
                         {Array.from({
                             length: totalStories,
                         }).map((_, index) => (
