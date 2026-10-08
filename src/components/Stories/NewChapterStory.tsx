@@ -1,4 +1,7 @@
-import { motion } from "motion/react";
+import {
+    AnimatePresence,
+    motion,
+} from "motion/react";
 import { Plane, Heart, Check } from "lucide-react";
 import {
     useEffect,
@@ -46,9 +49,9 @@ const START_DATE = new Date(
     couple.startYear,
     couple.startMonth - 1,
     couple.startDay,
-    couple.startHour,
-    couple.startMinute,
-    couple.startSecond,
+    couple.startHour ?? 0,
+    couple.startMinute ?? 0,
+    couple.startSecond ?? 0,
 );
 
 const ROUTE_PATH =
@@ -56,23 +59,14 @@ const ROUTE_PATH =
 
 function addMonths(date: Date, months: number) {
     const result = new Date(date);
-    const originalDay = result.getDate();
-
-    result.setDate(1);
     result.setMonth(result.getMonth() + months);
-
-    const lastDay = new Date(
-        result.getFullYear(),
-        result.getMonth() + 1,
-        0,
-    ).getDate();
-
-    result.setDate(Math.min(originalDay, lastDay));
-
     return result;
 }
 
-function differenceInDays(from: Date, to: Date) {
+function differenceInDays(
+    from: Date,
+    to: Date,
+) {
     const fromUTC = Date.UTC(
         from.getFullYear(),
         from.getMonth(),
@@ -87,14 +81,23 @@ function differenceInDays(from: Date, to: Date) {
 
     return Math.max(
         0,
-        Math.ceil((toUTC - fromUTC) / 86_400_000),
+        Math.ceil(
+            (toUTC - fromUTC) /
+                86_400_000,
+        ),
     );
 }
 
-function getMilestoneState(now: Date): MilestoneState {
+function getMilestoneState(
+    now: Date,
+): MilestoneState {
     let previousIndex = -1;
 
-    for (let i = 0; i < MILESTONES.length; i++) {
+    for (
+        let i = 0;
+        i < MILESTONES.length;
+        i++
+    ) {
         const milestoneDate = addMonths(
             START_DATE,
             MILESTONES[i].months,
@@ -107,35 +110,52 @@ function getMilestoneState(now: Date): MilestoneState {
         }
     }
 
-    const nextIndex = previousIndex + 1;
+    const nextIndex =
+        previousIndex + 1;
 
-    if (nextIndex >= MILESTONES.length) {
-        const last = MILESTONES[MILESTONES.length - 1];
+    /*
+     * Caso já tenha passado da última
+     * meta previamente cadastrada.
+     */
+    if (
+        nextIndex >=
+        MILESTONES.length
+    ) {
+        const last =
+            MILESTONES[
+                MILESTONES.length - 1
+            ];
 
         const next = {
-            label: `${last.months / 12 + 1} anos`,
+            label: `${
+                last.months / 12 + 1
+            } anos`,
             months: last.months + 12,
         };
 
-        const previousDate = addMonths(
-            START_DATE,
-            last.months,
-        );
+        const previousDate =
+            addMonths(
+                START_DATE,
+                last.months,
+            );
 
-        const nextDate = addMonths(
-            START_DATE,
-            next.months,
-        );
+        const nextDate =
+            addMonths(
+                START_DATE,
+                next.months,
+            );
 
-        const totalDays = differenceInDays(
-            previousDate,
-            nextDate,
-        );
+        const totalDays =
+            differenceInDays(
+                previousDate,
+                nextDate,
+            );
 
-        const elapsedDays = differenceInDays(
-            previousDate,
-            now,
-        );
+        const elapsedDays =
+            differenceInDays(
+                previousDate,
+                now,
+            );
 
         return {
             previous: last,
@@ -144,40 +164,49 @@ function getMilestoneState(now: Date): MilestoneState {
             nextDate,
             progress: Math.min(
                 100,
-                (elapsedDays / totalDays) * 100,
+                (elapsedDays /
+                    totalDays) *
+                    100,
             ),
         };
     }
 
     const previous =
         previousIndex >= 0
-            ? MILESTONES[previousIndex]
+            ? MILESTONES[
+                  previousIndex
+              ]
             : {
                   label: "Início",
                   months: 0,
               };
 
-    const next = MILESTONES[nextIndex];
+    const next =
+        MILESTONES[nextIndex];
 
-    const previousDate = addMonths(
-        START_DATE,
-        previous.months,
-    );
+    const previousDate =
+        addMonths(
+            START_DATE,
+            previous.months,
+        );
 
-    const nextDate = addMonths(
-        START_DATE,
-        next.months,
-    );
+    const nextDate =
+        addMonths(
+            START_DATE,
+            next.months,
+        );
 
-    const totalDays = differenceInDays(
-        previousDate,
-        nextDate,
-    );
+    const totalDays =
+        differenceInDays(
+            previousDate,
+            nextDate,
+        );
 
-    const elapsedDays = differenceInDays(
-        previousDate,
-        now,
-    );
+    const elapsedDays =
+        differenceInDays(
+            previousDate,
+            now,
+        );
 
     const progress =
         totalDays === 0
@@ -186,7 +215,9 @@ function getMilestoneState(now: Date): MilestoneState {
                   100,
                   Math.max(
                       0,
-                      (elapsedDays / totalDays) * 100,
+                      (elapsedDays /
+                          totalDays) *
+                          100,
                   ),
               );
 
@@ -215,67 +246,189 @@ function formatDate(date: Date) {
         "DEZ",
     ];
 
-    return `${String(date.getDate()).padStart(2, "0")} ${
+    return `${String(
+        date.getDate(),
+    ).padStart(2, "0")} ${
         months[date.getMonth()]
     } ${date.getFullYear()}`;
 }
 
-export function NextChapterStory() {
-    const [now, setNow] = useState(() => new Date());
+export function NextChapterStory({
+    isOpen = true,
+}: {
+    isOpen?: boolean;
+}) {
+    const [now, setNow] =
+        useState(() => new Date());
 
     const routePathRef =
         useRef<SVGPathElement>(null);
 
-    const [routePoints, setRoutePoints] =
-        useState<{
-            start: Point;
-            current: Point;
-            end: Point;
-        }>({
-            start: {
-                x: 18,
-                y: 75,
-            },
-            current: {
-                x: 18,
-                y: 75,
-            },
-            end: {
-                x: 302,
-                y: 25,
-            },
-        });
+    const previousMilestoneRef =
+        useRef<string | null>(null);
 
+    const celebrationTimeoutRef =
+        useRef<
+            ReturnType<
+                typeof setTimeout
+            > | null
+        >(null);
+
+    const [
+        isCelebrating,
+        setIsCelebrating,
+    ] = useState(false);
+
+    const [
+        celebrationData,
+        setCelebrationData,
+    ] = useState<{
+        completed: Milestone;
+        next: Milestone;
+    } | null>(null);
+
+    const [
+        routePoints,
+        setRoutePoints,
+    ] = useState<{
+        start: Point;
+        current: Point;
+        end: Point;
+    }>({
+        start: {
+            x: 18,
+            y: 75,
+        },
+        current: {
+            x: 18,
+            y: 75,
+        },
+        end: {
+            x: 302,
+            y: 25,
+        },
+    });
+
+    /*
+     * Relógio utilizado pelo countdown.
+     */
     useEffect(() => {
-        const interval = setInterval(() => {
-            setNow(new Date());
-        }, 1000);
+        const interval =
+            setInterval(() => {
+                setNow(new Date());
+            }, 1000);
 
-        return () => clearInterval(interval);
+        return () =>
+            clearInterval(interval);
     }, []);
 
     const milestone = useMemo(
-        () => getMilestoneState(now),
+        () =>
+            getMilestoneState(now),
         [now],
     );
 
     /*
-     * A contagem regressiva é calculada diretamente
-     * a partir da diferença exata entre agora e a
-     * próxima data.
+     * Detecta a virada de uma meta.
      *
-     * Exemplo:
-     * 337 dias, 14:23:10
+     * A comparação é feita pela próxima meta.
+     * Quando ela muda, significa que a meta
+     * anterior acabou de ser atingida.
+     *
+     * A comemoração só acontece se o Story
+     * estiver aberto naquele momento.
+     */
+    useEffect(() => {
+        const milestoneKey = `${milestone.next.months}-${milestone.next.label}`;
+
+        /*
+         * Primeira renderização:
+         * apenas registra qual era a meta.
+         */
+        if (
+            previousMilestoneRef.current ===
+            null
+        ) {
+            previousMilestoneRef.current =
+                milestoneKey;
+
+            return;
+        }
+
+        /*
+         * A próxima meta mudou.
+         */
+        if (
+            previousMilestoneRef.current !==
+                milestoneKey &&
+            isOpen
+        ) {
+            setCelebrationData({
+                completed:
+                    milestone.previous,
+                next: milestone.next,
+            });
+
+            setIsCelebrating(true);
+
+            if (
+                celebrationTimeoutRef.current
+            ) {
+                clearTimeout(
+                    celebrationTimeoutRef.current,
+                );
+            }
+
+            celebrationTimeoutRef.current =
+                setTimeout(() => {
+                    setIsCelebrating(
+                        false,
+                    );
+                }, 4200);
+        }
+
+        previousMilestoneRef.current =
+            milestoneKey;
+    }, [
+        milestone.next,
+        milestone.previous,
+        isOpen,
+    ]);
+
+    /*
+     * Limpa o timeout quando o componente
+     * for desmontado.
+     */
+    useEffect(() => {
+        return () => {
+            if (
+                celebrationTimeoutRef.current
+            ) {
+                clearTimeout(
+                    celebrationTimeoutRef.current,
+                );
+            }
+        };
+    }, []);
+
+    /*
+     * Countdown completo:
+     *
+     * 337 dias
+     * 14:23:10
      */
     const countdown = useMemo(() => {
         const difference =
             milestone.nextDate.getTime() -
             now.getTime();
 
-        const totalSeconds = Math.max(
-            0,
-            Math.floor(difference / 1000),
-        );
+        const totalSeconds =
+            Math.max(
+                0,
+                Math.floor(
+                    difference / 1000,
+                ),
+            );
 
         const days = Math.floor(
             totalSeconds / 86_400,
@@ -289,7 +442,9 @@ export function NextChapterStory() {
         );
 
         const minutes = Math.floor(
-            (remainingAfterDays % 3600) / 60,
+            (remainingAfterDays %
+                3600) /
+                60,
         );
 
         const seconds =
@@ -301,34 +456,42 @@ export function NextChapterStory() {
             minutes,
             seconds,
         };
-    }, [milestone.nextDate, now]);
+    }, [
+        milestone.nextDate,
+        now,
+    ]);
 
     const percentage = Math.round(
         milestone.progress,
     );
 
     /*
-     * Obtém os três pontos diretamente da mesma
-     * curva usada no SVG.
-     *
-     * Dessa forma, início, avião e destino ficam
-     * exatamente sobre o traçado, mesmo que a
-     * curva seja alterada futuramente.
+     * Obtém os três pontos diretamente da
+     * mesma curva usada pelo SVG.
      */
     useLayoutEffect(() => {
-        const path = routePathRef.current;
+        const path =
+            routePathRef.current;
 
         if (!path) return;
 
-        const length = path.getTotalLength();
+        const length =
+            path.getTotalLength();
 
-        const start = path.getPointAtLength(0);
+        const start =
+            path.getPointAtLength(0);
 
-        const current = path.getPointAtLength(
-            length * (milestone.progress / 100),
-        );
+        const current =
+            path.getPointAtLength(
+                length *
+                    (milestone.progress /
+                        100),
+            );
 
-        const end = path.getPointAtLength(length);
+        const end =
+            path.getPointAtLength(
+                length,
+            );
 
         setRoutePoints({
             start: {
@@ -374,7 +537,530 @@ export function NextChapterStory() {
                 text-[#fff3c7]
             "
         >
-            {/* BACKGROUND */}
+            {/* =========================================================
+                CELEBRAÇÃO DA META
+            ========================================================== */}
+
+            <AnimatePresence>
+                {isCelebrating &&
+                    celebrationData && (
+                        <motion.div
+                            initial={{
+                                opacity: 0,
+                            }}
+                            animate={{
+                                opacity: 1,
+                            }}
+                            exit={{
+                                opacity: 0,
+                            }}
+                            transition={{
+                                duration: 0.35,
+                            }}
+                            className="
+                                absolute
+                                inset-0
+                                z-[100]
+                                flex
+                                items-center
+                                justify-center
+                                overflow-hidden
+                                bg-[#0b0b2b]
+                            "
+                        >
+                            {/* FLASH */}
+
+                            <motion.div
+                                initial={{
+                                    scale: 0,
+                                    opacity: 0,
+                                }}
+                                animate={{
+                                    scale: [
+                                        0,
+                                        1.5,
+                                        3,
+                                    ],
+                                    opacity: [
+                                        0,
+                                        0.8,
+                                        0,
+                                    ],
+                                }}
+                                transition={{
+                                    duration: 1.1,
+                                    ease: "easeOut",
+                                }}
+                                className="
+                                    absolute
+                                    h-40
+                                    w-40
+                                    rounded-full
+                                    bg-[#a875ff]
+                                    blur-3xl
+                                "
+                            />
+
+                            {/* PRIMEIRO ANEL */}
+
+                            <motion.div
+                                initial={{
+                                    scale: 0.2,
+                                    opacity: 0,
+                                }}
+                                animate={{
+                                    scale: [
+                                        0.2,
+                                        1,
+                                        1.8,
+                                    ],
+                                    opacity: [
+                                        0,
+                                        0.6,
+                                        0,
+                                    ],
+                                }}
+                                transition={{
+                                    duration: 1.8,
+                                    delay: 0.2,
+                                    ease: "easeOut",
+                                }}
+                                className="
+                                    absolute
+                                    h-44
+                                    w-44
+                                    rounded-full
+                                    border-2
+                                    border-[#a875ff]/50
+                                "
+                            />
+
+                            {/* SEGUNDO ANEL */}
+
+                            <motion.div
+                                initial={{
+                                    scale: 0.2,
+                                    opacity: 0,
+                                }}
+                                animate={{
+                                    scale: [
+                                        0.2,
+                                        1,
+                                        2.3,
+                                    ],
+                                    opacity: [
+                                        0,
+                                        0.35,
+                                        0,
+                                    ],
+                                }}
+                                transition={{
+                                    duration: 2,
+                                    delay: 0.4,
+                                    ease: "easeOut",
+                                }}
+                                className="
+                                    absolute
+                                    h-44
+                                    w-44
+                                    rounded-full
+                                    border
+                                    border-[#fff3c7]/30
+                                "
+                            />
+
+                            {/* PARTÍCULAS */}
+
+                            {Array.from({
+                                length: 18,
+                            }).map(
+                                (
+                                    _,
+                                    index,
+                                ) => {
+                                    const angle =
+                                        (index /
+                                            18) *
+                                        Math.PI *
+                                        2;
+
+                                    const distance =
+                                        100 +
+                                        (index %
+                                            3) *
+                                            35;
+
+                                    const x =
+                                        Math.cos(
+                                            angle,
+                                        ) *
+                                        distance;
+
+                                    const y =
+                                        Math.sin(
+                                            angle,
+                                        ) *
+                                        distance;
+
+                                    return (
+                                        <motion.div
+                                            key={
+                                                index
+                                            }
+                                            initial={{
+                                                x: 0,
+                                                y: 0,
+                                                scale: 0,
+                                                opacity: 0,
+                                            }}
+                                            animate={{
+                                                x,
+                                                y,
+                                                scale: [
+                                                    0,
+                                                    1,
+                                                    0.4,
+                                                ],
+                                                opacity:
+                                                    [
+                                                        0,
+                                                        1,
+                                                        0,
+                                                    ],
+                                            }}
+                                            transition={{
+                                                duration: 1.6,
+                                                delay:
+                                                    0.25 +
+                                                    (index %
+                                                        5) *
+                                                        0.05,
+                                                ease: "easeOut",
+                                            }}
+                                            className="
+                                                absolute
+                                                h-1.5
+                                                w-1.5
+                                                rounded-full
+                                                bg-[#fff3c7]
+                                            "
+                                        />
+                                    );
+                                },
+                            )}
+
+                            {/* CORAÇÕES / ESTRELAS */}
+
+                            {[
+                                "♡",
+                                "✦",
+                                "♡",
+                                "✧",
+                            ].map(
+                                (
+                                    symbol,
+                                    index,
+                                ) => (
+                                    <motion.span
+                                        key={
+                                            index
+                                        }
+                                        initial={{
+                                            opacity: 0,
+                                            scale: 0,
+                                            y: 30,
+                                        }}
+                                        animate={{
+                                            opacity: [
+                                                0,
+                                                1,
+                                                0,
+                                            ],
+                                            scale: [
+                                                0,
+                                                1.2,
+                                                0.8,
+                                            ],
+                                            y: [
+                                                30,
+                                                -20 -
+                                                    index *
+                                                        12,
+                                                -70 -
+                                                    index *
+                                                        15,
+                                            ],
+                                            x:
+                                                index %
+                                                    2 ===
+                                                0
+                                                    ? -60 -
+                                                      index *
+                                                          20
+                                                    : 60 +
+                                                      index *
+                                                          20,
+                                        }}
+                                        transition={{
+                                            duration: 2.2,
+                                            delay:
+                                                0.3 +
+                                                index *
+                                                    0.15,
+                                            ease: "easeOut",
+                                        }}
+                                        className="
+                                            absolute
+                                            text-2xl
+                                            font-black
+                                            text-[#a875ff]
+                                        "
+                                    >
+                                        {
+                                            symbol
+                                        }
+                                    </motion.span>
+                                ),
+                            )}
+
+                            {/* CONTEÚDO CENTRAL */}
+
+                            <motion.div
+                                initial={{
+                                    opacity: 0,
+                                    scale: 0.7,
+                                    y: 20,
+                                }}
+                                animate={{
+                                    opacity: 1,
+                                    scale: 1,
+                                    y: 0,
+                                }}
+                                transition={{
+                                    delay: 0.55,
+                                    duration: 0.65,
+                                    ease: [
+                                        0.16,
+                                        1,
+                                        0.3,
+                                        1,
+                                    ],
+                                }}
+                                className="
+                                    relative
+                                    z-10
+                                    flex
+                                    flex-col
+                                    items-center
+                                    text-center
+                                "
+                            >
+                                {/* ÍCONE */}
+
+                                <motion.div
+                                    animate={{
+                                        rotate: [
+                                            0,
+                                            -8,
+                                            8,
+                                            -4,
+                                            4,
+                                            0,
+                                        ],
+                                        scale: [
+                                            1,
+                                            1.1,
+                                            1,
+                                        ],
+                                    }}
+                                    transition={{
+                                        duration: 1.2,
+                                        delay: 0.7,
+                                    }}
+                                    className="
+                                        mb-6
+                                        flex
+                                        h-20
+                                        w-20
+                                        items-center
+                                        justify-center
+                                        rounded-full
+                                        bg-[#fff3c7]
+                                        text-[#0b0b2b]
+                                        shadow-[0_0_50px_rgba(255,243,199,0.2)]
+                                    "
+                                >
+                                    <Heart
+                                        size={
+                                            34
+                                        }
+                                        fill="currentColor"
+                                        strokeWidth={
+                                            2.5
+                                        }
+                                    />
+                                </motion.div>
+
+                                <p
+                                    className="
+                                        text-[10px]
+                                        font-black
+                                        uppercase
+                                        tracking-[0.35em]
+                                        text-[#a875ff]
+                                    "
+                                >
+                                    Capítulo
+                                    concluído
+                                </p>
+
+                                <motion.h2
+                                    initial={{
+                                        opacity: 0,
+                                        y: 10,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        y: 0,
+                                    }}
+                                    transition={{
+                                        delay: 0.9,
+                                    }}
+                                    className="
+                                        mt-3
+                                        text-4xl
+                                        font-black
+                                        uppercase
+                                        leading-none
+                                        tracking-tight
+                                    "
+                                >
+                                    {
+                                        celebrationData
+                                            .completed
+                                            .label
+                                    }
+                                </motion.h2>
+
+                                <motion.p
+                                    initial={{
+                                        opacity: 0,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                    }}
+                                    transition={{
+                                        delay: 1.15,
+                                    }}
+                                    className="
+                                        mt-4
+                                        max-w-xs
+                                        text-sm
+                                        font-medium
+                                        leading-relaxed
+                                        text-[#fff3c7]/50
+                                    "
+                                >
+                                    Mais uma
+                                    parte da
+                                    nossa
+                                    história
+                                    acaba de
+                                    ser
+                                    escrita.
+                                </motion.p>
+
+                                {/* NOVA META */}
+
+                                <motion.div
+                                    initial={{
+                                        opacity: 0,
+                                        y: 15,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        y: 0,
+                                    }}
+                                    transition={{
+                                        delay: 1.55,
+                                        duration: 0.5,
+                                    }}
+                                    className="
+                                        mt-8
+                                        rounded-full
+                                        border
+                                        border-[#fff3c7]/10
+                                        bg-[#15153d]
+                                        px-5
+                                        py-3
+                                    "
+                                >
+                                    <p
+                                        className="
+                                            text-[8px]
+                                            font-black
+                                            uppercase
+                                            tracking-[0.2em]
+                                            text-[#fff3c7]/35
+                                        "
+                                    >
+                                        Próximo
+                                        destino
+                                    </p>
+
+                                    <p
+                                        className="
+                                            mt-1
+                                            text-sm
+                                            font-black
+                                            uppercase
+                                            text-[#a875ff]
+                                        "
+                                    >
+                                        {
+                                            celebrationData
+                                                .next
+                                                .label
+                                        }{" "}
+                                        ♡
+                                    </p>
+                                </motion.div>
+                            </motion.div>
+
+                            {/* LINHA DE PASSAGEM */}
+
+                            <motion.div
+                                initial={{
+                                    x: "-120%",
+                                }}
+                                animate={{
+                                    x: "120%",
+                                }}
+                                transition={{
+                                    duration: 1.2,
+                                    delay: 0.2,
+                                    ease: "easeInOut",
+                                }}
+                                className="
+                                    absolute
+                                    left-0
+                                    top-1/2
+                                    h-px
+                                    w-1/2
+                                    bg-gradient-to-r
+                                    from-transparent
+                                    via-[#a875ff]
+                                    to-transparent
+                                    opacity-50
+                                "
+                            />
+                        </motion.div>
+                    )}
+            </AnimatePresence>
+
+            {/* =========================================================
+                BACKGROUND
+            ========================================================== */}
 
             <motion.div
                 initial={{
@@ -451,7 +1137,11 @@ export function NextChapterStory() {
             <motion.div
                 animate={{
                     scale: [1, 1.2, 1],
-                    opacity: [0.4, 1, 0.4],
+                    opacity: [
+                        0.4,
+                        1,
+                        0.4,
+                    ],
                 }}
                 transition={{
                     duration: 2.5,
@@ -483,7 +1173,9 @@ export function NextChapterStory() {
                     pt-8
                 "
             >
-                {/* CABEÇALHO */}
+                {/* =====================================================
+                    CABEÇALHO
+                ====================================================== */}
 
                 <motion.div
                     initial={{
@@ -525,7 +1217,8 @@ export function NextChapterStory() {
                                 tracking-[0.22em]
                             "
                         >
-                            Nossa próxima aventura
+                            Nossa próxima
+                            aventura
                         </p>
                     </div>
 
@@ -554,14 +1247,20 @@ export function NextChapterStory() {
                             text-[#fff3c7]/55
                         "
                     >
-                        Contagem regressiva para{" "}
+                        Contagem regressiva
+                        para{" "}
                         <span className="font-black text-[#fff3c7]/90">
-                            {milestone.next.label}
+                            {
+                                milestone.next
+                                    .label
+                            }
                         </span>
                     </p>
                 </motion.div>
 
-                {/* PAINEL DE EMBARQUE */}
+                {/* =====================================================
+                    PAINEL DE EMBARQUE
+                ====================================================== */}
 
                 <motion.div
                     initial={{
@@ -608,7 +1307,8 @@ export function NextChapterStory() {
                                     text-[#fff3c7]/40
                                 "
                             >
-                                Painel de embarque
+                                Painel de
+                                embarque
                             </p>
 
                             <p
@@ -636,7 +1336,10 @@ export function NextChapterStory() {
                                 text-[#a875ff]
                             "
                         >
-                            {milestone.next.label}
+                            {
+                                milestone.next
+                                    .label
+                            }
                         </div>
                     </div>
 
@@ -658,7 +1361,9 @@ export function NextChapterStory() {
                                 </p>
 
                                 <motion.p
-                                    key={countdown.days}
+                                    key={
+                                        countdown.days
+                                    }
                                     initial={{
                                         opacity: 0,
                                         y: 6,
@@ -674,7 +1379,9 @@ export function NextChapterStory() {
                                         leading-none
                                     "
                                 >
-                                    {countdown.days}
+                                    {
+                                        countdown.days
+                                    }
 
                                     <span
                                         className="
@@ -700,7 +1407,8 @@ export function NextChapterStory() {
                                         text-[#fff3c7]/40
                                     "
                                 >
-                                    Contagem regressiva
+                                    Contagem
+                                    regressiva
                                 </p>
 
                                 <div
@@ -717,7 +1425,10 @@ export function NextChapterStory() {
                                     <span>
                                         {String(
                                             countdown.hours,
-                                        ).padStart(2, "0")}
+                                        ).padStart(
+                                            2,
+                                            "0",
+                                        )}
                                     </span>
 
                                     <span className="text-[#a875ff]">
@@ -727,7 +1438,10 @@ export function NextChapterStory() {
                                     <span>
                                         {String(
                                             countdown.minutes,
-                                        ).padStart(2, "0")}
+                                        ).padStart(
+                                            2,
+                                            "0",
+                                        )}
                                     </span>
 
                                     <span className="text-[#a875ff]">
@@ -747,7 +1461,10 @@ export function NextChapterStory() {
                                     >
                                         {String(
                                             countdown.seconds,
-                                        ).padStart(2, "0")}
+                                        ).padStart(
+                                            2,
+                                            "0",
+                                        )}
                                     </motion.span>
                                 </div>
                             </div>
@@ -828,8 +1545,12 @@ export function NextChapterStory() {
                                         "
                                     >
                                         <Check
-                                            size={10}
-                                            strokeWidth={4}
+                                            size={
+                                                10
+                                            }
+                                            strokeWidth={
+                                                4
+                                            }
                                         />
                                     </span>
 
@@ -840,7 +1561,9 @@ export function NextChapterStory() {
                     </div>
                 </motion.div>
 
-                {/* ROTA */}
+                {/* =====================================================
+                    ROTA
+                ====================================================== */}
 
                 <motion.div
                     initial={{
@@ -864,7 +1587,8 @@ export function NextChapterStory() {
                                 text-[#fff3c7]/40
                             "
                         >
-                            Rota do nosso amor
+                            Rota do nosso
+                            amor
                         </p>
 
                         <motion.p
@@ -883,7 +1607,8 @@ export function NextChapterStory() {
                                 text-[#a875ff]
                             "
                         >
-                            {percentage}% do caminho
+                            {percentage}% do
+                            caminho
                         </motion.p>
                     </div>
 
@@ -901,10 +1626,12 @@ export function NextChapterStory() {
                                 overflow-visible
                             "
                         >
-                            {/* brilho */}
+                            {/* BRILHO */}
 
                             <path
-                                d={ROUTE_PATH}
+                                d={
+                                    ROUTE_PATH
+                                }
                                 fill="none"
                                 stroke="#a875ff"
                                 strokeWidth="5"
@@ -913,11 +1640,15 @@ export function NextChapterStory() {
                                 filter="blur(4px)"
                             />
 
-                            {/* rota completa */}
+                            {/* ROTA COMPLETA */}
 
                             <path
-                                ref={routePathRef}
-                                d={ROUTE_PATH}
+                                ref={
+                                    routePathRef
+                                }
+                                d={
+                                    ROUTE_PATH
+                                }
                                 fill="none"
                                 stroke="rgba(255,243,199,0.12)"
                                 strokeWidth="2"
@@ -925,10 +1656,12 @@ export function NextChapterStory() {
                                 strokeLinecap="round"
                             />
 
-                            {/* rota percorrida */}
+                            {/* ROTA PERCORRIDA */}
 
                             <motion.path
-                                d={ROUTE_PATH}
+                                d={
+                                    ROUTE_PATH
+                                }
                                 fill="none"
                                 stroke="#a875ff"
                                 strokeWidth="2.5"
@@ -949,7 +1682,9 @@ export function NextChapterStory() {
                             />
                         </svg>
 
-                        {/* META ANTERIOR */}
+                        {/* =================================================
+                            META ANTERIOR
+                        ================================================== */}
 
                         <motion.div
                             className="
@@ -963,12 +1698,16 @@ export function NextChapterStory() {
                             "
                             style={{
                                 left: `${
-                                    (routePoints.start.x /
+                                    (routePoints
+                                        .start
+                                        .x /
                                         320) *
                                     100
                                 }%`,
                                 top: `${
-                                    (routePoints.start.y /
+                                    (routePoints
+                                        .start
+                                        .y /
                                         100) *
                                     100
                                 }%`,
@@ -1006,7 +1745,11 @@ export function NextChapterStory() {
                                         uppercase
                                     "
                                 >
-                                    {milestone.previous.label}
+                                    {
+                                        milestone
+                                            .previous
+                                            .label
+                                    }
                                 </p>
 
                                 <p
@@ -1024,7 +1767,9 @@ export function NextChapterStory() {
                             </div>
                         </motion.div>
 
-                        {/* AVIÃO / MOMENTO ATUAL */}
+                        {/* =================================================
+                            AVIÃO / MOMENTO ATUAL
+                        ================================================== */}
 
                         <motion.div
                             className="
@@ -1045,12 +1790,16 @@ export function NextChapterStory() {
                                 opacity: 1,
                                 scale: 1,
                                 left: `${
-                                    (routePoints.current.x /
+                                    (routePoints
+                                        .current
+                                        .x /
                                         320) *
                                     100
                                 }%`,
                                 top: `${
-                                    (routePoints.current.y /
+                                    (routePoints
+                                        .current
+                                        .y /
                                         100) *
                                     100
                                 }%`,
@@ -1076,7 +1825,11 @@ export function NextChapterStory() {
                         >
                             <motion.div
                                 animate={{
-                                    y: [0, -3, 0],
+                                    y: [
+                                        0,
+                                        -3,
+                                        0,
+                                    ],
                                 }}
                                 transition={{
                                     duration: 2,
@@ -1105,7 +1858,11 @@ export function NextChapterStory() {
                                         border-[#a875ff]/30
                                     "
                                     animate={{
-                                        scale: [1, 1.35, 1],
+                                        scale: [
+                                            1,
+                                            1.35,
+                                            1,
+                                        ],
                                         opacity: [
                                             0.7,
                                             0,
@@ -1120,9 +1877,13 @@ export function NextChapterStory() {
                                 />
 
                                 <Plane
-                                    size={13}
+                                    size={
+                                        13
+                                    }
                                     fill="currentColor"
-                                    strokeWidth={2.5}
+                                    strokeWidth={
+                                        2.5
+                                    }
                                     className="-rotate-12"
                                 />
                             </motion.div>
@@ -1147,12 +1908,16 @@ export function NextChapterStory() {
                                         text-[#fff3c7]/40
                                     "
                                 >
-                                    {percentage}% do caminho
+                                    {percentage}%
+                                    do
+                                    caminho
                                 </p>
                             </div>
                         </motion.div>
 
-                        {/* PRÓXIMA META */}
+                        {/* =================================================
+                            PRÓXIMA META
+                        ================================================== */}
 
                         <motion.div
                             className="
@@ -1166,12 +1931,16 @@ export function NextChapterStory() {
                             "
                             style={{
                                 left: `${
-                                    (routePoints.end.x /
+                                    (routePoints
+                                        .end
+                                        .x /
                                         320) *
                                     100
                                 }%`,
                                 top: `${
-                                    (routePoints.end.y /
+                                    (routePoints
+                                        .end
+                                        .y /
                                         100) *
                                     100
                                 }%`,
@@ -1209,7 +1978,11 @@ export function NextChapterStory() {
                                         uppercase
                                     "
                                 >
-                                    {milestone.next.label}
+                                    {
+                                        milestone
+                                            .next
+                                            .label
+                                    }
                                 </p>
 
                                 <p
@@ -1228,6 +2001,8 @@ export function NextChapterStory() {
                         </motion.div>
                     </div>
                 </motion.div>
+
+                {/* RODAPÉ */}
 
                 <motion.p
                     initial={{
@@ -1249,7 +2024,8 @@ export function NextChapterStory() {
                         text-[#fff3c7]/25
                     "
                 >
-                    Próximo destino confirmado ♡
+                    Próximo destino
+                    confirmado ♡
                 </motion.p>
             </div>
         </motion.div>
