@@ -19,28 +19,28 @@ const seasons: Record<Season, SeasonData> = {
         name: "PRIMAVERA",
         shortName: "primavera",
         description:
-            "Vocês começaram na primavera e, desde então, já viram muitas estações passarem juntos.",
+            "Começamos na primavera e, desde então, já vimos muitas estações passarem juntos.",
         accent: "#a875ff",
     },
     summer: {
         name: "VERÃO",
         shortName: "verão",
         description:
-            "Vocês começaram no verão e, desde então, já viram muitas estações passarem juntos.",
+            "Começamos no verão e, desde então, já vimos muitas estações passarem juntos.",
         accent: "#ff9d5c",
     },
     autumn: {
         name: "OUTONO",
         shortName: "outono",
         description:
-            "Vocês começaram no outono e, desde então, já viram muitas estações passarem juntos.",
+            "Começamos no outono e, desde então, já vimos muitas estações passarem juntos.",
         accent: "#d98255",
     },
     winter: {
         name: "INVERNO",
         shortName: "inverno",
         description:
-            "Vocês começaram no inverno e, desde então, já viram muitas estações passarem juntos.",
+            "Começamos no inverno e, desde então, já vimos muitas estações passarem juntos.",
         accent: "#7d8cff",
     },
 };
@@ -223,7 +223,7 @@ export function SeasonStory() {
                     className="mt-10"
                 >
                     <p className="max-w-xs text-base font-medium leading-relaxed text-[#fff3c7]/65">
-                        Quando tudo começou, era{" "}
+                        E era{" "}
                     </p>
                 </motion.div>
 
@@ -339,7 +339,7 @@ export function SeasonStory() {
                             repeat: Infinity,
                             ease: "easeInOut",
                         }}
-                        className="relative"
+                        className="relative pr-7"
                     >
                         <SeasonIllustration season={season} />
                     </motion.div>
