@@ -20,7 +20,7 @@ import { SideRibbon } from "../../SideRibbon/SideRibbon";
 
 import {
     VISIBLE_STARS,
-    REAL_CONSTELLATIONS,
+    getVisibleConstellations,
     projectStar,
     type RealStar,
 } from "./astronomy";
@@ -478,7 +478,7 @@ function ConstellationLines({
 }) {
     return (
         <>
-            {REAL_CONSTELLATIONS.map(
+            {getVisibleConstellations().map(
                 (
                     constellation,
                     constellationIndex,
