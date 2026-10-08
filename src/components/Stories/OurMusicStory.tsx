@@ -7,7 +7,7 @@ import {
 } from "../../utils/date";
 import { OdometerCounter } from "../OdometerCounter/OdometerCounter";
 import { SideRibbon } from "../SideRibbon/SideRibbon";
-import { StoryHeader } from "../StoryHeader/StoryHeader";
+import { StoryHeader } from "./StoryHeader";
 
 export function OurMusicStory() {
     const playedTimes = useAnimatedNumber(

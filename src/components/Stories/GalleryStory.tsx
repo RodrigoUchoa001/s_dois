@@ -10,7 +10,7 @@ import { useState } from "react";
 
 import { couple } from "../../data/couple";
 import { SideRibbon } from "../SideRibbon/SideRibbon";
-import { StoryHeader } from "../StoryHeader/StoryHeader";
+import { StoryHeader } from "./StoryHeader";
 
 export function GalleryStory() {
     const gallery = couple.wrapped.gallery;

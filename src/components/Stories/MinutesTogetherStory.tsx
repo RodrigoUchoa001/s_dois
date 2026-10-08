@@ -3,7 +3,7 @@ import { Heart, Sparkles } from "lucide-react";
 import { couple } from "../../data/couple";
 import { getMonthName } from "../../utils/date";
 import { SideRibbon } from "../SideRibbon/SideRibbon";
-import { StoryHeader } from "../StoryHeader/StoryHeader";
+import { StoryHeader } from "./StoryHeader";
 
 export function MinutesTogetherStory({
     animatedMinutes,

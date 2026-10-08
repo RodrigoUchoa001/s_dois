@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { CalendarDays, Sparkles } from "lucide-react";
 import { couple } from "../../../data/couple";
 import { TimelineEvent } from "./TimelineEvent";
-import { StoryHeader } from "../../StoryHeader/StoryHeader";
+import { StoryHeader } from "../StoryHeader";
 
 export function TimelineStory() {
     const timeline = couple.wrapped.timeline;
