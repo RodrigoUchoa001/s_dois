@@ -50,12 +50,14 @@ export function StoriesScreen({
 
     function nextStory() {
         if (currentStory < totalStories - 1) {
+            setStoryProgress(0);
             setCurrentStory((previous) => previous + 1);
         }
     }
 
     function previousStory() {
         if (currentStory > 0) {
+            setStoryProgress(0);
             setCurrentStory((previous) => previous - 1);
         }
     }
@@ -134,9 +136,6 @@ export function StoriesScreen({
      */
     useEffect(() => {
         if (!isOpen) return;
-
-        setStoryProgress(0);
-        setIsStoryPaused(false);
 
         storyStartTime.current = performance.now();
         pausedElapsed.current = 0;
