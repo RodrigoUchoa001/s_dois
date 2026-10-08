@@ -184,14 +184,14 @@ export function StoriesScreen({
                             <button
                                 type="button"
                                 onClick={previousStory}
-                                className="absolute left-0 top-0 z-20 h-full w-1/3"
+                                className="absolute left-0 top-0 z-10 h-full w-1/4"
                                 aria-label="Story anterior"
                             />
 
                             <button
                                 type="button"
                                 onClick={nextStory}
-                                className="absolute right-0 top-0 z-20 h-full w-1/3"
+                                className="absolute right-0 top-0 z-10 h-full w-1/4"
                                 aria-label="Próxima story"
                             />
                         </>
@@ -203,14 +203,14 @@ export function StoriesScreen({
                             <button
                                 type="button"
                                 onClick={previousStory}
-                                className="absolute left-0 top-0 z-20 h-[90%] w-1/3"
+                                className="absolute left-0 top-0 z-10 h-[90%] w-1/4"
                                 aria-label="Story anterior"
                             />
 
                             <button
                                 type="button"
                                 onClick={nextStory}
-                                className="absolute right-0 top-0 z-20 h-[90%] w-1/3"
+                                className="absolute right-0 top-0 z-10 h-[90%] w-1/4"
                                 aria-label="Próxima story"
                             />
                         </>
