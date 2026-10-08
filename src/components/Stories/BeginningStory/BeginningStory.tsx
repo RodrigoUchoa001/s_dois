@@ -83,7 +83,7 @@ function getElapsedTime() {
 }
 
 export function BeginningStory() {
-    const month = couple.startMonth;
+    const month = couple.startMonth - 1;
     const year = couple.startYear;
     const day = couple.startDay;
 
