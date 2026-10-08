@@ -78,6 +78,102 @@ export const REAL_CONSTELLATIONS: ConstellationLine[] =
         lines: feature.geometry.coordinates,
     }));
 
+export const MAX_CONSTELLATION_MAGNITUDE = 4.5;
+
+export const CONSTELLATION_STAR_DISTANCE = 0.15;
+
+function findVisibleStar(
+    ra: number,
+    dec: number,
+) {
+    let closestStar: RealStar | null = null;
+    let closestDistance = Infinity;
+
+    for (const star of VISIBLE_STARS) {
+        const raDistance = Math.abs(
+            star.ra - ra,
+        );
+
+        const decDistance = Math.abs(
+            star.dec - dec,
+        );
+
+        const distance = Math.sqrt(
+            raDistance ** 2 +
+                decDistance ** 2,
+        );
+
+        if (
+            distance <
+                closestDistance &&
+            distance <=
+                CONSTELLATION_STAR_DISTANCE
+        ) {
+            closestDistance = distance;
+            closestStar = star;
+        }
+    }
+
+    return closestStar;
+}
+
+export function getVisibleConstellations() {
+    return REAL_CONSTELLATIONS
+        .map((constellation) => {
+            const visibleLines =
+                constellation.lines
+                    .map((line) => {
+                        const visiblePoints =
+                            line.filter(
+                                ([ra, dec]) =>
+                                    findVisibleStar(
+                                        ra,
+                                        dec,
+                                    ) !== null,
+                            );
+
+                        /*
+                         * Uma linha precisa ter pelo
+                         * menos dois pontos para existir.
+                         */
+                        if (
+                            visiblePoints.length <
+                            2
+                        ) {
+                            return null;
+                        }
+
+                        return visiblePoints;
+                    })
+                    .filter(
+                        (
+                            line,
+                        ): line is [
+                            number,
+                            number,
+                        ][] =>
+                            line !== null,
+                    );
+
+            if (
+                visibleLines.length === 0
+            ) {
+                return null;
+            }
+
+            return {
+                ...constellation,
+                lines: visibleLines,
+            };
+        })
+        .filter(
+            (
+                constellation,
+            ): constellation is ConstellationLine =>
+                constellation !== null,
+        );
+}
+
 
 /* =========================================================
    ASTRONOMIA
