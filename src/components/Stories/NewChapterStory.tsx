@@ -27,7 +27,6 @@ type MilestoneState = {
     previousDate: Date;
     nextDate: Date;
     progress: number;
-    remainingDays: number;
 };
 
 const MILESTONES: Milestone[] = [
@@ -47,6 +46,9 @@ const START_DATE = new Date(
     couple.startYear,
     couple.startMonth - 1,
     couple.startDay,
+    couple.startHour,
+    couple.startMinute,
+    couple.startSecond,
 );
 
 const ROUTE_PATH =
@@ -144,10 +146,6 @@ function getMilestoneState(now: Date): MilestoneState {
                 100,
                 (elapsedDays / totalDays) * 100,
             ),
-            remainingDays: differenceInDays(
-                now,
-                nextDate,
-            ),
         };
     }
 
@@ -198,10 +196,6 @@ function getMilestoneState(now: Date): MilestoneState {
         previousDate,
         nextDate,
         progress,
-        remainingDays: differenceInDays(
-            now,
-            nextDate,
-        ),
     };
 }
 
@@ -265,6 +259,14 @@ export function NextChapterStory() {
         [now],
     );
 
+    /*
+     * A contagem regressiva é calculada diretamente
+     * a partir da diferença exata entre agora e a
+     * próxima data.
+     *
+     * Exemplo:
+     * 337 dias, 14:23:10
+     */
     const countdown = useMemo(() => {
         const difference =
             milestone.nextDate.getTime() -
@@ -275,14 +277,29 @@ export function NextChapterStory() {
             Math.floor(difference / 1000),
         );
 
+        const days = Math.floor(
+            totalSeconds / 86_400,
+        );
+
+        const remainingAfterDays =
+            totalSeconds % 86_400;
+
+        const hours = Math.floor(
+            remainingAfterDays / 3600,
+        );
+
+        const minutes = Math.floor(
+            (remainingAfterDays % 3600) / 60,
+        );
+
+        const seconds =
+            remainingAfterDays % 60;
+
         return {
-            hours: Math.floor(
-                totalSeconds / 3600,
-            ),
-            minutes: Math.floor(
-                (totalSeconds % 3600) / 60,
-            ),
-            seconds: totalSeconds % 60,
+            days,
+            hours,
+            minutes,
+            seconds,
         };
     }, [milestone.nextDate, now]);
 
@@ -625,6 +642,8 @@ export function NextChapterStory() {
 
                     <div className="px-4 py-4">
                         <div className="flex items-end justify-between">
+                            {/* DIAS */}
+
                             <div>
                                 <p
                                     className="
@@ -639,7 +658,7 @@ export function NextChapterStory() {
                                 </p>
 
                                 <motion.p
-                                    key={milestone.remainingDays}
+                                    key={countdown.days}
                                     initial={{
                                         opacity: 0,
                                         y: 6,
@@ -655,7 +674,7 @@ export function NextChapterStory() {
                                         leading-none
                                     "
                                 >
-                                    {milestone.remainingDays}
+                                    {countdown.days}
 
                                     <span
                                         className="
@@ -668,6 +687,8 @@ export function NextChapterStory() {
                                     </span>
                                 </motion.p>
                             </div>
+
+                            {/* HORAS / MINUTOS / SEGUNDOS */}
 
                             <div className="text-right">
                                 <p
@@ -867,9 +888,7 @@ export function NextChapterStory() {
                     </div>
 
                     <div className="relative h-24 w-full">
-                        {/* =====================================================
-                            SVG DA ROTA
-                        ====================================================== */}
+                        {/* SVG DA ROTA */}
 
                         <svg
                             viewBox="0 0 320 100"
@@ -930,9 +949,7 @@ export function NextChapterStory() {
                             />
                         </svg>
 
-                        {/* =====================================================
-                            META ANTERIOR
-                        ====================================================== */}
+                        {/* META ANTERIOR */}
 
                         <motion.div
                             className="
@@ -1007,9 +1024,7 @@ export function NextChapterStory() {
                             </div>
                         </motion.div>
 
-                        {/* =====================================================
-                            AVIÃO / MOMENTO ATUAL
-                        ====================================================== */}
+                        {/* AVIÃO / MOMENTO ATUAL */}
 
                         <motion.div
                             className="
@@ -1137,9 +1152,7 @@ export function NextChapterStory() {
                             </div>
                         </motion.div>
 
-                        {/* =====================================================
-                            PRÓXIMA META
-                        ====================================================== */}
+                        {/* PRÓXIMA META */}
 
                         <motion.div
                             className="
