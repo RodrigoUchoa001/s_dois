@@ -51,6 +51,7 @@ export function StoriesScreen({
     function nextStory() {
         if (currentStory < totalStories - 1) {
             setStoryProgress(0);
+            setIsStoryPaused(false);
             setCurrentStory((previous) => previous + 1);
         }
     }
@@ -58,6 +59,7 @@ export function StoriesScreen({
     function previousStory() {
         if (currentStory > 0) {
             setStoryProgress(0);
+            setIsStoryPaused(false);
             setCurrentStory((previous) => previous - 1);
         }
     }
