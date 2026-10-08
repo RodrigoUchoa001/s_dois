@@ -68,7 +68,7 @@ export const REAL_STARS: RealStar[] =
  */
 export const VISIBLE_STARS: RealStar[] =
     REAL_STARS
-        .filter((star) => star.magnitude <= 3.5)
+        .filter((star) => star.magnitude <= 3)
         .sort((a, b) => a.magnitude - b.magnitude)
         .slice(0, 1000);
 
