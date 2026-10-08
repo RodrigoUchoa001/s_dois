@@ -1,17 +1,24 @@
 import { motion } from "motion/react";
 import { Plane, Heart, Check } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import {
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 
 import { SideRibbon } from "../SideRibbon/SideRibbon";
 import { couple } from "../../data/couple";
 
-/* =========================================================
-   TIPOS
-========================================================= */
-
 type Milestone = {
     label: string;
     months: number;
+};
+
+type Point = {
+    x: number;
+    y: number;
 };
 
 type MilestoneState = {
@@ -22,10 +29,6 @@ type MilestoneState = {
     progress: number;
     remainingDays: number;
 };
-
-/* =========================================================
-   METAS
-========================================================= */
 
 const MILESTONES: Milestone[] = [
     { label: "1 mês", months: 1 },
@@ -40,26 +43,17 @@ const MILESTONES: Milestone[] = [
     { label: "20 anos", months: 240 },
 ];
 
-/* =========================================================
-   DATA INICIAL
-========================================================= */
-
 const START_DATE = new Date(
     couple.startYear,
     couple.startMonth - 1,
     couple.startDay,
 );
 
-/* =========================================================
-   FUNÇÕES
-========================================================= */
+const ROUTE_PATH =
+    "M 18 75 C 90 75, 90 20, 160 40 S 235 75, 302 25";
 
-/**
- * Adiciona meses mantendo o dia original sempre que possível.
- */
 function addMonths(date: Date, months: number) {
     const result = new Date(date);
-
     const originalDay = result.getDate();
 
     result.setDate(1);
@@ -76,9 +70,6 @@ function addMonths(date: Date, months: number) {
     return result;
 }
 
-/**
- * Retorna a quantidade de dias entre duas datas.
- */
 function differenceInDays(from: Date, to: Date) {
     const fromUTC = Date.UTC(
         from.getFullYear(),
@@ -98,9 +89,6 @@ function differenceInDays(from: Date, to: Date) {
     );
 }
 
-/**
- * Descobre a meta anterior e a próxima meta.
- */
 function getMilestoneState(now: Date): MilestoneState {
     let previousIndex = -1;
 
@@ -119,7 +107,6 @@ function getMilestoneState(now: Date): MilestoneState {
 
     const nextIndex = previousIndex + 1;
 
-    // Caso todas as metas cadastradas já tenham passado.
     if (nextIndex >= MILESTONES.length) {
         const last = MILESTONES[MILESTONES.length - 1];
 
@@ -155,7 +142,7 @@ function getMilestoneState(now: Date): MilestoneState {
             nextDate,
             progress: Math.min(
                 100,
-                elapsedDays / totalDays * 100,
+                (elapsedDays / totalDays) * 100,
             ),
             remainingDays: differenceInDays(
                 now,
@@ -218,11 +205,6 @@ function getMilestoneState(now: Date): MilestoneState {
     };
 }
 
-/**
- * Formata uma data como:
- *
- * 11 SET 2027
- */
 function formatDate(date: Date) {
     const months = [
         "JAN",
@@ -244,17 +226,32 @@ function formatDate(date: Date) {
     } ${date.getFullYear()}`;
 }
 
-/* =========================================================
-   STORY
-========================================================= */
-
 export function NextChapterStory() {
     const [now, setNow] = useState(() => new Date());
 
-    /**
-     * Atualiza a cada segundo para manter
-     * a contagem regressiva viva.
-     */
+    const routePathRef =
+        useRef<SVGPathElement>(null);
+
+    const [routePoints, setRoutePoints] =
+        useState<{
+            start: Point;
+            current: Point;
+            end: Point;
+        }>({
+            start: {
+                x: 18,
+                y: 75,
+            },
+            current: {
+                x: 18,
+                y: 75,
+            },
+            end: {
+                x: 302,
+                y: 25,
+            },
+        });
+
     useEffect(() => {
         const interval = setInterval(() => {
             setNow(new Date());
@@ -268,10 +265,6 @@ export function NextChapterStory() {
         [now],
     );
 
-    /* =====================================================
-       CONTAGEM REGRESSIVA
-    ====================================================== */
-
     const countdown = useMemo(() => {
         const difference =
             milestone.nextDate.getTime() -
@@ -282,26 +275,59 @@ export function NextChapterStory() {
             Math.floor(difference / 1000),
         );
 
-        const hours = Math.floor(
-            totalSeconds / 3600,
-        );
-
-        const minutes = Math.floor(
-            (totalSeconds % 3600) / 60,
-        );
-
-        const seconds = totalSeconds % 60;
-
         return {
-            hours,
-            minutes,
-            seconds,
+            hours: Math.floor(
+                totalSeconds / 3600,
+            ),
+            minutes: Math.floor(
+                (totalSeconds % 3600) / 60,
+            ),
+            seconds: totalSeconds % 60,
         };
     }, [milestone.nextDate, now]);
 
     const percentage = Math.round(
         milestone.progress,
     );
+
+    /*
+     * Obtém os três pontos diretamente da mesma
+     * curva usada no SVG.
+     *
+     * Dessa forma, início, avião e destino ficam
+     * exatamente sobre o traçado, mesmo que a
+     * curva seja alterada futuramente.
+     */
+    useLayoutEffect(() => {
+        const path = routePathRef.current;
+
+        if (!path) return;
+
+        const length = path.getTotalLength();
+
+        const start = path.getPointAtLength(0);
+
+        const current = path.getPointAtLength(
+            length * (milestone.progress / 100),
+        );
+
+        const end = path.getPointAtLength(length);
+
+        setRoutePoints({
+            start: {
+                x: start.x,
+                y: start.y,
+            },
+            current: {
+                x: current.x,
+                y: current.y,
+            },
+            end: {
+                x: end.x,
+                y: end.y,
+            },
+        });
+    }, [milestone.progress]);
 
     return (
         <motion.div
@@ -331,9 +357,7 @@ export function NextChapterStory() {
                 text-[#fff3c7]
             "
         >
-            {/* =================================================
-                BACKGROUND
-            ================================================= */}
+            {/* BACKGROUND */}
 
             <motion.div
                 initial={{
@@ -384,8 +408,6 @@ export function NextChapterStory() {
                 "
             />
 
-            {/* Estrelas */}
-
             <motion.div
                 animate={{
                     y: [0, -6, 0],
@@ -429,15 +451,7 @@ export function NextChapterStory() {
                 ✦
             </motion.div>
 
-            {/* =================================================
-                FITA LATERAL
-            ================================================= */}
-
             <SideRibbon text="Próximo capítulo" />
-
-            {/* =================================================
-                CONTEÚDO
-            ================================================= */}
 
             <div
                 className="
@@ -452,9 +466,7 @@ export function NextChapterStory() {
                     pt-8
                 "
             >
-                {/* =================================================
-                    CABEÇALHO
-                ================================================= */}
+                {/* CABEÇALHO */}
 
                 <motion.div
                     initial={{
@@ -532,9 +544,7 @@ export function NextChapterStory() {
                     </p>
                 </motion.div>
 
-                {/* =================================================
-                    PAINEL DE EMBARQUE
-                ================================================= */}
+                {/* PAINEL DE EMBARQUE */}
 
                 <motion.div
                     initial={{
@@ -560,8 +570,6 @@ export function NextChapterStory() {
                         backdrop-blur-md
                     "
                 >
-                    {/* Cabeçalho do painel */}
-
                     <div
                         className="
                             flex
@@ -615,8 +623,6 @@ export function NextChapterStory() {
                         </div>
                     </div>
 
-                    {/* Informações */}
-
                     <div className="px-4 py-4">
                         <div className="flex items-end justify-between">
                             <div>
@@ -650,6 +656,7 @@ export function NextChapterStory() {
                                     "
                                 >
                                     {milestone.remainingDays}
+
                                     <span
                                         className="
                                             ml-1
@@ -725,8 +732,6 @@ export function NextChapterStory() {
                             </div>
                         </div>
 
-                        {/* Divisória */}
-
                         <div
                             className="
                                 my-4
@@ -734,8 +739,6 @@ export function NextChapterStory() {
                                 bg-[#fff3c7]/10
                             "
                         />
-
-                        {/* Chegada + Status */}
 
                         <div className="flex items-end justify-between">
                             <div>
@@ -816,9 +819,7 @@ export function NextChapterStory() {
                     </div>
                 </motion.div>
 
-                {/* =================================================
-                    ROTA
-                ================================================= */}
+                {/* ROTA */}
 
                 <motion.div
                     initial={{
@@ -832,9 +833,7 @@ export function NextChapterStory() {
                     }}
                     className="relative mt-auto pt-7"
                 >
-                    {/* Título */}
-
-                    <div className="mb-1 flex items-center justify-between">
+                    <div className="mb-1 flex items-center justify-between pb-5">
                         <p
                             className="
                                 text-[9px]
@@ -867,9 +866,11 @@ export function NextChapterStory() {
                         </motion.p>
                     </div>
 
-                    {/* SVG DA ROTA */}
-
                     <div className="relative h-24 w-full">
+                        {/* =====================================================
+                            SVG DA ROTA
+                        ====================================================== */}
+
                         <svg
                             viewBox="0 0 320 100"
                             preserveAspectRatio="none"
@@ -881,20 +882,34 @@ export function NextChapterStory() {
                                 overflow-visible
                             "
                         >
-                            {/* Linha base */}
+                            {/* brilho */}
 
                             <path
-                                d="M 18 75 C 90 75, 90 20, 160 40 S 235 75, 302 25"
+                                d={ROUTE_PATH}
+                                fill="none"
+                                stroke="#a875ff"
+                                strokeWidth="5"
+                                strokeLinecap="round"
+                                opacity="0.08"
+                                filter="blur(4px)"
+                            />
+
+                            {/* rota completa */}
+
+                            <path
+                                ref={routePathRef}
+                                d={ROUTE_PATH}
                                 fill="none"
                                 stroke="rgba(255,243,199,0.12)"
                                 strokeWidth="2"
                                 strokeDasharray="5 6"
+                                strokeLinecap="round"
                             />
 
-                            {/* Linha percorrida */}
+                            {/* rota percorrida */}
 
                             <motion.path
-                                d="M 18 75 C 90 75, 90 20, 160 40 S 235 75, 302 25"
+                                d={ROUTE_PATH}
                                 fill="none"
                                 stroke="#a875ff"
                                 strokeWidth="2.5"
@@ -915,28 +930,50 @@ export function NextChapterStory() {
                             />
                         </svg>
 
-                        {/* =================================================
-                            PONTO INICIAL
-                        ================================================= */}
+                        {/* =====================================================
+                            META ANTERIOR
+                        ====================================================== */}
 
-                        <div
+                        <motion.div
                             className="
                                 absolute
-                                bottom-0
-                                left-0
+                                z-20
                                 flex
                                 -translate-x-1/2
+                                -translate-y-1/2
                                 flex-col
                                 items-center
                             "
+                            style={{
+                                left: `${
+                                    (routePoints.start.x /
+                                        320) *
+                                    100
+                                }%`,
+                                top: `${
+                                    (routePoints.start.y /
+                                        100) *
+                                    100
+                                }%`,
+                            }}
+                            initial={{
+                                opacity: 0,
+                                scale: 0.7,
+                            }}
+                            animate={{
+                                opacity: 1,
+                                scale: 1,
+                            }}
+                            transition={{
+                                delay: 0.9,
+                                duration: 0.4,
+                            }}
                         >
                             <div
                                 className="
-                                    flex
+                                    relative
                                     h-3
                                     w-3
-                                    items-center
-                                    justify-center
                                     rounded-full
                                     bg-[#fff3c7]
                                     ring-4
@@ -944,7 +981,7 @@ export function NextChapterStory() {
                                 "
                             />
 
-                            <div className="mt-2 text-center">
+                            <div className="mt-2 whitespace-nowrap text-center">
                                 <p
                                     className="
                                         text-[10px]
@@ -968,33 +1005,71 @@ export function NextChapterStory() {
                                     )}
                                 </p>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        {/* =================================================
-                            PONTO ATUAL
-                        ================================================= */}
+                        {/* =====================================================
+                            AVIÃO / MOMENTO ATUAL
+                        ====================================================== */}
 
                         <motion.div
                             className="
+                                pointer-events-none
                                 absolute
-                                left-[54%]
-                                top-[24px]
+                                z-30
                                 flex
                                 -translate-x-1/2
+                                -translate-y-1/2
                                 flex-col
                                 items-center
                             "
+                            initial={{
+                                opacity: 0,
+                                scale: 0.7,
+                            }}
                             animate={{
-                                y: [0, -3, 0],
+                                opacity: 1,
+                                scale: 1,
+                                left: `${
+                                    (routePoints.current.x /
+                                        320) *
+                                    100
+                                }%`,
+                                top: `${
+                                    (routePoints.current.y /
+                                        100) *
+                                    100
+                                }%`,
                             }}
                             transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut",
+                                opacity: {
+                                    delay: 1.1,
+                                    duration: 0.4,
+                                },
+                                scale: {
+                                    delay: 1.1,
+                                    duration: 0.4,
+                                },
+                                left: {
+                                    duration: 0.8,
+                                    ease: "easeInOut",
+                                },
+                                top: {
+                                    duration: 0.8,
+                                    ease: "easeInOut",
+                                },
                             }}
                         >
-                            <div
+                            <motion.div
+                                animate={{
+                                    y: [0, -3, 0],
+                                }}
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                }}
                                 className="
+                                    relative
                                     flex
                                     h-7
                                     w-7
@@ -1006,15 +1081,38 @@ export function NextChapterStory() {
                                     shadow-[0_0_0_5px_rgba(168,117,255,0.12)]
                                 "
                             >
+                                <motion.div
+                                    className="
+                                        absolute
+                                        inset-[-5px]
+                                        rounded-full
+                                        border
+                                        border-[#a875ff]/30
+                                    "
+                                    animate={{
+                                        scale: [1, 1.35, 1],
+                                        opacity: [
+                                            0.7,
+                                            0,
+                                            0.7,
+                                        ],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeOut",
+                                    }}
+                                />
+
                                 <Plane
                                     size={13}
                                     fill="currentColor"
                                     strokeWidth={2.5}
                                     className="-rotate-12"
                                 />
-                            </div>
+                            </motion.div>
 
-                            <div className="mt-2 text-center">
+                            <div className="mt-2 whitespace-nowrap text-center">
                                 <p
                                     className="
                                         text-[9px]
@@ -1039,28 +1137,50 @@ export function NextChapterStory() {
                             </div>
                         </motion.div>
 
-                        {/* =================================================
-                            PONTO FINAL
-                        ================================================= */}
+                        {/* =====================================================
+                            PRÓXIMA META
+                        ====================================================== */}
 
-                        <div
+                        <motion.div
                             className="
                                 absolute
-                                right-0
-                                top-0
+                                z-20
                                 flex
-                                translate-x-1/2
+                                -translate-x-1/2
+                                -translate-y-1/2
                                 flex-col
                                 items-center
                             "
+                            style={{
+                                left: `${
+                                    (routePoints.end.x /
+                                        320) *
+                                    100
+                                }%`,
+                                top: `${
+                                    (routePoints.end.y /
+                                        100) *
+                                    100
+                                }%`,
+                            }}
+                            initial={{
+                                opacity: 0,
+                                scale: 0.7,
+                            }}
+                            animate={{
+                                opacity: 1,
+                                scale: 1,
+                            }}
+                            transition={{
+                                delay: 1.5,
+                                duration: 0.4,
+                            }}
                         >
                             <div
                                 className="
-                                    flex
+                                    relative
                                     h-3
                                     w-3
-                                    items-center
-                                    justify-center
                                     rounded-full
                                     bg-[#fff3c7]
                                     ring-4
@@ -1068,7 +1188,7 @@ export function NextChapterStory() {
                                 "
                             />
 
-                            <div className="mt-2 text-center">
+                            <div className="mt-2 whitespace-nowrap text-center">
                                 <p
                                     className="
                                         text-[10px]
@@ -1092,13 +1212,9 @@ export function NextChapterStory() {
                                     )}
                                 </p>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </motion.div>
-
-                {/* =================================================
-                    RODAPÉ
-                ================================================= */}
 
                 <motion.p
                     initial={{
