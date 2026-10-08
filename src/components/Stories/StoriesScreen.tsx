@@ -16,6 +16,7 @@ import { SeasonStory } from "./SeasonStory/SeasonStory";
 import { TimelineStory } from "./TimelineStory/TimelineStory";
 import { GalleryStory } from "./GalleryStory";
 import { BeginningStory } from "./BeginningStory/BeginningStory";
+import { StarMapStory } from "./StarMapStory/StarMapStory";
 
 interface StoriesScreenProps {
     isOpen: boolean;
@@ -28,7 +29,7 @@ export function StoriesScreen({
 }: StoriesScreenProps) {
     const [currentStory, setCurrentStory] = useState(0);
 
-    const totalStories = 8;
+    const totalStories = 9;
     const storyDuration = 8000;
 
     const minutesTogether = getMinutesTogether();
@@ -175,16 +176,18 @@ export function StoriesScreen({
 
                             {currentStory === 4 && <SeasonStory />}
 
-                            {currentStory === 5 && <GalleryStory />}
+                            {currentStory === 5 && <StarMapStory />}
 
-                            {currentStory === 6 && <OurMusicStory />}
+                            {currentStory === 6 && <GalleryStory />}
 
-                            {currentStory === 7 && <TimelineStory />}
+                            {currentStory === 7 && <OurMusicStory />}
+
+                            {currentStory === 8 && <TimelineStory />}
                         </AnimatePresence>
                     </div>
 
                     {/* Navegação lateral */}
-                    {currentStory !== 5 && (
+                    {currentStory !== 6 && (
                         <>
                             <button
                                 type="button"
@@ -203,7 +206,7 @@ export function StoriesScreen({
                     )}
 
                     {/* Navegação da Gallery */}
-                    {currentStory === 5 && (
+                    {currentStory === 6 && (
                         <>
                             <button
                                 type="button"
