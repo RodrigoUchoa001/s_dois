@@ -14,8 +14,12 @@ import {
 } from "lucide-react";
 import { couple } from "../../../data/couple";
 import { SideRibbon } from "../../SideRibbon/SideRibbon";
-import { CONSTELLATIONS, STARS, type Star } from "./starsData";
-
+import {
+    REAL_STARS,
+    REAL_CONSTELLATIONS,
+    projectStar,
+    type RealStar,
+} from "./astronomy";
 
 /* ============================================================
    TIPOS
@@ -99,29 +103,75 @@ function StarPoint({
     star,
     arrival,
 }: {
-    star: Star;
+    star: RealStar;
     arrival: boolean;
 }) {
-    const x = (star.x / 100) * MAP_SIZE;
-    const y = (star.y / 100) * MAP_SIZE;
+    const position = projectStar(
+        star.ra,
+        star.dec,
+    );
+
+    const x =
+        (position.x / 100) * MAP_SIZE;
+
+    const y =
+        (position.y / 100) * MAP_SIZE;
+
+    /*
+     * Magnitude menor = estrela mais brilhante.
+     *
+     * Limitamos o tamanho para evitar estrelas
+     * exageradamente grandes ou pequenas.
+     */
+    const radius = Math.max(
+        0.45,
+        Math.min(
+            2.2,
+            2.8 - star.magnitude * 0.35,
+        ),
+    );
+
+    const opacity = Math.max(
+        0.25,
+        Math.min(
+            1,
+            1.15 - star.magnitude * 0.12,
+        ),
+    );
+
+    function getStarDelay(id: number | string) {
+        const value =
+            typeof id === "number"
+                ? id
+                : id
+                    .split("")
+                    .reduce(
+                        (sum, char) =>
+                            sum +
+                            char.charCodeAt(0),
+                        0,
+                    );
+
+        return (value % 80) / 100;
+    }
 
     return (
         <motion.circle
             cx={x}
             cy={y}
-            r={star.radius}
+            r={radius}
             fill="#fff3c7"
             initial={{
                 opacity: 0,
                 scale: 0,
             }}
             animate={{
-                opacity: star.opacity,
+                opacity,
                 scale: arrival ? 1.15 : 1,
             }}
             transition={{
-                delay: star.delay,
                 duration: 0.45,
+                delay: getStarDelay(star.id),
                 type: "spring",
                 stiffness: 180,
             }}
@@ -140,59 +190,70 @@ function ConstellationLines({
 }) {
     return (
         <>
-            {CONSTELLATIONS.map(
-                (constellation, index) => {
-                    const points = constellation.starIds
-                        .map((starId) => {
-                            const star = STARS.find(
-                                (item) =>
-                                    item.id === starId,
+            {REAL_CONSTELLATIONS.map(
+                (constellation, constellationIndex) =>
+                    constellation.lines.map(
+                        (line, lineIndex) => {
+                            const points = line
+                                .map(
+                                    ([ra, dec]) => {
+                                        const position =
+                                            projectStar(
+                                                ra,
+                                                dec,
+                                            );
+
+                                        const x =
+                                            (position.x /
+                                                100) *
+                                            MAP_SIZE;
+
+                                        const y =
+                                            (position.y /
+                                                100) *
+                                            MAP_SIZE;
+
+                                        return `${x},${y}`;
+                                    },
+                                )
+                                .join(" ");
+
+                            return (
+                                <motion.polyline
+                                    key={`${constellation.id}-${lineIndex}`}
+                                    points={points}
+                                    fill="none"
+                                    stroke="#a875ff"
+                                    strokeWidth="0.7"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    initial={{
+                                        pathLength: 0,
+                                        opacity: 0,
+                                    }}
+                                    animate={{
+                                        pathLength:
+                                            arrival
+                                                ? 1
+                                                : 0,
+                                        opacity:
+                                            arrival
+                                                ? 0.8
+                                                : 0,
+                                    }}
+                                    transition={{
+                                        delay:
+                                            constellationIndex *
+                                                0.05 +
+                                            lineIndex *
+                                                0.1,
+                                        duration: 1.1,
+                                        ease: "easeInOut",
+                                    }}
+                                />
                             );
-
-                            if (!star) return null;
-
-                            const x =
-                                (star.x / 100) *
-                                MAP_SIZE;
-
-                            const y =
-                                (star.y / 100) *
-                                MAP_SIZE;
-
-                            return `${x},${y}`;
-                        })
-                        .filter(Boolean)
-                        .join(" ");
-
-                    return (
-                        <motion.polyline
-                            key={constellation.id}
-                            points={points}
-                            fill="none"
-                            stroke="#a875ff"
-                            strokeWidth="0.7"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            initial={{
-                                pathLength: 0,
-                                opacity: 0,
-                            }}
-                            animate={{
-                                pathLength: arrival
-                                    ? 1
-                                    : 0,
-                                opacity: arrival
-                                    ? 0.8
-                                    : 0,
-                            }}
-                            transition={{
-                                delay: index * 0.45,
-                                duration: 1.1,
-                                ease: "easeInOut",
-                            }}
-                        />
-                    );
-                },
+                        },
+                    ),
             )}
         </>
     );
@@ -204,8 +265,10 @@ function ConstellationLines({
 
 function StarMap({
     phase,
+    rotation,
 }: {
     phase: Phase;
+    rotation: number;
 }) {
     const traveling = phase === "traveling";
     const arrival = phase === "arrival";
@@ -214,30 +277,11 @@ function StarMap({
         <motion.div
             className="relative aspect-square w-[min(78vw,340px)]"
             animate={{
-                rotate: traveling
-                    ? [0, 360, 720, 1080]
-                    : 0,
-
-                scale: traveling
-                    ? [1, 1.025, 1.04, 1.02]
-                    : arrival
-                      ? [1.02, 1]
-                      : 1,
+                rotate: rotation,
             }}
             transition={{
-                rotate: traveling
-                    ? {
-                          duration: 2.8,
-                          ease: "linear",
-                      }
-                    : {
-                          duration: 0.8,
-                          ease: "easeOut",
-                      },
-
-                scale: {
-                    duration: traveling ? 2.8 : 0.8,
-                },
+                duration: traveling ? 2.8 : 0,
+                ease: [0.22, 0.61, 0.36, 1],
             }}
         >
             {/* Brilho */}
@@ -354,7 +398,7 @@ function StarMap({
 
                 {/* Estrelas */}
 
-                {STARS.map((star) => (
+                {REAL_STARS.map((star) => (
                     <StarPoint
                         key={star.id}
                         star={star}
@@ -392,46 +436,6 @@ function StarMap({
                     }}
                 />
             </svg>
-
-            {/* Brilho superior */}
-
-            {/* <motion.div
-                className="absolute -right-2 top-10"
-                animate={{
-                    rotate: [0, 15, -10, 0],
-                    scale: [1, 1.15, 1],
-                }}
-                transition={{
-                    duration: 2.8,
-                    repeat: Infinity,
-                }}
-            >
-                <Sparkles
-                    size={17}
-                    fill="#fff3c7"
-                    className="text-[#fff3c7]"
-                />
-            </motion.div> */}
-
-            {/* Brilho inferior */}
-
-            {/* <motion.div
-                className="absolute -bottom-1 left-5"
-                animate={{
-                    rotate: [0, -15, 10, 0],
-                    opacity: [0.4, 1, 0.4],
-                }}
-                transition={{
-                    duration: 2.2,
-                    repeat: Infinity,
-                }}
-            >
-                <Sparkles
-                    size={12}
-                    fill="#a875ff"
-                    className="text-[#a875ff]"
-                />
-            </motion.div> */}
         </motion.div>
     );
 }
@@ -452,12 +456,23 @@ export function StarMapStory() {
     const [displayDate, setDisplayDate] =
         useState(getToday);
 
+    /*
+     * Rotação atual do mapa.
+     *
+     * Importante:
+     * esse valor começa em 0 e vai para 1080.
+     * Nunca volta para 0 quando chega em "arrival".
+     */
+    const [mapRotation, setMapRotation] =
+        useState(0);
+
     /* ========================================================
        INÍCIO DA VIAGEM
     ======================================================== */
 
     useEffect(() => {
         const timeout = window.setTimeout(() => {
+            setMapRotation(1080);
             setPhase("traveling");
         }, 1300);
 
@@ -602,52 +617,6 @@ export function StarMapStory() {
             />
 
             {/* =================================================
-                ESTRELAS DECORATIVAS
-            ================================================= */}
-
-            {/* <motion.div
-                initial={{
-                    opacity: 0,
-                    rotate: -30,
-                }}
-                animate={{
-                    opacity: 1,
-                    rotate: 0,
-                }}
-                transition={{
-                    delay: 0.7,
-                }}
-                className="absolute right-16 top-14"
-            >
-                <Sparkles
-                    size={15}
-                    fill="#fff3c7"
-                    className="text-[#fff3c7]"
-                />
-            </motion.div>
-
-            <motion.div
-                initial={{
-                    opacity: 0,
-                    scale: 0,
-                }}
-                animate={{
-                    opacity: 1,
-                    scale: 1,
-                }}
-                transition={{
-                    delay: 1,
-                }}
-                className="absolute bottom-28 left-8"
-            >
-                <Sparkles
-                    size={11}
-                    fill="#a875ff"
-                    className="text-[#a875ff]"
-                />
-            </motion.div> */}
-
-            {/* =================================================
                 FITA
             ================================================= */}
 
@@ -693,7 +662,10 @@ export function StarMapStory() {
                 ================================================= */}
 
                 <div className="flex min-h-0 flex-1 items-center justify-center">
-                    <StarMap phase={phase} />
+                    <StarMap
+                        phase={phase}
+                        rotation={mapRotation}
+                    />
                 </div>
 
                 {/* =================================================
