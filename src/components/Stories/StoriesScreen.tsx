@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { Pause, Play, X } from "lucide-react";
 import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
     getMinutesTogether,
@@ -28,11 +28,21 @@ export function StoriesScreen({
     closeWrapped,
 }: StoriesScreenProps) {
     const [currentStory, setCurrentStory] = useState(0);
+    const [isStoryPaused, setIsStoryPaused] = useState(false);
+    const [storyProgress, setStoryProgress] = useState(0);
+
+    const storyStartTime = useRef<number | null>(null);
+    const pausedElapsed = useRef(0);
+
+    // Controle do toque rápido x pressionamento longo
+    const pressTimer = useRef<number | null>(null);
+    const isLongPress = useRef(false);
 
     const totalStories = 9;
     const storyDuration = 8000;
 
     const minutesTogether = getMinutesTogether();
+
     const animatedMinutes = useAnimatedNumber(
         minutesTogether,
         1800
@@ -48,6 +58,51 @@ export function StoriesScreen({
         if (currentStory > 0) {
             setCurrentStory((previous) => previous - 1);
         }
+    }
+
+    /*
+     * Começa a detectar se o usuário está segurando
+     * o botão lateral.
+     */
+    function handleStoryPress() {
+        isLongPress.current = false;
+
+        pressTimer.current = window.setTimeout(() => {
+            isLongPress.current = true;
+
+            if (storyStartTime.current !== null) {
+                pausedElapsed.current =
+                    performance.now() - storyStartTime.current;
+            }
+
+            setIsStoryPaused(true);
+        }, 200);
+    }
+
+    /*
+     * Usuário soltou o botão.
+     * Se era um long press, apenas continua o story.
+     */
+    function handleStoryRelease() {
+        if (pressTimer.current !== null) {
+            clearTimeout(pressTimer.current);
+            pressTimer.current = null;
+        }
+
+        setIsStoryPaused(false);
+    }
+
+    /*
+     * Só executa a navegação se NÃO tiver sido
+     * um pressionamento longo.
+     */
+    function handleStoryClick(action: () => void) {
+        if (isLongPress.current) {
+            isLongPress.current = false;
+            return;
+        }
+
+        action();
     }
 
     useEffect(() => {
@@ -74,6 +129,78 @@ export function StoriesScreen({
         };
     }, [isOpen, currentStory]);
 
+    /*
+     * Reinicia o progresso quando muda de story.
+     */
+    useEffect(() => {
+        if (!isOpen) return;
+
+        setStoryProgress(0);
+        setIsStoryPaused(false);
+
+        storyStartTime.current = performance.now();
+        pausedElapsed.current = 0;
+    }, [currentStory, isOpen]);
+
+    /*
+     * Controle do tempo do story.
+     */
+    useEffect(() => {
+        if (!isOpen || isStoryPaused) return;
+
+        storyStartTime.current =
+            performance.now() - pausedElapsed.current;
+
+        let animationFrame: number;
+
+        function updateProgress() {
+            if (storyStartTime.current === null) return;
+
+            const elapsed =
+                performance.now() - storyStartTime.current;
+
+            const progress = Math.min(
+                elapsed / storyDuration,
+                1
+            );
+
+            setStoryProgress(progress);
+
+            if (progress >= 1) {
+                if (currentStory !== 4) {
+                    nextStory();
+                }
+
+                return;
+            }
+
+            animationFrame =
+                requestAnimationFrame(updateProgress);
+        }
+
+        animationFrame =
+            requestAnimationFrame(updateProgress);
+
+        return () => {
+            cancelAnimationFrame(animationFrame);
+        };
+    }, [isOpen, currentStory, isStoryPaused]);
+
+    /*
+     * Botão manual de pausa.
+     */
+    function toggleStoryPause() {
+        if (
+            !isStoryPaused &&
+            storyStartTime.current !== null
+        ) {
+            pausedElapsed.current =
+                performance.now() - storyStartTime.current;
+        }
+
+        setIsStoryPaused((previous) => !previous);
+    }
+
     if (!isOpen) {
         return null;
     }
@@ -99,6 +226,29 @@ export function StoriesScreen({
                     aria-label="Fechar Wrapped"
                 >
                     <X size={23} />
+                </motion.button>
+
+                {/* Pausar / continuar */}
+                <motion.button
+                    type="button"
+                    onClick={toggleStoryPause}
+                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.08 }}
+                    className="absolute right-[4.5rem] top-5 z-[100] flex h-11 w-11 items-center justify-center rounded-full border border-[#fff3c7]/10 bg-[#0b0b2b]/70 text-[#fff3c7]/70 backdrop-blur-md transition hover:text-[#fff3c7]"
+                    aria-label={
+                        isStoryPaused
+                            ? "Continuar story"
+                            : "Pausar story"
+                    }
+                >
+                    {isStoryPaused ? (
+                        <Play
+                            size={20}
+                            fill="currentColor"
+                        />
+                    ) : (
+                        <Pause size={20} />
+                    )}
                 </motion.button>
 
                 {/* Story */}
@@ -134,21 +284,11 @@ export function StoriesScreen({
                                 )}
 
                                 {index === currentStory && (
-                                    <motion.div
-                                        key={currentStory}
-                                        initial={{ width: "0%" }}
-                                        animate={{ width: "100%" }}
-                                        transition={{
-                                            duration:
-                                                storyDuration / 1000,
-                                            ease: "linear",
-                                        }}
-                                        onAnimationComplete={() => {
-                                            if (currentStory !== 4) {
-                                                nextStory();
-                                            }
-                                        }}
+                                    <div
                                         className="h-full bg-[#a875ff]"
+                                        style={{
+                                            width: `${storyProgress * 100}%`,
+                                        }}
                                     />
                                 )}
                             </div>
@@ -160,7 +300,9 @@ export function StoriesScreen({
                         <AnimatePresence mode="wait">
                             {currentStory === 0 && (
                                 <MinutesTogetherStory
-                                    animatedMinutes={animatedMinutes}
+                                    animatedMinutes={
+                                        animatedMinutes
+                                    }
                                 />
                             )}
 
@@ -172,17 +314,29 @@ export function StoriesScreen({
                                 <BeginningStory />
                             )}
 
-                            {currentStory === 3 && <MoonStory />}
+                            {currentStory === 3 && (
+                                <MoonStory />
+                            )}
 
-                            {currentStory === 4 && <SeasonStory />}
+                            {currentStory === 4 && (
+                                <SeasonStory />
+                            )}
 
-                            {currentStory === 5 && <StarMapStory />}
+                            {currentStory === 5 && (
+                                <StarMapStory />
+                            )}
 
-                            {currentStory === 6 && <GalleryStory />}
+                            {currentStory === 6 && (
+                                <GalleryStory />
+                            )}
 
-                            {currentStory === 7 && <OurMusicStory />}
+                            {currentStory === 7 && (
+                                <OurMusicStory />
+                            )}
 
-                            {currentStory === 8 && <TimelineStory />}
+                            {currentStory === 8 && (
+                                <TimelineStory />
+                            )}
                         </AnimatePresence>
                     </div>
 
@@ -191,14 +345,40 @@ export function StoriesScreen({
                         <>
                             <button
                                 type="button"
-                                onClick={previousStory}
+                                onPointerDown={
+                                    handleStoryPress
+                                }
+                                onPointerUp={
+                                    handleStoryRelease
+                                }
+                                onPointerCancel={
+                                    handleStoryRelease
+                                }
+                                onClick={() =>
+                                    handleStoryClick(
+                                        previousStory
+                                    )
+                                }
                                 className="absolute left-0 top-0 z-10 h-full w-1/4"
                                 aria-label="Story anterior"
                             />
 
                             <button
                                 type="button"
-                                onClick={nextStory}
+                                onPointerDown={
+                                    handleStoryPress
+                                }
+                                onPointerUp={
+                                    handleStoryRelease
+                                }
+                                onPointerCancel={
+                                    handleStoryRelease
+                                }
+                                onClick={() =>
+                                    handleStoryClick(
+                                        nextStory
+                                    )
+                                }
                                 className="absolute right-0 top-0 z-10 h-full w-1/4"
                                 aria-label="Próxima story"
                             />
@@ -210,14 +390,40 @@ export function StoriesScreen({
                         <>
                             <button
                                 type="button"
-                                onClick={previousStory}
+                                onPointerDown={
+                                    handleStoryPress
+                                }
+                                onPointerUp={
+                                    handleStoryRelease
+                                }
+                                onPointerCancel={
+                                    handleStoryRelease
+                                }
+                                onClick={() =>
+                                    handleStoryClick(
+                                        previousStory
+                                    )
+                                }
                                 className="absolute left-0 top-0 z-10 h-[90%] w-1/4"
                                 aria-label="Story anterior"
                             />
 
                             <button
                                 type="button"
-                                onClick={nextStory}
+                                onPointerDown={
+                                    handleStoryPress
+                                }
+                                onPointerUp={
+                                    handleStoryRelease
+                                }
+                                onPointerCancel={
+                                    handleStoryRelease
+                                }
+                                onClick={() =>
+                                    handleStoryClick(
+                                        nextStory
+                                    )
+                                }
                                 className="absolute right-0 top-0 z-10 h-[90%] w-1/4"
                                 aria-label="Próxima story"
                             />
