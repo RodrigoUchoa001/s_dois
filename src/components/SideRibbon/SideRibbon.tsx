@@ -4,17 +4,19 @@ interface SideRibbonProps {
     text: string;
     rotation?: number;
     textDirection?: string;
+    bg_color?: string;
 }
 
 export function SideRibbon({
     text,
     rotation = 0,
     textDirection = "lr",
+    bg_color = "bg-[#8064ff]",
 }: SideRibbonProps) {
     return (
         <div className="absolute right-0 top-0 h-full w-10">
             <div
-                className="absolute inset-0 origin-center overflow-hidden border-l-2 border-[#fff3c7]/20 bg-[#8064ff]"
+                className={`absolute inset-0 origin-center overflow-hidden border-l-2 border-[#fff3c7]/20 ${bg_color}`}
                 style={{
                     transform: `rotate(${rotation}deg)`,
                 }}
