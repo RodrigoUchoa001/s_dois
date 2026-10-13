@@ -19,6 +19,7 @@ import { BeginningStory } from "./BeginningStory/BeginningStory";
 import { StarMapStory } from "./StarMapStory/StarMapStory";
 import { NextChapterStory } from "./NewChapterStory";
 import { FinalStory } from "./FinalStory";
+import { FinalShareStory } from "./FinalShareStory";
 
 interface StoriesScreenProps {
     isOpen: boolean;
@@ -40,7 +41,7 @@ export function StoriesScreen({
     const pressTimer = useRef<number | null>(null);
     const isLongPress = useRef(false);
 
-    const totalStories = 11;
+    const totalStories = 12;
     const storyDuration = 8000;
 
     const minutesTogether = getMinutesTogether();
@@ -351,6 +352,10 @@ export function StoriesScreen({
 
                             {currentStory === 10 && (
                                 <FinalStory animatedMinutes={animatedMinutes}  />
+                            )}
+
+                            {currentStory === 11 && (
+                                <FinalShareStory />
                             )}
                         </AnimatePresence>
                     </div>
