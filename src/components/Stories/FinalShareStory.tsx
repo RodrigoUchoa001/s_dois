@@ -1,12 +1,14 @@
 
 import { motion, useReducedMotion } from "motion/react";
-import { Heart, Music2, Sparkles } from "lucide-react";
+import { toBlob } from "html-to-image";
+import { Heart, LoaderCircle, Music2, Share2, Sparkles } from "lucide-react";
 
 import { couple } from "../../data/couple";
 import {
     getMinutesTogether,
     useAnimatedNumber,
 } from "../../utils/date";
+import { useRef, useState } from "react";
 
 export function FinalShareStory() {
     const prefersReducedMotion = useReducedMotion();
@@ -36,6 +38,95 @@ export function FinalShareStory() {
     const couplePhoto =
         couple.wrapped.gallery.photoStack[0]?.images[0]?.src
         ?? coverImage;
+    
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [isSharing, setIsSharing] = useState(false);
+
+    async function handleShare() {
+        const card = cardRef.current;
+
+        if (!card || isSharing) return;
+
+        setIsSharing(true);
+
+        try {
+            // Garante que a imagem e as fontes estejam carregadas.
+            await document.fonts.ready;
+
+            const images = Array.from(card.querySelectorAll("img"));
+
+            await Promise.all(
+                images.map(async (img) => {
+                    if (!img.complete) {
+                        await new Promise<void>((resolve) => {
+                            img.addEventListener("load", () => resolve(), {
+                                once: true,
+                            });
+                            img.addEventListener("error", () => resolve(), {
+                                once: true,
+                            });
+                        });
+                    }
+                })
+            );
+
+            // Captura somente a caixa preta em alta resolução.
+            const blob = await toBlob(card, {
+                pixelRatio: 2,
+                cacheBust: true,
+                backgroundColor: "#101014",
+            });
+
+            if (!blob) {
+                throw new Error("Não foi possível gerar a imagem.");
+            }
+
+            const file = new File(
+                [blob],
+                "nossa-historia.png",
+                { type: "image/png" }
+            );
+
+            // Abre o menu nativo de compartilhamento, quando suportado.
+            if (
+                navigator.share &&
+                navigator.canShare?.({ files: [file] })
+            ) {
+                await navigator.share({
+                    files: [file],
+                    title: "Nossa história",
+                    text: `${couple.names.man} ❤️ ${couple.names.woman}`,
+                });
+
+                return;
+            }
+
+            // Alternativa: baixa o PNG para compartilhar manualmente.
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+
+            link.href = url;
+            link.download = "nossa-historia.png";
+            link.click();
+
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) {
+            // Cancelar o menu de compartilhamento não é uma falha.
+            if (
+                error instanceof DOMException &&
+                error.name === "AbortError"
+            ) {
+                return;
+            }
+
+            console.error("Erro ao compartilhar o cartão:", error);
+            alert(
+                "Não foi possível gerar a imagem. Tente novamente."
+            );
+        } finally {
+            setIsSharing(false);
+        }
+    }
 
     return (
         <section className="absolute inset-0 flex items-center justify-center overflow-hidden bg-[#080810] px-5 py-10 text-white">
@@ -47,6 +138,7 @@ export function FinalShareStory() {
 
             {/* Cartão de compartilhamento */}
             <motion.div
+                ref={cardRef}
                 initial={{
                     opacity: 0,
                     y: prefersReducedMotion ? 0 : 28,
@@ -267,6 +359,25 @@ export function FinalShareStory() {
             >
                 Cada minuto faz parte da nossa história
             </motion.p>
+            
+            <motion.button
+                type="button"
+                onClick={handleShare}
+                disabled={isSharing}
+                whileTap={{ scale: 0.96 }}
+                whileHover={{ scale: 1.03 }}
+                className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2.5 whitespace-nowrap rounded-full border border-[#e8c98b]/30 bg-[#17151e] px-5 py-3 text-xs font-semibold text-[#fff4d6] shadow-lg transition hover:border-[#e8c98b]/60 hover:bg-[#24202c] disabled:cursor-wait disabled:opacity-70"
+            >
+                {isSharing ? (
+                    <LoaderCircle size={16} className="animate-spin" />
+                ) : (
+                    <Share2 size={16} className="text-[#e8c98b]" />
+                )}
+
+                {isSharing
+                    ? "Preparando imagem..."
+                    : "Compartilhar nossa história"}
+            </motion.button>
         </section>
     );
 }
