@@ -68,7 +68,7 @@ export const REAL_STARS: RealStar[] =
  */
 export const VISIBLE_STARS: RealStar[] =
     REAL_STARS
-        .filter((star) => star.magnitude <= 3)
+        .filter((star) => star.magnitude <= 3.8)
         .sort((a, b) => a.magnitude - b.magnitude)
         .slice(0, 1000);
 
@@ -78,100 +78,12 @@ export const REAL_CONSTELLATIONS: ConstellationLine[] =
         lines: feature.geometry.coordinates,
     }));
 
-export const MAX_CONSTELLATION_MAGNITUDE = 4.5;
-
-export const CONSTELLATION_STAR_DISTANCE = 0.15;
-
-function findVisibleStar(
-    ra: number,
-    dec: number,
-) {
-    let closestStar: RealStar | null = null;
-    let closestDistance = Infinity;
-
-    for (const star of VISIBLE_STARS) {
-        const raDistance = Math.abs(
-            star.ra - ra,
-        );
-
-        const decDistance = Math.abs(
-            star.dec - dec,
-        );
-
-        const distance = Math.sqrt(
-            raDistance ** 2 +
-                decDistance ** 2,
-        );
-
-        if (
-            distance <
-                closestDistance &&
-            distance <=
-                CONSTELLATION_STAR_DISTANCE
-        ) {
-            closestDistance = distance;
-            closestStar = star;
-        }
-    }
-
-    return closestStar;
-}
-
-export function getVisibleConstellations() {
-    return REAL_CONSTELLATIONS
-        .map((constellation) => {
-            const visibleLines =
-                constellation.lines
-                    .map((line) => {
-                        const visiblePoints =
-                            line.filter(
-                                ([ra, dec]) =>
-                                    findVisibleStar(
-                                        ra,
-                                        dec,
-                                    ) !== null,
-                            );
-
-                        /*
-                         * Uma linha precisa ter pelo
-                         * menos dois pontos para existir.
-                         */
-                        if (
-                            visiblePoints.length <
-                            2
-                        ) {
-                            return null;
-                        }
-
-                        return visiblePoints;
-                    })
-                    .filter(
-                        (
-                            line,
-                        ): line is [
-                            number,
-                            number,
-                        ][] =>
-                            line !== null,
-                    );
-
-            if (
-                visibleLines.length === 0
-            ) {
-                return null;
-            }
-
-            return {
-                ...constellation,
-                lines: visibleLines,
-            };
-        })
-        .filter(
-            (
-                constellation,
-            ): constellation is ConstellationLine =>
-                constellation !== null,
-        );
+export function getVisibleConstellations(): ConstellationLine[] {
+    // Preserva os segmentos originais das constelações.
+    // A visibilidade deve ser determinada durante a projeção
+    // de cada segmento no mapa, e não filtrando seus vértices
+    // com base no catálogo de estrelas brilhantes.
+    return REAL_CONSTELLATIONS;
 }
 
 
@@ -272,7 +184,9 @@ export function equatorialToHorizontal(
             Math.cos(H);
 
     const altitude = toDegrees(
-        Math.asin(sinAltitude),
+        Math.asin(
+            Math.max(-1, Math.min(1, sinAltitude)),
+        ),
     );
 
     /*
@@ -312,59 +226,31 @@ export function projectToSkyMap(
     mapSize: number,
     radius: number,
 ) {
-    /*
-     * Abaixo do horizonte não aparece.
-     */
-    if (altitude < 0) {
+    // Não exibe objetos abaixo do horizonte.
+    if (altitude < 0 || altitude > 90) {
         return null;
     }
 
     const center = mapSize / 2;
 
-    /*
-     * Zenith:
-     * altitude 90 → centro
-     *
-     * Horizonte:
-     * altitude 0 → borda
-     */
-    const normalizedRadius =
-        ((90 - altitude) / 90) * radius;
-
+    // Projeção radial: zênite no centro e horizonte na borda.
+    const normalizedRadius = ((90 - altitude) / 90) * radius;
     const azimuthRad = toRadians(azimuth);
 
     /*
-     * Norte para cima
-     * Leste para direita
-     * Sul para baixo
-     * Oeste para esquerda
+     * Orientação do mapa celeste:
+     * Norte: cima
+     * Sul: baixo
+     * Leste: esquerda
+     * Oeste: direita
      */
     const x =
-        center +
-        normalizedRadius *
-            Math.sin(azimuthRad);
+        center - normalizedRadius * Math.sin(azimuthRad);
 
     const y =
-        center -
-        normalizedRadius *
-            Math.cos(azimuthRad);
+        center - normalizedRadius * Math.cos(azimuthRad);
 
-    /*
-     * Segurança extra.
-     */
-    const distance = Math.sqrt(
-        (x - center) ** 2 +
-            (y - center) ** 2,
-    );
-
-    if (distance > radius + 0.1) {
-        return null;
-    }
-
-    return {
-        x,
-        y,
-    };
+    return { x, y };
 }
 
 
