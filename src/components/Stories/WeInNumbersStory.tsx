@@ -20,6 +20,7 @@ import {
 
 import { SideRibbon } from "../SideRibbon/SideRibbon";
 import { Orbits } from "../Orbits/Orbits";
+import { StoryHeader } from "./StoryHeader";
 
 type NumberItemProps = {
     quantity: number;
@@ -296,15 +297,7 @@ export function WeInNumbersStory() {
 
             <div className="relative z-10 flex h-full flex-col px-7 pb-7 pr-14 pt-8">
                 {/* Cabeçalho */}
-                <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#9DABFF]/30 bg-[#8B9DFF]/15 text-[#B9C7FF]">
-                        <Heart size={18} fill="currentColor" strokeWidth={2.5} />
-                    </div>
-
-                    <p className="text-xs font-black uppercase tracking-[0.22em] text-[#B9C7FF]">
-                        Nossa história
-                    </p>
-                </div>
+                <StoryHeader text="Nossa história" />
 
                 <h1 className="max-w-xs text-4xl font-black uppercase leading-[0.9] tracking-tight">
                     O nosso amor,
