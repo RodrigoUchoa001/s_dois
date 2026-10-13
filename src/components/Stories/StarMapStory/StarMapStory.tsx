@@ -1,21 +1,11 @@
-import {
-    useEffect,
-    useState,
-} from "react";
 
-import {
-    AnimatePresence,
-    motion,
-} from "motion/react";
+import { useEffect, useState } from "react";
 
-import {
-    Clock3,
-    MapPin,
-    Navigation,
-} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+
+import { Clock3, MapPin, Navigation } from "lucide-react";
 
 import { couple } from "../../../data/couple";
-
 import { SideRibbon } from "../../SideRibbon/SideRibbon";
 
 import {
@@ -25,42 +15,42 @@ import {
     type RealStar,
 } from "./astronomy";
 
-
 /* =========================================================
    TIPOS
 ========================================================= */
 
-type Phase =
-    | "today"
-    | "traveling"
-    | "arrival";
-
+type Phase = "today" | "traveling" | "arrival";
 
 /* =========================================================
    CONFIGURAÇÕES
 ========================================================= */
 
 const MAP_SIZE = 320;
-
 const CENTER = MAP_SIZE / 2;
-
 const RADIUS = 142;
-
 
 /*
  * Pedro II - PI
  */
 const LOCATION = {
     name: "Pedro II, PI, Brasil",
-
-    coordinates:
-        "4°25′29″ S · 41°27′31″ W",
-
+    coordinates: "4°25′29″ S · 41°27′31″ W",
     latitude: -4.4247,
-
     longitude: -41.4586,
 };
 
+/* =========================================================
+   PALETA VISUAL
+========================================================= */
+
+const COLORS = {
+    ink: "#FFF3D8",
+    muted: "#C5BEDD",
+    purple: "#C0A5FF",
+    lilac: "#D0B5FF",
+    warmWhite: "#FFF3D8",
+    border: "rgba(168, 117, 255, 0.22)",
+};
 
 /* =========================================================
    DATAS
@@ -69,7 +59,6 @@ const LOCATION = {
 function getToday() {
     return new Date();
 }
-
 
 function getStartDate() {
     return new Date(
@@ -82,30 +71,21 @@ function getStartDate() {
     );
 }
 
-
 function formatDate(date: Date) {
-    return date.toLocaleDateString(
-        "pt-BR",
-        {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        },
-    );
+    return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
 }
-
 
 function formatTime(date: Date) {
-    return date.toLocaleTimeString(
-        "pt-BR",
-        {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-        },
-    );
+    return date.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
 }
-
 
 /* =========================================================
    STAR MAP
@@ -121,114 +101,80 @@ function StarMap({
     date: Date;
 }) {
     const arrival = phase === "arrival";
-
     const traveling = phase === "traveling";
 
     return (
         <motion.div
             className="
-                relative
-                aspect-square
+                relative aspect-square
                 w-[min(78vw,340px)]
-                overflow-hidden
-                rounded-full
+                overflow-hidden rounded-full
+                shadow-[0_22px_65px_rgba(63,48,110,0.22)]
             "
-            animate={{
-                rotate: rotation,
-            }}
+            animate={{ rotate: rotation }}
             transition={{
                 duration: traveling ? 2.8 : 0,
-                ease: [
-                    0.22,
-                    0.61,
-                    0.36,
-                    1,
-                ],
+                ease: [0.22, 0.61, 0.36, 1],
             }}
         >
-            {/* =================================================
-                GLOW
-            ================================================= */}
+            {/* GLOW EXTERNO */}
 
             <div
                 className="
-                    absolute
-                    inset-0
-                    rounded-full
-                    bg-[#8064ff]/10
-                    blur-2xl
+                    absolute inset-0 rounded-full
+                    bg-[#A875FF]/15 blur-2xl
                 "
             />
 
             <div
                 className="
-                    absolute
-                    left-1/2
-                    top-1/2
-                    h-[80%]
-                    w-[80%]
-                    -translate-x-1/2
-                    -translate-y-1/2
-                    rounded-full
-                    bg-[#8064ff]/10
-                    blur-3xl
+                    absolute left-1/2 top-1/2
+                    h-[80%] w-[80%]
+                    -translate-x-1/2 -translate-y-1/2
+                    rounded-full bg-[#8064FF]/15 blur-3xl
                 "
             />
 
-            {/* =================================================
-                CÍRCULO DO MAPA
-            ================================================= */}
+            {/* CÍRCULO DO MAPA */}
 
             <div
                 className="
-                    absolute
-                    inset-0
-                    rounded-full
-                    border
-                    border-[#fff3c7]/20
-                    bg-[#0b0b2b]/80
+                    absolute inset-0 rounded-full
+                    border border-white/20
+                    bg-[#10152F]
                 "
+                style={{
+                    background:
+                        "radial-gradient(circle at 45% 38%, #252344 0%, #151832 52%, #0B1026 100%)",
+                }}
             />
 
-            {/* =================================================
-                SVG
-            ================================================= */}
+            {/* SVG ASTRONÔMICO */}
 
             <svg
                 viewBox={`0 0 ${MAP_SIZE} ${MAP_SIZE}`}
-                className="
-                    absolute
-                    inset-0
-                    h-full
-                    w-full
-                "
+                className="absolute inset-0 h-full w-full"
             >
-                {/* =============================================
-                    CÍRCULO INTERNO
-                ============================================= */}
+                {/* CÍRCULOS DE ALTITUDE */}
 
                 <circle
                     cx={CENTER}
                     cy={CENTER}
                     r={RADIUS}
                     fill="none"
-                    stroke="#fff3c7"
+                    stroke={COLORS.warmWhite}
                     strokeWidth="0.6"
-                    opacity="0.15"
+                    opacity="0.22"
                 />
-
-                {/* =============================================
-                    CÍRCULOS DE ALTITUDE
-                ============================================= */}
 
                 <circle
                     cx={CENTER}
                     cy={CENTER}
                     r={RADIUS * 0.66}
                     fill="none"
-                    stroke="#fff3c7"
+                    stroke={COLORS.warmWhite}
                     strokeWidth="0.5"
-                    opacity="0.06"
+                    opacity="0.11"
                 />
 
                 <circle
@@ -236,23 +182,21 @@ function StarMap({
                     cy={CENTER}
                     r={RADIUS * 0.33}
                     fill="none"
-                    stroke="#fff3c7"
+                    stroke={COLORS.warmWhite}
                     strokeWidth="0.5"
-                    opacity="0.06"
+                    opacity="0.09"
                 />
 
-                {/* =============================================
-                    LINHAS CARDINAIS
-                ============================================= */}
+                {/* LINHAS CARDINAIS */}
 
                 <line
                     x1={CENTER}
                     y1={CENTER - RADIUS}
                     x2={CENTER}
                     y2={CENTER + RADIUS}
-                    stroke="#fff3c7"
+                    stroke={COLORS.warmWhite}
                     strokeWidth="0.4"
-                    opacity="0.06"
+                    opacity="0.12"
                 />
 
                 <line
@@ -260,65 +204,48 @@ function StarMap({
                     y1={CENTER}
                     x2={CENTER + RADIUS}
                     y2={CENTER}
-                    stroke="#fff3c7"
+                    stroke={COLORS.warmWhite}
                     strokeWidth="0.4"
-                    opacity="0.06"
+                    opacity="0.12"
                 />
 
-                {/* =============================================
-                    ESTRELAS
-                ============================================= */}
+                {/* ESTRELAS */}
 
                 <g>
-                    {VISIBLE_STARS.map(
-                        (star) => (
-                            <StarPoint
-                                key={star.id}
-                                star={star}
-                                date={
-                                    phase === "traveling"
-                                        ? getToday()
-                                        : date
-                                }
-                            />
-                        ),
-                    )}
+                    {VISIBLE_STARS.map((star) => (
+                        <StarPoint
+                            key={star.id}
+                            star={star}
+                            date={
+                                phase === "traveling"
+                                    ? getToday()
+                                    : date
+                            }
+                        />
+                    ))}
                 </g>
 
-                {/* =============================================
-                    CONSTELAÇÕES
-                ============================================= */}
+                {/* CONSTELAÇÕES */}
 
                 <ConstellationLines
                     date={date}
                     arrival={arrival}
                 />
 
-                {/* =============================================
-                    CENTRO / ZENITE
-                ============================================= */}
+                {/* CENTRO / ZÊNITE */}
 
                 <motion.circle
                     cx={CENTER}
                     cy={CENTER}
                     r={2}
-                    fill="#fff3c7"
+                    fill={COLORS.warmWhite}
                     animate={{
-                        opacity:
-                            arrival
-                                ? [0.4, 1, 0.4]
-                                : 0.5,
-                        scale:
-                            arrival
-                                ? [1, 1.6, 1]
-                                : 1,
+                        opacity: arrival ? [0.4, 1, 0.4] : 0.5,
+                        scale: arrival ? [1, 1.6, 1] : 1,
                     }}
                     transition={{
                         duration: 2,
-                        repeat:
-                            arrival
-                                ? Infinity
-                                : 0,
+                        repeat: arrival ? Infinity : 0,
                         ease: "easeInOut",
                     }}
                 />
@@ -328,26 +255,20 @@ function StarMap({
                     cy={CENTER}
                     r={6}
                     fill="none"
-                    stroke="#a875ff"
-                    strokeWidth="0.7"
-                    opacity="0.4"
+                    stroke={COLORS.lilac}
+                    strokeWidth="0.8"
+                    opacity="0.7"
                 />
             </svg>
 
-            {/* =================================================
-                PONTOS CARDEAIS
-            ================================================= */}
+            {/* PONTOS CARDEAIS */}
 
             <span
                 className="
-                    absolute
-                    left-1/2
-                    top-3
+                    absolute left-1/2 top-3
                     -translate-x-1/2
-                    text-[10px]
-                    font-black
-                    tracking-widest
-                    text-[#fff3c7]/60
+                    text-[10px] font-black tracking-widest
+                    text-[#FFF3D8]/75
                 "
             >
                 N
@@ -355,14 +276,10 @@ function StarMap({
 
             <span
                 className="
-                    absolute
-                    bottom-3
-                    left-1/2
+                    absolute bottom-3 left-1/2
                     -translate-x-1/2
-                    text-[10px]
-                    font-black
-                    tracking-widest
-                    text-[#fff3c7]/60
+                    text-[10px] font-black tracking-widest
+                    text-[#FFF3D8]/75
                 "
             >
                 S
@@ -370,14 +287,10 @@ function StarMap({
 
             <span
                 className="
-                    absolute
-                    left-3
-                    top-1/2
+                    absolute left-3 top-1/2
                     -translate-y-1/2
-                    text-[10px]
-                    font-black
-                    tracking-widest
-                    text-[#fff3c7]/60
+                    text-[10px] font-black tracking-widest
+                    text-[#FFF3D8]/75
                 "
             >
                 L
@@ -385,14 +298,10 @@ function StarMap({
 
             <span
                 className="
-                    absolute
-                    right-3
-                    top-1/2
+                    absolute right-3 top-1/2
                     -translate-y-1/2
-                    text-[10px]
-                    font-black
-                    tracking-widest
-                    text-[#fff3c7]/60
+                    text-[10px] font-black tracking-widest
+                    text-[#FFF3D8]/75
                 "
             >
                 O
@@ -400,7 +309,6 @@ function StarMap({
         </motion.div>
     );
 }
-
 
 /* =========================================================
    ESTRELA
@@ -422,35 +330,17 @@ function StarPoint({
         RADIUS,
     );
 
-    /*
-     * Abaixo do horizonte.
-     */
-    if (!position) {
-        return null;
-    }
+    // Estrelas abaixo do horizonte não são exibidas.
+    if (!position) return null;
 
-    /*
-     * Estrelas mais brilhantes
-     * ficam maiores.
-     */
     const radius = Math.max(
         0.45,
-        Math.min(
-            2.4,
-            2.8 -
-                star.magnitude *
-                    0.35,
-        ),
+        Math.min(2.4, 2.8 - star.magnitude * 0.35),
     );
 
     const opacity = Math.max(
         0.25,
-        Math.min(
-            1,
-            1.15 -
-                star.magnitude *
-                    0.12,
-        ),
+        Math.min(1, 1.15 - star.magnitude * 0.12),
     );
 
     return (
@@ -458,17 +348,15 @@ function StarPoint({
             cx={position.x}
             cy={position.y}
             r={radius}
-            fill="#fff3c7"
+            fill={COLORS.warmWhite}
             opacity={opacity}
         />
     );
 }
 
-
 /* =========================================================
    CONSTELAÇÕES
 ========================================================= */
-
 
 function ConstellationLines({
     date,
@@ -492,8 +380,8 @@ function ConstellationLines({
                                 key={`${constellation.id}-${lineIndex}-${segmentIndex}`}
                                 points={points}
                                 fill="none"
-                                stroke="#a875ff"
-                                strokeWidth="0.7"
+                                stroke={COLORS.lilac}
+                                strokeWidth="0.8"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 initial={{
@@ -502,7 +390,7 @@ function ConstellationLines({
                                 }}
                                 animate={{
                                     pathLength: arrival ? 1 : 0,
-                                    opacity: arrival ? 0.75 : 0,
+                                    opacity: arrival ? 0.8 : 0,
                                 }}
                                 transition={{
                                     delay:
@@ -560,137 +448,110 @@ function getVisibleLineSegments(
     return segments;
 }
 
+/* =========================================================
+   CARTÃO DE INFORMAÇÃO
+========================================================= */
 
+function InfoCard({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <div
+            className="
+                rounded-2xl border
+                bg-[#fff3c7]/5 p-4
+                shadow-[0_10px_30px_rgba(0,0,0,0.12)]
+                backdrop-blur-xl
+            "
+            style={{
+                borderColor: "rgba(168, 117, 255, 0.22)",
+            }}
+        >
+            {children}
+        </div>
+    );
+}
 
 /* =========================================================
    COMPONENTE PRINCIPAL
 ========================================================= */
 
 export function StarMapStory() {
-    const [phase, setPhase] =
-        useState<Phase>("today");
+    const [phase, setPhase] = useState<Phase>("today");
 
-    const [displayDate, setDisplayDate] =
-        useState<Date>(() => getToday());
+    const [displayDate, setDisplayDate] = useState<Date>(
+        () => getToday(),
+    );
 
-    const [mapRotation, setMapRotation] =
-        useState(0);
+    const [mapRotation, setMapRotation] = useState(0);
 
-    /*
-     * Essas datas são criadas apenas uma vez.
-     */
-    const [today] =
-        useState<Date>(() => getToday());
+    const [today] = useState<Date>(() => getToday());
 
-    const [startDate] =
-        useState<Date>(() => getStartDate());
-
+    const [startDate] = useState<Date>(() => getStartDate());
 
     /* =====================================================
        INÍCIO DA ANIMAÇÃO
     ===================================================== */
 
     useEffect(() => {
-        const timeout =
-            window.setTimeout(
-                () => {
-                    setMapRotation(
-                        1080,
-                    );
+        const timeout = window.setTimeout(() => {
+            setMapRotation(1080);
+            setPhase("traveling");
+        }, 1300);
 
-                    setPhase(
-                        "traveling",
-                    );
-                },
-                1300,
-            );
-
-        return () =>
-            window.clearTimeout(
-                timeout,
-            );
+        return () => window.clearTimeout(timeout);
     }, []);
-
 
     /* =====================================================
        VIAGEM NO TEMPO
     ===================================================== */
 
     useEffect(() => {
-        if (phase !== "traveling") {
-            return;
-        }
+        if (phase !== "traveling") return;
 
         const totalSteps = 45;
-
         let currentStep = 0;
 
-        const startTimestamp =
-            today.getTime();
+        const startTimestamp = today.getTime();
+        const targetTimestamp = startDate.getTime();
 
-        const targetTimestamp =
-            startDate.getTime();
+        const interval = window.setInterval(() => {
+            currentStep++;
 
-        const interval =
-            window.setInterval(() => {
-                currentStep++;
+            const progress = Math.min(
+                currentStep / totalSteps,
+                1,
+            );
 
-                const progress = Math.min(
-                    currentStep / totalSteps,
-                    1,
-                );
+            const eased =
+                progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 -
+                      Math.pow(-2 * progress + 2, 2) / 2;
 
-                /*
-                * Ease in/out
-                */
-                const eased =
-                    progress < 0.5
-                        ? 2 * progress * progress
-                        : 1 -
-                        Math.pow(
-                            -2 * progress + 2,
-                            2,
-                        ) /
-                            2;
+            const timestamp =
+                startTimestamp +
+                (targetTimestamp - startTimestamp) * eased;
 
-                const timestamp =
-                    startTimestamp +
-                    (targetTimestamp -
-                        startTimestamp) *
-                        eased;
+            setDisplayDate(new Date(timestamp));
 
-                setDisplayDate(
-                    new Date(timestamp),
-                );
+            if (currentStep >= totalSteps) {
+                window.clearInterval(interval);
 
-                /*
-                * Chegou ao destino.
-                */
-                if (
-                    currentStep >=
-                    totalSteps
-                ) {
-                    window.clearInterval(
-                        interval,
-                    );
+                setDisplayDate(new Date(targetTimestamp));
 
-                    setDisplayDate(
-                        new Date(
-                            targetTimestamp,
-                        ),
-                    );
-
-                    window.setTimeout(() => {
-                        setPhase("arrival");
-                    }, 500);
-                }
-            }, 55);
+                window.setTimeout(() => {
+                    setPhase("arrival");
+                }, 500);
+            }
+        }, 55);
 
         return () => {
             window.clearInterval(interval);
         };
     }, [phase, startDate, today]);
-
 
     /* =====================================================
        RENDER
@@ -699,448 +560,297 @@ export function StarMapStory() {
     return (
         <div
             className="
-                relative
-                flex
-                min-h-screen
-                w-full
-                flex-col
-                items-center
-                justify-center
-                overflow-hidden
-                bg-[#0b0b2b]
-                px-6
-                py-10
+                relative flex min-h-screen w-full flex-col
+                items-center justify-center overflow-hidden
+                bg-[#0b0b2b] px-6 py-10 pr-15
                 text-[#fff3c7]
-                pr-15
             "
         >
             {/* =================================================
-                DECORAÇÃO
+                BRILHOS SUAVES
             ================================================= */}
 
-            <div
+            <motion.div
                 className="
-                    pointer-events-none
-                    absolute
-                    -left-32
-                    -top-32
-                    h-80
-                    w-80
-                    rounded-full
-                    bg-[#8064ff]/15
-                    blur-3xl
+                    pointer-events-none absolute
+                    -left-32 -top-32 h-80 w-80
+                    rounded-full bg-[#B7A0FF]/35 blur-3xl
                 "
+                animate={{ opacity: [0.45, 0.75, 0.45] }}
+                transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                }}
+            />
+
+            <motion.div
+                className="
+                    pointer-events-none absolute
+                    -bottom-40 -right-32 h-96 w-96
+                    rounded-full bg-[#F7BFCF]/40 blur-3xl
+                "
+                animate={{ opacity: [0.4, 0.7, 0.4] }}
+                transition={{
+                    duration: 9,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                }}
             />
 
             <div
                 className="
-                    pointer-events-none
-                    absolute
-                    -bottom-40
-                    -right-32
-                    h-96
-                    w-96
-                    rounded-full
-                    bg-[#a875ff]/10
-                    blur-3xl
+                    pointer-events-none absolute
+                    right-[12%] top-[12%]
+                    h-28 w-28 rounded-full
+                    bg-white/30 blur-3xl
                 "
             />
 
-            {/* =================================================
-                SIDE RIBBON
-            ================================================= */}
+            {/* SIDE RIBBON */}
 
             <SideRibbon text="NOSSO CÉU" />
 
-
-            {/* =================================================
-                CONTEÚDO
-            ================================================= */}
+            {/* CONTEÚDO */}
 
             <div
                 className="
-                    relative
-                    z-10
-                    flex
-                    w-full
-                    max-w-xl
-                    flex-col
-                    items-center
+                    relative z-10 flex w-full max-w-xl
+                    flex-col items-center
                 "
             >
-                {/* =================================================
-                    HEADER
-                ================================================= */}
+                {/* HEADER */}
 
                 <motion.div
-                    className="
-                        mb-7
-                        text-center
-                    "
-                    initial={{
-                        opacity: 0,
-                        y: 20,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        duration: 0.6,
-                    }}
+                    className="mb-7 text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
                 >
                     <p
                         className="
-                            mb-2
-                            text-[11px]
-                            font-black
-                            uppercase
-                            tracking-[0.3em]
-                            text-[#a875ff]
+                            mb-2 text-[11px] font-black
+                            uppercase tracking-[0.3em]
                         "
+                        style={{ color: COLORS.purple }}
                     >
-                        {phase ===
-                        "today"
+                        {phase === "today"
                             ? "O CÉU DE HOJE"
-                            : phase ===
-                                "traveling"
+                            : phase === "traveling"
                               ? "VOLTANDO NO TEMPO"
                               : "AQUELA NOITE"}
                     </p>
 
                     <h2
                         className="
-                            text-3xl
-                            font-black
-                            uppercase
-                            leading-none
-                            tracking-tight
+                            text-3xl font-black uppercase
+                            leading-tight tracking-tight
                             sm:text-4xl
                         "
+                        style={{ color: COLORS.ink }}
                     >
-                        {phase ===
-                        "arrival"
+                        {phase === "arrival"
                             ? "O céu quando tudo começou"
                             : "Nosso mapa estelar"}
                     </h2>
+
+                    <div
+                        className="
+                            mx-auto mt-3 h-1 w-12
+                            rounded-full
+                        "
+                        style={{
+                            background:
+                                "linear-gradient(90deg, #8064FF, #E1A6D5)",
+                        }}
+                    />
                 </motion.div>
 
-
-                {/* =================================================
-                    MAPA
-                ================================================= */}
+                {/* MAPA */}
 
                 <StarMap
                     phase={phase}
-                    rotation={
-                        mapRotation
-                    }
-                    date={
-                        displayDate
-                    }
+                    rotation={mapRotation}
+                    date={displayDate}
                 />
 
+                {/* INFORMAÇÕES */}
 
-                {/* =================================================
-                    INFORMAÇÕES
-                ================================================= */}
-
-                <AnimatePresence
-                    mode="wait"
-                >
-                    {phase ===
-                        "today" && (
+                <AnimatePresence mode="wait">
+                    {phase === "today" && (
                         <motion.div
                             key="today-info"
-                            className="
-                                mt-8
-                                text-center
-                            "
-                            initial={{
-                                opacity: 0,
-                                y: 15,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                y: 0,
-                            }}
-                            exit={{
-                                opacity: 0,
-                                y: -15,
-                            }}
+                            className="mt-8 text-center"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
                         >
                             <p
                                 className="
-                                    text-xs
-                                    font-bold
-                                    uppercase
+                                    text-xs font-bold uppercase
                                     tracking-widest
-                                    text-[#fff3c7]/50
                                 "
+                                style={{ color: COLORS.muted }}
                             >
                                 Preparando nossa
+                                <br />
                                 viagem pelo tempo...
                             </p>
                         </motion.div>
                     )}
 
-
-                    {phase ===
-                        "traveling" && (
+                    {phase === "traveling" && (
                         <motion.div
                             key="traveling-info"
-                            className="
-                                mt-8
-                                text-center
-                            "
-                            initial={{
-                                opacity: 0,
-                            }}
-                            animate={{
-                                opacity: 1,
-                            }}
+                            className="mt-8 text-center"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                         >
                             <p
                                 className="
-                                    text-xs
-                                    font-black
-                                    uppercase
+                                    text-xs font-black uppercase
                                     tracking-[0.2em]
-                                    text-[#a875ff]
                                 "
+                                style={{ color: COLORS.purple }}
                             >
                                 Retornando para
                             </p>
 
                             <p
-                                className="
-                                    mt-1
-                                    text-lg
-                                    font-black
-                                "
+                                className="mt-1 text-lg font-black"
+                                style={{ color: COLORS.ink }}
                             >
-                                {formatDate(
-                                    displayDate,
-                                )}
+                                {formatDate(displayDate)}
                             </p>
                         </motion.div>
                     )}
 
-
-                    {phase ===
-                        "arrival" && (
+                    {phase === "arrival" && (
                         <motion.div
                             key="arrival-info"
-                            className="
-                                mt-8
-                                w-full
-                            "
-                            initial={{
-                                opacity: 0,
-                                y: 20,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                y: 0,
-                            }}
-                            transition={{
-                                duration: 0.7,
-                            }}
+                            className="mt-8 w-full"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.7 }}
                         >
-                            {/* =====================================
-                                DATA / HORA
-                            ===================================== */}
+                            {/* DATA / HORA */}
 
-                            <div
-                                className="
-                                    mb-4
-                                    grid
-                                    grid-cols-2
-                                    gap-3
-                                "
-                            >
-                                <div
-                                    className="
-                                        rounded-2xl
-                                        border
-                                        border-[#fff3c7]/10
-                                        bg-[#fff3c7]/5
-                                        p-4
-                                    "
-                                >
+                            <div className="mb-4 grid grid-cols-2 gap-3">
+                                <InfoCard>
                                     <Clock3
-                                        size={
-                                            17
-                                        }
-                                        className="
-                                            mb-2
-                                            text-[#a875ff]
-                                        "
+                                        size={18}
+                                        className="mb-2"
+                                        color={COLORS.purple}
                                     />
 
                                     <p
                                         className="
-                                            text-[9px]
-                                            font-black
-                                            uppercase
-                                            tracking-widest
-                                            text-[#fff3c7]/40
+                                            text-[9px] font-black
+                                            uppercase tracking-widest
                                         "
+                                        style={{ color: COLORS.muted }}
                                     >
                                         Data e hora
                                     </p>
 
                                     <p
-                                        className="
-                                            mt-1
-                                            text-lg
-                                            font-black
-                                        "
+                                        className="mt-1 text-lg font-black"
+                                        style={{ color: COLORS.ink }}
                                     >
-                                        {formatDate(
-                                            startDate,
-                                        )}
+                                        {formatDate(startDate)}
                                     </p>
 
                                     <p
-                                        className="
-                                            mt-1
-                                            text-lg
-                                            font-black
-                                        "
+                                        className="mt-1 text-lg font-black"
+                                        style={{ color: COLORS.ink }}
                                     >
-                                        {formatTime(
-                                            startDate,
-                                        )}
+                                        {formatTime(startDate)}
                                     </p>
-                                </div>
+                                </InfoCard>
 
-
-                                <div
-                                    className="
-                                        rounded-2xl
-                                        border
-                                        border-[#fff3c7]/10
-                                        bg-[#fff3c7]/5
-                                        p-4
-                                    "
-                                >
+                                <InfoCard>
                                     <MapPin
-                                        size={
-                                            17
-                                        }
-                                        className="
-                                            mb-2
-                                            text-[#a875ff]
-                                        "
+                                        size={18}
+                                        className="mb-2"
+                                        color={COLORS.purple}
                                     />
 
                                     <p
                                         className="
-                                            text-[9px]
-                                            font-black
-                                            uppercase
-                                            tracking-widest
-                                            text-[#fff3c7]/40
+                                            text-[9px] font-black
+                                            uppercase tracking-widest
                                         "
+                                        style={{ color: COLORS.muted }}
                                     >
                                         Onde
                                     </p>
 
                                     <p
-                                        className="
-                                            mt-1
-                                            text-sm
-                                            font-black
-                                        "
+                                        className="mt-1 text-sm font-black"
+                                        style={{ color: COLORS.ink }}
                                     >
-                                        {
-                                            LOCATION.name
-                                        }
+                                        {LOCATION.name}
                                     </p>
-                                </div>
+
+                                    <p
+                                        className="mt-1 text-xs"
+                                        style={{ color: COLORS.muted }}
+                                    >
+                                        Piauí, Brasil
+                                    </p>
+                                </InfoCard>
                             </div>
 
-
-                            {/* =====================================
-                                COORDENADAS
-                            ===================================== */}
+                            {/* COORDENADAS */}
 
                             <div
                                 className="
-                                    flex
-                                    items-center
-                                    justify-center
-                                    gap-2
-                                    rounded-2xl
-                                    border
-                                    border-[#a875ff]/20
-                                    bg-[#8064ff]/10
-                                    px-4
-                                    py-3
+                                    flex items-center justify-center
+                                    gap-2 rounded-2xl border
+                                    bg-white/40 px-4 py-3
+                                    backdrop-blur-xl
                                 "
+                                style={{ borderColor: COLORS.border }}
                             >
                                 <Navigation
-                                    size={
-                                        14
-                                    }
-                                    className="
-                                        text-[#a875ff]
-                                    "
+                                    size={14}
+                                    color={COLORS.purple}
                                 />
 
                                 <span
                                     className="
-                                        text-[10px]
-                                        font-black
-                                        uppercase
-                                        tracking-widest
-                                        text-[#fff3c7]/60
+                                        text-[10px] font-black
+                                        uppercase tracking-widest
                                     "
+                                    style={{ color: COLORS.muted }}
                                 >
-                                    {
-                                        LOCATION.coordinates
-                                    }
+                                    {LOCATION.coordinates}
                                 </span>
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-
-                {/* =================================================
-                    FRASE FINAL
-                ================================================= */}
+                {/* FRASE FINAL */}
 
                 <AnimatePresence>
-                    {phase ===
-                        "arrival" && (
+                    {phase === "arrival" && (
                         <motion.p
                             className="
-                                mt-8
-                                max-w-sm
-                                text-center
-                                text-sm
-                                font-black
-                                uppercase
-                                leading-relaxed
-                                tracking-widest
-                                text-[#fff3c7]/70
+                                mt-8 max-w-sm text-center
+                                text-sm font-black uppercase
+                                leading-relaxed tracking-widest
                             "
-                            initial={{
-                                opacity: 0,
-                                y: 15,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                y: 0,
-                            }}
+                            style={{ color: COLORS.ink }}
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
                             transition={{
                                 delay: 1,
                                 duration: 0.7,
                             }}
                         >
                             O céu quando nossos
+                            <br />
                             mundos se colidiram.
                         </motion.p>
                     )}
