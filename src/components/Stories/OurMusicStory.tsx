@@ -169,8 +169,7 @@ export function OurMusicStory() {
                     className="mt-9"
                 >
                     <p className="max-w-xs text-base font-medium leading-relaxed text-[#fff3c7]/65">
-                        Se nossa história tivesse uma trilha sonora,
-                        provavelmente seria essa.
+                        Entre o céu pintado pelo pôr do sol e o nosso primeiro beijo, essa música encontrou seu lugar na nossa história.
                     </p>
                 </motion.div>
 
