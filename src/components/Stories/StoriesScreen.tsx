@@ -168,8 +168,11 @@ export function StoriesScreen({
 
             setStoryProgress(progress);
 
+            // Só avança quando o tempo terminar.
             if (progress >= 1) {
-                if (currentStory !== 4) {
+                // Stories 6 (Gallery) e 8 (Timeline):
+                // não avançam automaticamente.
+                if (currentStory !== 6 && currentStory !== 8) {
                     nextStory();
                 }
 
@@ -178,7 +181,8 @@ export function StoriesScreen({
 
             animationFrame =
                 requestAnimationFrame(updateProgress);
-        }
+
+            }
 
         animationFrame =
             requestAnimationFrame(updateProgress);
