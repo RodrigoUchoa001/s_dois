@@ -287,11 +287,10 @@ export function BeginningStory() {
                     </h2>
 
                     <p className="mt-5 text-lg font-bold text-[#fff3c7]/50">
-                        Há {elapsed.years}{" "}
-                        {elapsed.years === 1
-                            ? "ano"
-                            : "anos"}{" "}
-                        e {elapsed.days}{" "}
+                        Há{" "}
+                        { elapsed.years > 0 && `${elapsed.years} anos, `}
+                        { elapsed.years > 0 && `e`}
+                        { elapsed.days }{" "}
                         {elapsed.days === 1
                             ? "dia"
                             : "dias"}.
