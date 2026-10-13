@@ -380,7 +380,7 @@ function StarMap({
                     text-[#fff3c7]/60
                 "
             >
-                O
+                L
             </span>
 
             <span
@@ -395,7 +395,7 @@ function StarMap({
                     text-[#fff3c7]/60
                 "
             >
-                L
+                O
             </span>
         </motion.div>
     );
@@ -469,6 +469,7 @@ function StarPoint({
    CONSTELAÇÕES
 ========================================================= */
 
+
 function ConstellationLines({
     date,
     arrival,
@@ -479,108 +480,86 @@ function ConstellationLines({
     return (
         <>
             {getVisibleConstellations().map(
-                (
-                    constellation,
-                    constellationIndex,
-                ) =>
-                    constellation.lines.map(
-                        (
+                (constellation, constellationIndex) =>
+                    constellation.lines.map((line, lineIndex) => {
+                        const segments = getVisibleLineSegments(
                             line,
-                            lineIndex,
-                        ) => {
-                            const points =
-                                line
-                                    .map(
-                                        (
-                                            [
-                                                ra,
-                                                dec,
-                                            ],
-                                        ) => {
-                                            const position =
-                                                projectStar(
-                                                    {
-                                                        id: `${constellation.id}-${lineIndex}`,
-                                                        ra,
-                                                        dec,
-                                                        magnitude: 0,
-                                                    },
-                                                    date,
-                                                    LOCATION.latitude,
-                                                    LOCATION.longitude,
-                                                    MAP_SIZE,
-                                                    RADIUS,
-                                                );
+                            date,
+                        );
 
-                                            if (
-                                                !position
-                                            ) {
-                                                return null;
-                                            }
-
-                                            return `${position.x},${position.y}`;
-                                        },
-                                    )
-                                    .filter(
-                                        (
-                                            point,
-                                        ): point is string =>
-                                            point !==
-                                            null,
-                                    )
-                                    .join(
-                                        " ",
-                                    );
-
-                            if (
-                                !points
-                            ) {
-                                return null;
-                            }
-
-                            return (
-                                <motion.polyline
-                                    key={`${constellation.id}-${lineIndex}`}
-                                    points={
-                                        points
-                                    }
-                                    fill="none"
-                                    stroke="#a875ff"
-                                    strokeWidth="0.7"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    initial={{
-                                        pathLength: 0,
-                                        opacity: 0,
-                                    }}
-                                    animate={{
-                                        pathLength:
-                                            arrival
-                                                ? 1
-                                                : 0,
-                                        opacity:
-                                            arrival
-                                                ? 0.75
-                                                : 0,
-                                    }}
-                                    transition={{
-                                        delay:
-                                            constellationIndex *
-                                                0.015 +
-                                            lineIndex *
-                                                0.08,
-                                        duration: 0.9,
-                                        ease:
-                                            "easeInOut",
-                                    }}
-                                />
-                            );
-                        },
-                    ),
+                        return segments.map((points, segmentIndex) => (
+                            <motion.polyline
+                                key={`${constellation.id}-${lineIndex}-${segmentIndex}`}
+                                points={points}
+                                fill="none"
+                                stroke="#a875ff"
+                                strokeWidth="0.7"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                initial={{
+                                    pathLength: 0,
+                                    opacity: 0,
+                                }}
+                                animate={{
+                                    pathLength: arrival ? 1 : 0,
+                                    opacity: arrival ? 0.75 : 0,
+                                }}
+                                transition={{
+                                    delay:
+                                        constellationIndex * 0.015 +
+                                        lineIndex * 0.08,
+                                    duration: 0.9,
+                                    ease: "easeInOut",
+                                }}
+                            />
+                        ));
+                    }),
             )}
         </>
     );
 }
+
+function getVisibleLineSegments(
+    line: [number, number][],
+    date: Date,
+): string[] {
+    const segments: string[] = [];
+    let currentSegment: string[] = [];
+
+    for (const [ra, dec] of line) {
+        const position = projectStar(
+            {
+                id: `constellation-${ra}-${dec}`,
+                ra,
+                dec,
+                magnitude: 0,
+            },
+            date,
+            LOCATION.latitude,
+            LOCATION.longitude,
+            MAP_SIZE,
+            RADIUS,
+        );
+
+        if (!position) {
+            if (currentSegment.length >= 2) {
+                segments.push(currentSegment.join(" "));
+            }
+
+            currentSegment = [];
+            continue;
+        }
+
+        currentSegment.push(`${position.x},${position.y}`);
+    }
+
+    if (currentSegment.length >= 2) {
+        segments.push(currentSegment.join(" "));
+    }
+
+    return segments;
+}
+
 
 
 /* =========================================================
