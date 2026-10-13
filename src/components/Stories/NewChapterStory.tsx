@@ -1,8 +1,19 @@
+
 import {
     AnimatePresence,
     motion,
+    useReducedMotion,
 } from "motion/react";
-import { Plane, Heart, Check } from "lucide-react";
+import {
+    Plane,
+    Heart,
+    Check,
+    Sparkles,
+    Ticket,
+    Clock3,
+    CalendarDays,
+    Star,
+} from "lucide-react";
 import {
     useEffect,
     useLayoutEffect,
@@ -54,19 +65,32 @@ const START_DATE = new Date(
     couple.startSecond ?? 0,
 );
 
-const ROUTE_PATH =
-    "M 18 75 C 90 75, 90 20, 160 40 S 235 75, 302 25";
+const ROUTE_PATH = "M 18 67 Q 160 -15 302 70";
+
+const MONTHS = [
+    "JAN", "FEV", "MAR", "ABR", "MAI", "JUN",
+    "JUL", "AGO", "SET", "OUT", "NOV", "DEZ",
+];
 
 function addMonths(date: Date, months: number) {
     const result = new Date(date);
+    const originalDay = result.getDate();
+
+    result.setDate(1);
     result.setMonth(result.getMonth() + months);
+
+    const lastDayOfTargetMonth = new Date(
+        result.getFullYear(),
+        result.getMonth() + 1,
+        0,
+    ).getDate();
+
+    result.setDate(Math.min(originalDay, lastDayOfTargetMonth));
+
     return result;
 }
 
-function differenceInDays(
-    from: Date,
-    to: Date,
-) {
+function differenceInDays(from: Date, to: Date) {
     const fromUTC = Date.UTC(
         from.getFullYear(),
         from.getMonth(),
@@ -81,144 +105,53 @@ function differenceInDays(
 
     return Math.max(
         0,
-        Math.ceil(
-            (toUTC - fromUTC) /
-                86_400_000,
-        ),
+        Math.ceil((toUTC - fromUTC) / 86_400_000),
     );
 }
 
-function getMilestoneState(
-    now: Date,
-): MilestoneState {
+function getMilestoneState(now: Date): MilestoneState {
     let previousIndex = -1;
 
-    for (
-        let i = 0;
-        i < MILESTONES.length;
-        i++
-    ) {
-        const milestoneDate = addMonths(
-            START_DATE,
-            MILESTONES[i].months,
-        );
-
-        if (milestoneDate <= now) {
+    for (let i = 0; i < MILESTONES.length; i++) {
+        if (addMonths(START_DATE, MILESTONES[i].months) <= now) {
             previousIndex = i;
         } else {
             break;
         }
     }
 
-    const nextIndex =
-        previousIndex + 1;
+    const nextIndex = previousIndex + 1;
 
-    /*
-     * Caso já tenha passado da última
-     * meta previamente cadastrada.
-     */
-    if (
-        nextIndex >=
-        MILESTONES.length
-    ) {
-        const last =
-            MILESTONES[
-                MILESTONES.length - 1
-            ];
+    let previous: Milestone;
+    let next: Milestone;
 
-        const next = {
-            label: `${
-                last.months / 12 + 1
-            } anos`,
-            months: last.months + 12,
+    if (previousIndex < 0) {
+        previous = { label: "Início", months: 0 };
+        next = MILESTONES[0];
+    } else if (nextIndex >= MILESTONES.length) {
+        previous = MILESTONES[MILESTONES.length - 1];
+
+        next = {
+            label: `${previous.months / 12 + 1} anos`,
+            months: previous.months + 12,
         };
-
-        const previousDate =
-            addMonths(
-                START_DATE,
-                last.months,
-            );
-
-        const nextDate =
-            addMonths(
-                START_DATE,
-                next.months,
-            );
-
-        const totalDays =
-            differenceInDays(
-                previousDate,
-                nextDate,
-            );
-
-        const elapsedDays =
-            differenceInDays(
-                previousDate,
-                now,
-            );
-
-        return {
-            previous: last,
-            next,
-            previousDate,
-            nextDate,
-            progress: Math.min(
-                100,
-                (elapsedDays /
-                    totalDays) *
-                    100,
-            ),
-        };
+    } else {
+        previous = MILESTONES[previousIndex];
+        next = MILESTONES[nextIndex];
     }
 
-    const previous =
-        previousIndex >= 0
-            ? MILESTONES[
-                  previousIndex
-              ]
-            : {
-                  label: "Início",
-                  months: 0,
-              };
+    const previousDate = addMonths(START_DATE, previous.months);
+    const nextDate = addMonths(START_DATE, next.months);
 
-    const next =
-        MILESTONES[nextIndex];
-
-    const previousDate =
-        addMonths(
-            START_DATE,
-            previous.months,
-        );
-
-    const nextDate =
-        addMonths(
-            START_DATE,
-            next.months,
-        );
-
-    const totalDays =
-        differenceInDays(
-            previousDate,
-            nextDate,
-        );
-
-    const elapsedDays =
-        differenceInDays(
-            previousDate,
-            now,
-        );
+    const totalDays = differenceInDays(previousDate, nextDate);
+    const elapsedDays = differenceInDays(previousDate, now);
 
     const progress =
-        totalDays === 0
+        totalDays <= 0
             ? 0
             : Math.min(
                   100,
-                  Math.max(
-                      0,
-                      (elapsedDays /
-                          totalDays) *
-                          100,
-                  ),
+                  Math.max(0, (elapsedDays / totalDays) * 100),
               );
 
     return {
@@ -231,26 +164,20 @@ function getMilestoneState(
 }
 
 function formatDate(date: Date) {
-    const months = [
-        "JAN",
-        "FEV",
-        "MAR",
-        "ABR",
-        "MAI",
-        "JUN",
-        "JUL",
-        "AGO",
-        "SET",
-        "OUT",
-        "NOV",
-        "DEZ",
-    ];
-
-    return `${String(
-        date.getDate(),
-    ).padStart(2, "0")} ${
-        months[date.getMonth()]
+    return `${String(date.getDate()).padStart(2, "0")} ${
+        MONTHS[date.getMonth()]
     } ${date.getFullYear()}`;
+}
+
+function getExactProgress(now: Date, from: Date, to: Date) {
+    const total = to.getTime() - from.getTime();
+
+    if (total <= 0) return 0;
+
+    return Math.min(
+        1,
+        Math.max(0, (now.getTime() - from.getTime()) / total),
+    );
 }
 
 export function NextChapterStory({
@@ -258,1776 +185,841 @@ export function NextChapterStory({
 }: {
     isOpen?: boolean;
 }) {
-    const [now, setNow] =
-        useState(() => new Date());
+    const [now, setNow] = useState(() => new Date());
+    const reduceMotion = useReducedMotion();
 
-    const routePathRef =
-        useRef<SVGPathElement>(null);
-
-    const previousMilestoneRef =
-        useRef<string | null>(null);
+    const previousMilestoneRef = useRef<string | null>(null);
 
     const celebrationTimeoutRef =
-        useRef<
-            ReturnType<
-                typeof setTimeout
-            > | null
-        >(null);
+        useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const [
-        isCelebrating,
-        setIsCelebrating,
-    ] = useState(false);
+    const [isCelebrating, setIsCelebrating] = useState(false);
 
-    const [
-        celebrationData,
-        setCelebrationData,
-    ] = useState<{
+    const [celebrationData, setCelebrationData] = useState<{
         completed: Milestone;
         next: Milestone;
     } | null>(null);
 
-    const [
-        routePoints,
-        setRoutePoints,
-    ] = useState<{
-        start: Point;
-        current: Point;
-        end: Point;
-    }>({
-        start: {
-            x: 18,
-            y: 75,
-        },
-        current: {
-            x: 18,
-            y: 75,
-        },
-        end: {
-            x: 302,
-            y: 25,
-        },
-    });
-
-    /*
-     * Relógio utilizado pelo countdown.
-     */
-    useEffect(() => {
-        const interval =
-            setInterval(() => {
-                setNow(new Date());
-            }, 1000);
-
-        return () =>
-            clearInterval(interval);
-    }, []);
-
     const milestone = useMemo(
-        () =>
-            getMilestoneState(now),
+        () => getMilestoneState(now),
         [now],
     );
 
     /*
-     * Detecta a virada de uma meta.
-     *
-     * A comparação é feita pela próxima meta.
-     * Quando ela muda, significa que a meta
-     * anterior acabou de ser atingida.
-     *
-     * A comemoração só acontece se o Story
-     * estiver aberto naquele momento.
+     * Relógio do countdown.
      */
     useEffect(() => {
-        const milestoneKey = `${milestone.next.months}-${milestone.next.label}`;
+        const interval = setInterval(() => {
+            setNow(new Date());
+        }, 1000);
 
-        /*
-         * Primeira renderização:
-         * apenas registra qual era a meta.
-         */
-        if (
-            previousMilestoneRef.current ===
-            null
-        ) {
-            previousMilestoneRef.current =
-                milestoneKey;
+        return () => clearInterval(interval);
+    }, []);
 
+    /*
+     * Detecta quando a próxima meta muda.
+     * A meta anterior acaba de ser concluída.
+     */
+    useEffect(() => {
+        const key = `${milestone.next.months}-${milestone.next.label}`;
+
+        if (previousMilestoneRef.current === null) {
+            previousMilestoneRef.current = key;
             return;
         }
 
-        /*
-         * A próxima meta mudou.
-         */
-        if (
-            previousMilestoneRef.current !==
-                milestoneKey &&
-            isOpen
-        ) {
+        if (previousMilestoneRef.current !== key && isOpen) {
             setCelebrationData({
-                completed:
-                    milestone.previous,
+                completed: milestone.previous,
                 next: milestone.next,
             });
 
             setIsCelebrating(true);
 
-            if (
-                celebrationTimeoutRef.current
-            ) {
-                clearTimeout(
-                    celebrationTimeoutRef.current,
-                );
+            if (celebrationTimeoutRef.current) {
+                clearTimeout(celebrationTimeoutRef.current);
             }
 
-            celebrationTimeoutRef.current =
-                setTimeout(() => {
-                    setIsCelebrating(
-                        false,
-                    );
-                }, 4200);
+            celebrationTimeoutRef.current = setTimeout(() => {
+                setIsCelebrating(false);
+            }, 4400);
         }
 
-        previousMilestoneRef.current =
-            milestoneKey;
+        previousMilestoneRef.current = key;
     }, [
-        milestone.next,
+        milestone.next.months,
+        milestone.next.label,
         milestone.previous,
         isOpen,
     ]);
 
-    /*
-     * Limpa o timeout quando o componente
-     * for desmontado.
-     */
     useEffect(() => {
         return () => {
-            if (
-                celebrationTimeoutRef.current
-            ) {
-                clearTimeout(
-                    celebrationTimeoutRef.current,
-                );
+            if (celebrationTimeoutRef.current) {
+                clearTimeout(celebrationTimeoutRef.current);
             }
         };
     }, []);
 
     /*
-     * Countdown completo:
-     *
-     * 337 dias
-     * 14:23:10
+     * Countdown.
      */
     const countdown = useMemo(() => {
-        const difference =
-            milestone.nextDate.getTime() -
-            now.getTime();
-
-        const totalSeconds =
-            Math.max(
-                0,
-                Math.floor(
-                    difference / 1000,
-                ),
-            );
-
-        const days = Math.floor(
-            totalSeconds / 86_400,
+        const difference = Math.max(
+            0,
+            Math.floor(
+                (milestone.nextDate.getTime() - now.getTime()) / 1000,
+            ),
         );
-
-        const remainingAfterDays =
-            totalSeconds % 86_400;
-
-        const hours = Math.floor(
-            remainingAfterDays / 3600,
-        );
-
-        const minutes = Math.floor(
-            (remainingAfterDays %
-                3600) /
-                60,
-        );
-
-        const seconds =
-            remainingAfterDays % 60;
 
         return {
-            days,
-            hours,
-            minutes,
-            seconds,
+            days: Math.floor(difference / 86_400),
+            hours: Math.floor((difference % 86_400) / 3600),
+            minutes: Math.floor((difference % 3600) / 60),
+            seconds: difference % 60,
         };
-    }, [
-        milestone.nextDate,
-        now,
-    ]);
+    }, [milestone.nextDate, now]);
 
-    const percentage = Math.round(
-        milestone.progress,
+    const percentage = Math.round(milestone.progress);
+
+    const exactProgress = getExactProgress(
+        now,
+        milestone.previousDate,
+        milestone.nextDate,
     );
 
     /*
-     * Obtém os três pontos diretamente da
-     * mesma curva usada pelo SVG.
+     * A posição do avião é calculada diretamente a partir da curva SVG.
+     * Assim, ele segue o trajeto real em vez de se mover em linha reta.
      */
+    const routePathRef = useRef<SVGPathElement>(null);
+
+    const [planePosition, setPlanePosition] = useState<Point>({
+        x: 18,
+        y: 67,
+    });
+
     useLayoutEffect(() => {
-        const path =
-            routePathRef.current;
+        const path = routePathRef.current;
 
         if (!path) return;
 
-        const length =
-            path.getTotalLength();
+        const length = path.getTotalLength();
+        const point = path.getPointAtLength(length * exactProgress);
 
-        const start =
-            path.getPointAtLength(0);
-
-        const current =
-            path.getPointAtLength(
-                length *
-                    (milestone.progress /
-                        100),
-            );
-
-        const end =
-            path.getPointAtLength(
-                length,
-            );
-
-        setRoutePoints({
-            start: {
-                x: start.x,
-                y: start.y,
-            },
-            current: {
-                x: current.x,
-                y: current.y,
-            },
-            end: {
-                x: end.x,
-                y: end.y,
-            },
+        setPlanePosition({
+            x: point.x,
+            y: point.y,
         });
-    }, [milestone.progress]);
+    }, [exactProgress]);
+
+    const routeProgress = Math.max(0, Math.min(1, exactProgress));
 
     return (
         <motion.div
             key="next-chapter"
-            initial={{
-                opacity: 0,
-                scale: 1.04,
-            }}
-            animate={{
-                opacity: 1,
-                scale: 1,
-            }}
-            exit={{
-                opacity: 0,
-                scale: 0.96,
-            }}
-            transition={{
-                duration: 0.6,
-                ease: "easeOut",
-            }}
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
             className="
-                relative
-                h-full
-                w-full
-                overflow-hidden
-                bg-[#0b0b2b]
-                text-[#fff3c7]
+                relative h-full w-full overflow-hidden
+                bg-[#0b0b2b] text-[#fff3c7]
             "
         >
-            {/* =========================================================
-                CELEBRAÇÃO DA META
-            ========================================================== */}
+            {/* FUNDO NOTURNO */}
 
-            <AnimatePresence>
-                {isCelebrating &&
-                    celebrationData && (
-                        <motion.div
-                            initial={{
-                                opacity: 0,
-                            }}
-                            animate={{
-                                opacity: 1,
-                            }}
-                            exit={{
-                                opacity: 0,
-                            }}
-                            transition={{
-                                duration: 0.35,
-                            }}
-                            className="
-                                absolute
-                                inset-0
-                                z-[100]
-                                flex
-                                items-center
-                                justify-center
-                                overflow-hidden
-                                bg-[#0b0b2b]
-                            "
-                        >
-                            {/* FLASH */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute -right-28 -top-32 h-80 w-80 rounded-full bg-[#8064ff]/20 blur-[110px]" />
 
-                            <motion.div
-                                initial={{
-                                    scale: 0,
-                                    opacity: 0,
-                                }}
-                                animate={{
-                                    scale: [
-                                        0,
-                                        1.5,
-                                        3,
-                                    ],
-                                    opacity: [
-                                        0,
-                                        0.8,
-                                        0,
-                                    ],
-                                }}
-                                transition={{
-                                    duration: 1.1,
-                                    ease: "easeOut",
-                                }}
-                                className="
-                                    absolute
-                                    h-40
-                                    w-40
-                                    rounded-full
-                                    bg-[#a875ff]
-                                    blur-3xl
-                                "
-                            />
+                <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-[#a875ff]/15 blur-[120px]" />
 
-                            {/* PRIMEIRO ANEL */}
+                <div className="absolute left-[35%] top-[38%] h-48 w-48 rounded-full bg-[#8064ff]/[0.06] blur-[90px]" />
 
-                            <motion.div
-                                initial={{
-                                    scale: 0.2,
-                                    opacity: 0,
-                                }}
-                                animate={{
-                                    scale: [
-                                        0.2,
-                                        1,
-                                        1.8,
-                                    ],
-                                    opacity: [
-                                        0,
-                                        0.6,
-                                        0,
-                                    ],
-                                }}
-                                transition={{
-                                    duration: 1.8,
-                                    delay: 0.2,
-                                    ease: "easeOut",
-                                }}
-                                className="
-                                    absolute
-                                    h-44
-                                    w-44
-                                    rounded-full
-                                    border-2
-                                    border-[#a875ff]/50
-                                "
-                            />
+                {[
+                    [12, 19],
+                    [84, 12],
+                    [91, 34],
+                    [7, 57],
+                    [79, 73],
+                    [23, 87],
+                    [63, 9],
+                    [47, 24],
+                ].map(([x, y], index) => (
+                    <motion.span
+                        key={index}
+                        animate={
+                            reduceMotion
+                                ? undefined
+                                : {
+                                      opacity: [0.2, 0.75, 0.2],
+                                      scale: [0.8, 1.15, 0.8],
+                                  }
+                        }
+                        transition={{
+                            duration: 2.5 + index * 0.3,
+                            repeat: Infinity,
+                            delay: index * 0.2,
+                        }}
+                        className="absolute h-1 w-1 rounded-full bg-[#cbb8ff]"
+                        style={{
+                            left: `${x}%`,
+                            top: `${y}%`,
+                        }}
+                    />
+                ))}
+            </div>
 
-                            {/* SEGUNDO ANEL */}
+            <SideRibbon text="Próximo capítulo" bg_color="bg-[#a875ff]/10" />
 
-                            <motion.div
-                                initial={{
-                                    scale: 0.2,
-                                    opacity: 0,
-                                }}
-                                animate={{
-                                    scale: [
-                                        0.2,
-                                        1,
-                                        2.3,
-                                    ],
-                                    opacity: [
-                                        0,
-                                        0.35,
-                                        0,
-                                    ],
-                                }}
-                                transition={{
-                                    duration: 2,
-                                    delay: 0.4,
-                                    ease: "easeOut",
-                                }}
-                                className="
-                                    absolute
-                                    h-44
-                                    w-44
-                                    rounded-full
-                                    border
-                                    border-[#fff3c7]/30
-                                "
-                            />
-
-                            {/* PARTÍCULAS */}
-
-                            {Array.from({
-                                length: 18,
-                            }).map(
-                                (
-                                    _,
-                                    index,
-                                ) => {
-                                    const angle =
-                                        (index /
-                                            18) *
-                                        Math.PI *
-                                        2;
-
-                                    const distance =
-                                        100 +
-                                        (index %
-                                            3) *
-                                            35;
-
-                                    const x =
-                                        Math.cos(
-                                            angle,
-                                        ) *
-                                        distance;
-
-                                    const y =
-                                        Math.sin(
-                                            angle,
-                                        ) *
-                                        distance;
-
-                                    return (
-                                        <motion.div
-                                            key={
-                                                index
-                                            }
-                                            initial={{
-                                                x: 0,
-                                                y: 0,
-                                                scale: 0,
-                                                opacity: 0,
-                                            }}
-                                            animate={{
-                                                x,
-                                                y,
-                                                scale: [
-                                                    0,
-                                                    1,
-                                                    0.4,
-                                                ],
-                                                opacity:
-                                                    [
-                                                        0,
-                                                        1,
-                                                        0,
-                                                    ],
-                                            }}
-                                            transition={{
-                                                duration: 1.6,
-                                                delay:
-                                                    0.25 +
-                                                    (index %
-                                                        5) *
-                                                        0.05,
-                                                ease: "easeOut",
-                                            }}
-                                            className="
-                                                absolute
-                                                h-1.5
-                                                w-1.5
-                                                rounded-full
-                                                bg-[#fff3c7]
-                                            "
-                                        />
-                                    );
-                                },
-                            )}
-
-                            {/* CORAÇÕES / ESTRELAS */}
-
-                            {[
-                                "♡",
-                                "✦",
-                                "♡",
-                                "✧",
-                            ].map(
-                                (
-                                    symbol,
-                                    index,
-                                ) => (
-                                    <motion.span
-                                        key={
-                                            index
-                                        }
-                                        initial={{
-                                            opacity: 0,
-                                            scale: 0,
-                                            y: 30,
-                                        }}
-                                        animate={{
-                                            opacity: [
-                                                0,
-                                                1,
-                                                0,
-                                            ],
-                                            scale: [
-                                                0,
-                                                1.2,
-                                                0.8,
-                                            ],
-                                            y: [
-                                                30,
-                                                -20 -
-                                                    index *
-                                                        12,
-                                                -70 -
-                                                    index *
-                                                        15,
-                                            ],
-                                            x:
-                                                index %
-                                                    2 ===
-                                                0
-                                                    ? -60 -
-                                                      index *
-                                                          20
-                                                    : 60 +
-                                                      index *
-                                                          20,
-                                        }}
-                                        transition={{
-                                            duration: 2.2,
-                                            delay:
-                                                0.3 +
-                                                index *
-                                                    0.15,
-                                            ease: "easeOut",
-                                        }}
-                                        className="
-                                            absolute
-                                            text-2xl
-                                            font-black
-                                            text-[#a875ff]
-                                        "
-                                    >
-                                        {
-                                            symbol
-                                        }
-                                    </motion.span>
-                                ),
-                            )}
-
-                            {/* CONTEÚDO CENTRAL */}
-
-                            <motion.div
-                                initial={{
-                                    opacity: 0,
-                                    scale: 0.7,
-                                    y: 20,
-                                }}
-                                animate={{
-                                    opacity: 1,
-                                    scale: 1,
-                                    y: 0,
-                                }}
-                                transition={{
-                                    delay: 0.55,
-                                    duration: 0.65,
-                                    ease: [
-                                        0.16,
-                                        1,
-                                        0.3,
-                                        1,
-                                    ],
-                                }}
-                                className="
-                                    relative
-                                    z-10
-                                    flex
-                                    flex-col
-                                    items-center
-                                    text-center
-                                "
-                            >
-                                {/* ÍCONE */}
-
-                                <motion.div
-                                    animate={{
-                                        rotate: [
-                                            0,
-                                            -8,
-                                            8,
-                                            -4,
-                                            4,
-                                            0,
-                                        ],
-                                        scale: [
-                                            1,
-                                            1.1,
-                                            1,
-                                        ],
-                                    }}
-                                    transition={{
-                                        duration: 1.2,
-                                        delay: 0.7,
-                                    }}
-                                    className="
-                                        mb-6
-                                        flex
-                                        h-20
-                                        w-20
-                                        items-center
-                                        justify-center
-                                        rounded-full
-                                        bg-[#fff3c7]
-                                        text-[#0b0b2b]
-                                        shadow-[0_0_50px_rgba(255,243,199,0.2)]
-                                    "
-                                >
-                                    <Heart
-                                        size={
-                                            34
-                                        }
-                                        fill="currentColor"
-                                        strokeWidth={
-                                            2.5
-                                        }
-                                    />
-                                </motion.div>
-
-                                <p
-                                    className="
-                                        text-[10px]
-                                        font-black
-                                        uppercase
-                                        tracking-[0.35em]
-                                        text-[#a875ff]
-                                    "
-                                >
-                                    Capítulo
-                                    concluído
-                                </p>
-
-                                <motion.h2
-                                    initial={{
-                                        opacity: 0,
-                                        y: 10,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        y: 0,
-                                    }}
-                                    transition={{
-                                        delay: 0.9,
-                                    }}
-                                    className="
-                                        mt-3
-                                        text-4xl
-                                        font-black
-                                        uppercase
-                                        leading-none
-                                        tracking-tight
-                                    "
-                                >
-                                    {
-                                        celebrationData
-                                            .completed
-                                            .label
-                                    }
-                                </motion.h2>
-
-                                <motion.p
-                                    initial={{
-                                        opacity: 0,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                    }}
-                                    transition={{
-                                        delay: 1.15,
-                                    }}
-                                    className="
-                                        mt-4
-                                        max-w-xs
-                                        text-sm
-                                        font-medium
-                                        leading-relaxed
-                                        text-[#fff3c7]/50
-                                    "
-                                >
-                                    Mais uma
-                                    parte da
-                                    nossa
-                                    história
-                                    acaba de
-                                    ser
-                                    escrita.
-                                </motion.p>
-
-                                {/* NOVA META */}
-
-                                <motion.div
-                                    initial={{
-                                        opacity: 0,
-                                        y: 15,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        y: 0,
-                                    }}
-                                    transition={{
-                                        delay: 1.55,
-                                        duration: 0.5,
-                                    }}
-                                    className="
-                                        mt-8
-                                        rounded-full
-                                        border
-                                        border-[#fff3c7]/10
-                                        bg-[#15153d]
-                                        px-5
-                                        py-3
-                                    "
-                                >
-                                    <p
-                                        className="
-                                            text-[8px]
-                                            font-black
-                                            uppercase
-                                            tracking-[0.2em]
-                                            text-[#fff3c7]/35
-                                        "
-                                    >
-                                        Próximo
-                                        destino
-                                    </p>
-
-                                    <p
-                                        className="
-                                            mt-1
-                                            text-sm
-                                            font-black
-                                            uppercase
-                                            text-[#a875ff]
-                                        "
-                                    >
-                                        {
-                                            celebrationData
-                                                .next
-                                                .label
-                                        }{" "}
-                                        ♡
-                                    </p>
-                                </motion.div>
-                            </motion.div>
-
-                            {/* LINHA DE PASSAGEM */}
-
-                            <motion.div
-                                initial={{
-                                    x: "-120%",
-                                }}
-                                animate={{
-                                    x: "120%",
-                                }}
-                                transition={{
-                                    duration: 1.2,
-                                    delay: 0.2,
-                                    ease: "easeInOut",
-                                }}
-                                className="
-                                    absolute
-                                    left-0
-                                    top-1/2
-                                    h-px
-                                    w-1/2
-                                    bg-gradient-to-r
-                                    from-transparent
-                                    via-[#a875ff]
-                                    to-transparent
-                                    opacity-50
-                                "
-                            />
-                        </motion.div>
-                    )}
-            </AnimatePresence>
-
-            {/* =========================================================
-                BACKGROUND
-            ========================================================== */}
-
-            <motion.div
-                initial={{
-                    opacity: 0,
-                    scale: 0.4,
-                }}
-                animate={{
-                    opacity: 0.2,
-                    scale: 1,
-                }}
-                transition={{
-                    duration: 1.2,
-                }}
-                className="
-                    absolute
-                    -right-32
-                    -top-32
-                    h-80
-                    w-80
-                    rounded-full
-                    bg-[#8064ff]
-                    blur-[110px]
-                "
-            />
-
-            <motion.div
-                initial={{
-                    opacity: 0,
-                    scale: 0.4,
-                }}
-                animate={{
-                    opacity: 0.14,
-                    scale: 1,
-                }}
-                transition={{
-                    duration: 1.2,
-                    delay: 0.2,
-                }}
-                className="
-                    absolute
-                    -bottom-40
-                    -left-20
-                    h-96
-                    w-96
-                    rounded-full
-                    bg-[#a875ff]
-                    blur-[120px]
-                "
-            />
-
-            <motion.div
-                animate={{
-                    y: [0, -6, 0],
-                    rotate: [0, 5, 0],
-                }}
-                transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="
-                    absolute
-                    right-16
-                    top-14
-                    text-[#fff3c7]
-                "
-            >
-                <Heart
-                    size={15}
-                    fill="currentColor"
-                />
-            </motion.div>
-
-            <motion.div
-                animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [
-                        0.4,
-                        1,
-                        0.4,
-                    ],
-                }}
-                transition={{
-                    duration: 2.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="
-                    absolute
-                    bottom-28
-                    left-8
-                    text-[#a875ff]
-                "
-            >
-                ✦
-            </motion.div>
-
-            <SideRibbon text="Próximo capítulo" />
-
-            <div
-                className="
-                    relative
-                    z-10
-                    flex
-                    h-full
-                    flex-col
-                    px-7
-                    pb-7
-                    pr-14
-                    pt-8
-                "
-            >
-                {/* =====================================================
-                    CABEÇALHO
-                ====================================================== */}
+            <div className="relative z-10 flex h-full flex-col px-6 pb-6 pr-14 pt-7">
+                {/* CABEÇALHO */}
 
                 <motion.div
-                    initial={{
-                        opacity: 0,
-                        y: -20,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        delay: 0.15,
-                    }}
+                    initial={{ opacity: 0, y: -12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
                 >
-                    <div className="mb-4 flex items-center gap-3">
-                        <div
-                            className="
-                                flex
-                                h-9
-                                w-9
-                                items-center
-                                justify-center
-                                rounded-full
-                                bg-[#fff3c7]
-                                text-[#0b0b2b]
-                            "
-                        >
-                            <Plane
-                                size={18}
-                                strokeWidth={2.5}
-                            />
-                        </div>
+                    <div className="mb-3 flex items-center gap-2">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#a875ff]/30 bg-[#a875ff]/10 text-[#cbb8ff]">
+                            <Plane size={16} />
+                        </span>
 
-                        <p
-                            className="
-                                text-xs
-                                font-black
-                                uppercase
-                                tracking-[0.22em]
-                            "
-                        >
-                            Nossa próxima
-                            aventura
-                        </p>
+                        <span className="text-[9px] font-black uppercase tracking-[0.24em] text-[#cbb8ff]">
+                            Passaporte da nossa história
+                        </span>
                     </div>
 
-                    <h1
-                        className="
-                            max-w-xs
-                            text-4xl
-                            font-black
-                            uppercase
-                            leading-[0.9]
-                            tracking-tight
-                        "
-                    >
-                        Próximo
-                        <br />
-                        capítulo.
-                    </h1>
+                    <div className="flex items-end justify-between gap-3">
+                        <div>
+                            <h1 className="text-3xl font-black leading-[0.95] tracking-tight">
+                                O próximo
+                                <br />
+                                capítulo<span className="text-[#a875ff]">.</span>
+                            </h1>
 
-                    <p
-                        className="
-                            mt-4
-                            max-w-xs
-                            text-sm
-                            font-medium
-                            leading-relaxed
-                            text-[#fff3c7]/55
-                        "
-                    >
-                        Contagem regressiva
-                        para{" "}
-                        <span className="font-black text-[#fff3c7]/90">
-                            {
-                                milestone.next
-                                    .label
+                            <p className="mt-3 max-w-[255px] text-xs leading-relaxed text-[#fff3c7]/55">
+                                Ainda temos tantos destinos para viver juntos.
+                            </p>
+                        </div>
+
+                        <motion.div
+                            animate={
+                                reduceMotion
+                                    ? undefined
+                                    : {
+                                          rotate: [8, -4, 8],
+                                          y: [0, -3, 0],
+                                      }
                             }
-                        </span>
-                    </p>
+                            transition={{
+                                duration: 5,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                            }}
+                            className="
+                                mb-1 flex h-14 w-14 shrink-0
+                                items-center justify-center rounded-2xl
+                                border border-[#a875ff]/25
+                                bg-gradient-to-br from-[#a875ff]/20
+                                to-[#8064ff]/5
+                                shadow-[0_0_25px_rgba(168,117,255,0.08)]
+                            "
+                        >
+                            <Heart
+                                size={25}
+                                fill="#a875ff"
+                                className="text-[#a875ff]"
+                            />
+                        </motion.div>
+                    </div>
                 </motion.div>
 
-                {/* =====================================================
-                    PAINEL DE EMBARQUE
-                ====================================================== */}
+                {/* BILHETE DE EMBARQUE */}
 
                 <motion.div
-                    initial={{
-                        opacity: 0,
-                        y: 25,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        delay: 0.35,
-                        duration: 0.6,
-                    }}
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25, duration: 0.5 }}
                     className="
-                        mt-5
-                        overflow-hidden
-                        rounded-2xl
-                        border
-                        border-[#fff3c7]/10
-                        bg-[#15153d]/80
-                        shadow-[0_15px_40px_rgba(0,0,0,0.25)]
+                        relative mt-5 overflow-hidden rounded-[22px]
+                        border border-[#c4aaff]/25 bg-[#171536]/90
+                        shadow-[0_18px_45px_rgba(0,0,0,0.25)]
                         backdrop-blur-md
                     "
                 >
-                    <div
-                        className="
-                            flex
-                            items-center
-                            justify-between
-                            border-b
-                            border-[#fff3c7]/10
-                            px-4
-                            py-3
-                        "
-                    >
-                        <div>
-                            <p
-                                className="
-                                    text-[9px]
-                                    font-black
-                                    uppercase
-                                    tracking-[0.2em]
-                                    text-[#fff3c7]/40
-                                "
-                            >
-                                Painel de
-                                embarque
-                            </p>
+                    <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#a875ff]/10 to-transparent" />
 
-                            <p
-                                className="
-                                    mt-1
-                                    text-sm
-                                    font-black
-                                    uppercase
-                                "
-                            >
-                                Próxima parada
-                            </p>
+                    <div className="relative flex items-center justify-between border-b border-dashed border-[#fff3c7]/15 px-4 py-3">
+                        <div className="flex items-center gap-2">
+                            <Ticket size={15} className="text-[#c4aaff]" />
+
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#fff3c7]/55">
+                                Bilhete para o futuro
+                            </span>
                         </div>
 
-                        <div
-                            className="
-                                rounded-full
-                                bg-[#a875ff]/15
-                                px-3
-                                py-1.5
-                                text-[9px]
-                                font-black
-                                uppercase
-                                tracking-wider
-                                text-[#a875ff]
-                            "
-                        >
-                            {
-                                milestone.next
-                                    .label
-                            }
-                        </div>
+                        <span className="rounded-full border border-[#a875ff]/25 bg-[#a875ff]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#cbb8ff]">
+                            {milestone.next.label}
+                        </span>
                     </div>
 
-                    <div className="px-4 py-4">
-                        <div className="flex items-end justify-between">
-                            {/* DIAS */}
-
+                    <div className="relative px-4 pb-4 pt-3">
+                        <div className="flex items-center justify-between gap-2">
                             <div>
-                                <p
-                                    className="
-                                        text-[9px]
-                                        font-bold
-                                        uppercase
-                                        tracking-[0.18em]
-                                        text-[#fff3c7]/40
-                                    "
-                                >
-                                    Faltam
+                                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#fff3c7]/40">
+                                    Tempo até a próxima meta
                                 </p>
 
-                                <motion.p
-                                    key={
-                                        countdown.days
-                                    }
-                                    initial={{
-                                        opacity: 0,
-                                        y: 6,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        y: 0,
-                                    }}
-                                    className="
-                                        mt-1
-                                        text-3xl
-                                        font-black
-                                        leading-none
-                                    "
-                                >
-                                    {
-                                        countdown.days
-                                    }
-
-                                    <span
-                                        className="
-                                            ml-1
-                                            text-sm
-                                            text-[#fff3c7]/45
-                                        "
+                                <div className="mt-1.5 flex items-baseline gap-1.5">
+                                    <motion.span
+                                        key={countdown.days}
+                                        initial={{ opacity: 0.5, y: 4 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="text-4xl font-black leading-none tracking-tight tabular-nums"
                                     >
+                                        {countdown.days}
+                                    </motion.span>
+
+                                    <span className="text-xs font-bold text-[#fff3c7]/55">
                                         dias
                                     </span>
-                                </motion.p>
+                                </div>
                             </div>
 
-                            {/* HORAS / MINUTOS / SEGUNDOS */}
-
-                            <div className="text-right">
-                                <p
-                                    className="
-                                        text-[9px]
-                                        font-bold
-                                        uppercase
-                                        tracking-[0.18em]
-                                        text-[#fff3c7]/40
-                                    "
-                                >
-                                    Contagem
-                                    regressiva
-                                </p>
-
-                                <div
-                                    className="
-                                        mt-1
-                                        flex
-                                        items-center
-                                        gap-1
-                                        font-mono
-                                        text-sm
-                                        font-black
-                                    "
-                                >
-                                    <span>
-                                        {String(
-                                            countdown.hours,
-                                        ).padStart(
-                                            2,
-                                            "0",
-                                        )}
-                                    </span>
-
-                                    <span className="text-[#a875ff]">
-                                        :
-                                    </span>
-
-                                    <span>
-                                        {String(
-                                            countdown.minutes,
-                                        ).padStart(
-                                            2,
-                                            "0",
-                                        )}
-                                    </span>
-
-                                    <span className="text-[#a875ff]">
-                                        :
-                                    </span>
-
-                                    <motion.span
-                                        key={
-                                            countdown.seconds
-                                        }
-                                        initial={{
-                                            opacity: 0.3,
-                                        }}
-                                        animate={{
-                                            opacity: 1,
-                                        }}
+                            <div className="flex items-center gap-1.5">
+                                {[
+                                    { value: countdown.hours, label: "h" },
+                                    { value: countdown.minutes, label: "m" },
+                                    { value: countdown.seconds, label: "s" },
+                                ].map((unit) => (
+                                    <div
+                                        key={unit.label}
+                                        className="
+                                            flex min-w-[38px] flex-col
+                                            items-center rounded-xl border
+                                            border-[#fff3c7]/10
+                                            bg-[#0b0b2b]/60 px-2 py-2
+                                        "
                                     >
-                                        {String(
-                                            countdown.seconds,
-                                        ).padStart(
-                                            2,
-                                            "0",
-                                        )}
-                                    </motion.span>
-                                </div>
+                                        <span className="font-mono text-sm font-black tabular-nums">
+                                            {String(unit.value).padStart(2, "0")}
+                                        </span>
+
+                                        <span className="mt-0.5 text-[8px] font-black uppercase text-[#a875ff]">
+                                            {unit.label}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
-                        <div
-                            className="
-                                my-4
-                                h-px
-                                bg-[#fff3c7]/10
-                            "
-                        />
+                        <div className="my-4 h-px bg-[#fff3c7]/10" />
 
-                        <div className="flex items-end justify-between">
-                            <div>
-                                <p
-                                    className="
-                                        text-[9px]
-                                        font-bold
-                                        uppercase
-                                        tracking-[0.18em]
-                                        text-[#fff3c7]/40
-                                    "
-                                >
-                                    Chegada
-                                </p>
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#a875ff]/10 text-[#c4aaff]">
+                                    <CalendarDays size={15} />
+                                </span>
 
-                                <p
-                                    className="
-                                        mt-1
-                                        text-lg
-                                        font-black
-                                        tracking-tight
-                                    "
-                                >
-                                    {formatDate(
-                                        milestone.nextDate,
-                                    )}
-                                </p>
+                                <div>
+                                    <p className="text-[8px] font-black uppercase tracking-[0.18em] text-[#fff3c7]/40">
+                                        Data de chegada
+                                    </p>
+
+                                    <p className="mt-0.5 text-sm font-black tracking-wide">
+                                        {formatDate(milestone.nextDate)}
+                                    </p>
+                                </div>
                             </div>
 
                             <div className="text-right">
-                                <p
-                                    className="
-                                        text-[9px]
-                                        font-bold
-                                        uppercase
-                                        tracking-[0.18em]
-                                        text-[#fff3c7]/40
-                                    "
-                                >
-                                    Status
+                                <p className="text-[8px] font-black uppercase tracking-[0.18em] text-[#fff3c7]/35">
+                                    Jornada atual
                                 </p>
 
-                                <div
-                                    className="
-                                        mt-1
-                                        flex
-                                        items-center
-                                        gap-1.5
-                                        text-[10px]
-                                        font-black
-                                        uppercase
-                                        tracking-wider
-                                        text-[#a875ff]
-                                    "
-                                >
-                                    <span
-                                        className="
-                                            flex
-                                            h-4
-                                            w-4
-                                            items-center
-                                            justify-center
-                                            rounded-full
-                                            bg-[#a875ff]
-                                            text-[#0b0b2b]
-                                        "
-                                    >
-                                        <Check
-                                            size={
-                                                10
-                                            }
-                                            strokeWidth={
-                                                4
-                                            }
-                                        />
-                                    </span>
-
-                                    Confirmado
-                                </div>
+                                <p className="mt-1 text-sm font-black text-[#c4aaff]">
+                                    {percentage}%
+                                </p>
                             </div>
+                        </div>
+
+                        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+                            <motion.div
+                                className="h-full rounded-full bg-gradient-to-r from-[#8064ff] to-[#c4aaff]"
+                                animate={{ width: `${percentage}%` }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                style={{
+                                    boxShadow: "0 0 12px rgba(168,117,255,0.35)",
+                                }}
+                            />
                         </div>
                     </div>
                 </motion.div>
 
-                {/* =====================================================
-                    ROTA
-                ====================================================== */}
+                {/* ROTA DOS MARCOS */}
 
                 <motion.div
-                    initial={{
-                        opacity: 0,
-                    }}
-                    animate={{
-                        opacity: 1,
-                    }}
-                    transition={{
-                        delay: 0.8,
-                    }}
-                    className="relative mt-auto pt-7"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45, duration: 0.5 }}
+                    className="mt-5 flex min-h-0 flex-1 flex-col"
                 >
-                    <div className="mb-1 flex items-center justify-between pb-5">
-                        <p
-                            className="
-                                text-[9px]
-                                font-black
-                                uppercase
-                                tracking-[0.2em]
-                                text-[#fff3c7]/40
-                            "
-                        >
-                            Rota do nosso
-                            amor
-                        </p>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#c4aaff]">
+                                Nossa rota
+                            </p>
 
-                        <motion.p
-                            key={percentage}
-                            initial={{
-                                opacity: 0,
-                                scale: 0.8,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                scale: 1,
-                            }}
-                            className="
-                                text-[10px]
-                                font-black
-                                text-[#a875ff]
-                            "
-                        >
-                            {percentage}% do
-                            caminho
-                        </motion.p>
+                            <h2 className="mt-1 text-base font-black">
+                                Um destino de cada vez
+                            </h2>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 text-[9px] font-bold text-[#fff3c7]/40">
+                            <Clock3 size={12} className="text-[#a875ff]" />
+                            <span>Em andamento</span>
+                        </div>
                     </div>
 
-                    <div className="relative h-24 w-full">
-                        {/* SVG DA ROTA */}
-
+                    <div className="relative min-h-[118px] flex-1">
                         <svg
                             viewBox="0 0 320 100"
                             preserveAspectRatio="none"
-                            className="
-                                absolute
-                                inset-0
-                                h-full
-                                w-full
-                                overflow-visible
-                            "
+                            className="absolute inset-0 h-full w-full overflow-visible"
                         >
-                            {/* BRILHO */}
+                            <defs>
+                                <linearGradient
+                                    id="future-route-gradient"
+                                    x1="0"
+                                    y1="0"
+                                    x2="1"
+                                    y2="0"
+                                >
+                                    <stop offset="0%" stopColor="#8064ff" />
+                                    <stop offset="100%" stopColor="#c4aaff" />
+                                </linearGradient>
+                            </defs>
 
                             <path
-                                d={
-                                    ROUTE_PATH
-                                }
+                                d={ROUTE_PATH}
                                 fill="none"
                                 stroke="#a875ff"
-                                strokeWidth="5"
+                                strokeWidth="7"
                                 strokeLinecap="round"
                                 opacity="0.08"
-                                filter="blur(4px)"
                             />
 
-                            {/* ROTA COMPLETA */}
-
                             <path
-                                ref={
-                                    routePathRef
-                                }
-                                d={
-                                    ROUTE_PATH
-                                }
+                                ref={routePathRef}
+                                d={ROUTE_PATH}
                                 fill="none"
-                                stroke="rgba(255,243,199,0.12)"
-                                strokeWidth="2"
-                                strokeDasharray="5 6"
+                                stroke="rgba(255,243,199,0.17)"
+                                strokeWidth="1.8"
+                                strokeDasharray="3 5"
                                 strokeLinecap="round"
                             />
 
-                            {/* ROTA PERCORRIDA */}
-
                             <motion.path
-                                d={
-                                    ROUTE_PATH
-                                }
+                                d={ROUTE_PATH}
                                 fill="none"
-                                stroke="#a875ff"
+                                stroke="url(#future-route-gradient)"
                                 strokeWidth="2.5"
                                 strokeLinecap="round"
                                 pathLength={1}
-                                initial={{
-                                    pathLength: 0,
-                                }}
-                                animate={{
-                                    pathLength:
-                                        milestone.progress /
-                                        100,
-                                }}
-                                transition={{
-                                    duration: 1.5,
-                                    ease: "easeInOut",
-                                }}
+                                initial={{ pathLength: 0 }}
+                                animate={{ pathLength: routeProgress }}
+                                transition={{ duration: 0.7, ease: "linear" }}
                             />
                         </svg>
 
-                        {/* =================================================
-                            META ANTERIOR
-                        ================================================== */}
+                        {/* PARTIDA */}
 
-                        <motion.div
+                        <div
                             className="
-                                absolute
-                                z-20
-                                flex
-                                -translate-x-1/2
-                                -translate-y-1/2
-                                flex-col
-                                items-center
+                                absolute z-10 flex h-6 w-6
+                                -translate-x-1/2 -translate-y-1/2
+                                items-center justify-center rounded-full
+                                border border-[#fff3c7]/20 bg-[#242044]
                             "
-                            style={{
-                                left: `${
-                                    (routePoints
-                                        .start
-                                        .x /
-                                        320) *
-                                    100
-                                }%`,
-                                top: `${
-                                    (routePoints
-                                        .start
-                                        .y /
-                                        100) *
-                                    100
-                                }%`,
-                            }}
-                            initial={{
-                                opacity: 0,
-                                scale: 0.7,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                scale: 1,
-                            }}
-                            transition={{
-                                delay: 0.9,
-                                duration: 0.4,
-                            }}
+                            style={{ left: "5.625%", top: "67%" }}
                         >
-                            <div
-                                className="
-                                    relative
-                                    h-3
-                                    w-3
-                                    rounded-full
-                                    bg-[#fff3c7]
-                                    ring-4
-                                    ring-[#fff3c7]/10
-                                "
-                            />
+                            <Check size={12} className="text-[#fff3c7]/70" />
+                        </div>
 
-                            <div className="mt-2 whitespace-nowrap text-center">
-                                <p
-                                    className="
-                                        text-[10px]
-                                        font-black
-                                        uppercase
-                                    "
-                                >
-                                    {
-                                        milestone
-                                            .previous
-                                            .label
-                                    }
-                                </p>
-
-                                <p
-                                    className="
-                                        mt-0.5
-                                        text-[8px]
-                                        font-bold
-                                        text-[#fff3c7]/35
-                                    "
-                                >
-                                    {formatDate(
-                                        milestone.previousDate,
-                                    )}
-                                </p>
-                            </div>
-                        </motion.div>
-
-                        {/* =================================================
-                            AVIÃO / MOMENTO ATUAL
-                        ================================================== */}
+                        {/* AVIÃO */}
 
                         <motion.div
                             className="
-                                pointer-events-none
-                                absolute
-                                z-30
-                                flex
-                                -translate-x-1/2
-                                -translate-y-1/2
-                                flex-col
-                                items-center
+                                absolute z-30
+                                -translate-x-1/2 -translate-y-1/2
                             "
-                            initial={{
-                                opacity: 0,
-                                scale: 0.7,
-                            }}
                             animate={{
-                                opacity: 1,
-                                scale: 1,
-                                left: `${
-                                    (routePoints
-                                        .current
-                                        .x /
-                                        320) *
-                                    100
-                                }%`,
-                                top: `${
-                                    (routePoints
-                                        .current
-                                        .y /
-                                        100) *
-                                    100
-                                }%`,
+                                left: `${(planePosition.x / 320) * 100}%`,
+                                top: `${planePosition.y}%`,
                             }}
-                            transition={{
-                                opacity: {
-                                    delay: 1.1,
-                                    duration: 0.4,
-                                },
-                                scale: {
-                                    delay: 1.1,
-                                    duration: 0.4,
-                                },
-                                left: {
-                                    duration: 0.8,
-                                    ease: "easeInOut",
-                                },
-                                top: {
-                                    duration: 0.8,
-                                    ease: "easeInOut",
-                                },
-                            }}
+                            transition={
+                                reduceMotion
+                                    ? { duration: 0 }
+                                    : { duration: 0.85, ease: "easeInOut" }
+                            }
                         >
                             <motion.div
-                                animate={{
-                                    y: [
-                                        0,
-                                        -3,
-                                        0,
-                                    ],
-                                }}
+                                animate={
+                                    reduceMotion
+                                        ? undefined
+                                        : { y: [0, -2, 0] }
+                                }
                                 transition={{
-                                    duration: 2,
+                                    duration: 2.2,
                                     repeat: Infinity,
                                     ease: "easeInOut",
                                 }}
                                 className="
-                                    relative
-                                    flex
-                                    h-7
-                                    w-7
-                                    items-center
-                                    justify-center
-                                    rounded-full
-                                    bg-[#a875ff]
-                                    text-[#0b0b2b]
-                                    shadow-[0_0_0_5px_rgba(168,117,255,0.12)]
+                                    relative flex h-8 w-8 items-center
+                                    justify-center rounded-full
+                                    border border-[#d9ccff]/40
+                                    bg-[#a875ff] text-[#0b0b2b]
+                                    shadow-[0_0_22px_rgba(168,117,255,0.35)]
                                 "
                             >
-                                <motion.div
-                                    className="
-                                        absolute
-                                        inset-[-5px]
-                                        rounded-full
-                                        border
-                                        border-[#a875ff]/30
-                                    "
-                                    animate={{
-                                        scale: [
-                                            1,
-                                            1.35,
-                                            1,
-                                        ],
-                                        opacity: [
-                                            0.7,
-                                            0,
-                                            0.7,
-                                        ],
-                                    }}
-                                    transition={{
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: "easeOut",
-                                    }}
-                                />
+                                <span className="absolute inset-[-5px] rounded-full border border-[#a875ff]/30" />
 
                                 <Plane
-                                    size={
-                                        13
-                                    }
+                                    size={15}
                                     fill="currentColor"
-                                    strokeWidth={
-                                        2.5
-                                    }
                                     className="-rotate-12"
                                 />
                             </motion.div>
-
-                            <div className="mt-2 whitespace-nowrap text-center">
-                                <p
-                                    className="
-                                        text-[9px]
-                                        font-black
-                                        uppercase
-                                        text-[#a875ff]
-                                    "
-                                >
-                                    Agora
-                                </p>
-
-                                <p
-                                    className="
-                                        mt-0.5
-                                        text-[8px]
-                                        font-bold
-                                        text-[#fff3c7]/40
-                                    "
-                                >
-                                    {percentage}%
-                                    do
-                                    caminho
-                                </p>
-                            </div>
                         </motion.div>
 
-                        {/* =================================================
-                            PRÓXIMA META
-                        ================================================== */}
+                        {/* DESTINO */}
 
-                        <motion.div
+                        <div
                             className="
-                                absolute
-                                z-20
-                                flex
-                                -translate-x-1/2
-                                -translate-y-1/2
-                                flex-col
-                                items-center
+                                absolute z-10 flex h-7 w-7
+                                -translate-x-1/2 -translate-y-1/2
+                                items-center justify-center rounded-full
+                                border border-[#a875ff]/40
+                                bg-[#a875ff]/15 text-[#cbb8ff]
                             "
-                            style={{
-                                left: `${
-                                    (routePoints
-                                        .end
-                                        .x /
-                                        320) *
-                                    100
-                                }%`,
-                                top: `${
-                                    (routePoints
-                                        .end
-                                        .y /
-                                        100) *
-                                    100
-                                }%`,
-                            }}
-                            initial={{
-                                opacity: 0,
-                                scale: 0.7,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                scale: 1,
-                            }}
-                            transition={{
-                                delay: 1.5,
-                                duration: 0.4,
-                            }}
+                            style={{ left: "94.375%", top: "67%" }}
                         >
-                            <div
-                                className="
-                                    relative
-                                    h-3
-                                    w-3
-                                    rounded-full
-                                    bg-[#fff3c7]
-                                    ring-4
-                                    ring-[#fff3c7]/10
-                                "
-                            />
+                            <motion.span
+                                animate={
+                                    reduceMotion
+                                        ? undefined
+                                        : { scale: [1, 1.08, 1] }
+                                }
+                                transition={{
+                                    duration: 2.5,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                }}
+                            >
+                                <Star size={13} fill="currentColor" />
+                            </motion.span>
+                        </div>
 
-                            <div className="mt-2 whitespace-nowrap text-center">
-                                <p
-                                    className="
-                                        text-[10px]
-                                        font-black
-                                        uppercase
-                                    "
-                                >
-                                    {
-                                        milestone
-                                            .next
-                                            .label
-                                    }
+                        {/* ETIQUETAS DA ROTA */}
+
+                        <div className="absolute bottom-0 left-0 flex max-w-[42%] items-center gap-2">
+                            <div className="h-7 w-0.5 rounded-full bg-[#fff3c7]/25" />
+
+                            <div>
+                                <p className="text-[9px] font-black uppercase text-[#fff3c7]/70">
+                                    Onde começou
                                 </p>
 
-                                <p
-                                    className="
-                                        mt-0.5
-                                        text-[8px]
-                                        font-bold
-                                        text-[#fff3c7]/35
-                                    "
-                                >
-                                    {formatDate(
-                                        milestone.nextDate,
-                                    )}
+                                <p className="mt-0.5 text-[8px] text-[#fff3c7]/35">
+                                    {formatDate(START_DATE)}
                                 </p>
                             </div>
-                        </motion.div>
+                        </div>
+
+                        <div className="absolute bottom-0 right-0 flex max-w-[42%] items-center gap-2">
+                            <div>
+                                <p className="text-[9px] font-black uppercase text-[#fff3c7]/70">
+                                    Próxima parada
+                                </p>
+
+                                <p className="mt-0.5 text-end text-[8px] text-[#fff3c7]/35">
+                                    {formatDate(milestone.nextDate)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* MARCOS COMO DESTINOS */}
+
+                    <div className="mt-2">
+                        <div className="mb-2 flex items-center justify-between">
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#fff3c7]/40">
+                                Destinos no nosso mapa
+                            </p>
+
+                            <p className="text-[9px] font-bold text-[#a875ff]">
+                                {MILESTONES.length} marcos
+                            </p>
+                        </div>
+
+                        <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            {MILESTONES.map((item, index) => {
+                                const date = addMonths(
+                                    START_DATE,
+                                    item.months,
+                                );
+
+                                const completed = date <= now;
+                                const next =
+                                    item.months === milestone.next.months;
+
+                                return (
+                                    <div
+                                        key={item.months}
+                                        className={`
+                                            relative min-w-[82px] flex-1
+                                            overflow-hidden rounded-xl border
+                                            px-2 py-2.5
+                                            ${
+                                                next
+                                                    ? "border-[#a875ff]/50 bg-[#a875ff]/10"
+                                                    : completed
+                                                      ? "border-[#fff3c7]/10 bg-[#fff3c7]/[0.035]"
+                                                      : "border-[#fff3c7]/[0.07] bg-[#15153d]/45"
+                                            }
+                                        `}
+                                    >
+                                        {next && (
+                                            <motion.div
+                                                className="absolute inset-x-0 top-0 h-0.5 bg-[#a875ff]"
+                                                layoutId="next-milestone-marker"
+                                            />
+                                        )}
+
+                                        <div className="flex items-center justify-between gap-1">
+                                            <span
+                                                className={`
+                                                    text-[8px] font-black uppercase tracking-wider
+                                                    ${
+                                                        next
+                                                            ? "text-[#cbb8ff]"
+                                                            : completed
+                                                              ? "text-[#fff3c7]/55"
+                                                              : "text-[#fff3c7]/30"
+                                                    }
+                                                `}
+                                            >
+                                                {String(index + 1).padStart(2, "0")}
+                                            </span>
+
+                                            {completed ? (
+                                                <Check
+                                                    size={11}
+                                                    className="text-[#cbb8ff]"
+                                                />
+                                            ) : next ? (
+                                                <Plane
+                                                    size={11}
+                                                    className="text-[#cbb8ff]"
+                                                />
+                                            ) : (
+                                                <Star
+                                                    size={10}
+                                                    className="text-[#fff3c7]/25"
+                                                />
+                                            )}
+                                        </div>
+
+                                        <p
+                                            className={`
+                                                mt-2 text-[10px] font-black leading-tight
+                                                ${
+                                                    next
+                                                        ? "text-[#fff3c7]"
+                                                        : completed
+                                                          ? "text-[#fff3c7]/65"
+                                                          : "text-[#fff3c7]/40"
+                                                }
+                                            `}
+                                        >
+                                            {item.label}
+                                        </p>
+
+                                        <p className="mt-1 text-[8px] font-medium text-[#fff3c7]/30">
+                                            {formatDate(date)}
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </motion.div>
 
                 {/* RODAPÉ */}
 
-                <motion.p
-                    initial={{
-                        opacity: 0,
-                    }}
-                    animate={{
-                        opacity: 1,
-                    }}
-                    transition={{
-                        delay: 1.2,
-                    }}
-                    className="
-                        mt-1
-                        text-center
-                        text-[9px]
-                        font-bold
-                        uppercase
-                        tracking-[0.2em]
-                        text-[#fff3c7]/25
-                    "
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                    className="mt-1 flex items-center justify-center gap-2 pt-1"
                 >
-                    Próximo destino
-                    confirmado ♡
-                </motion.p>
+                    <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#a875ff]/20" />
+
+                    <Heart
+                        size={10}
+                        fill="#a875ff"
+                        className="text-[#a875ff]/70"
+                    />
+
+                    <p className="whitespace-nowrap text-[8px] font-black uppercase tracking-[0.2em] text-[#fff3c7]/30">
+                        Nosso melhor destino é juntos
+                    </p>
+
+                    <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#a875ff]/20" />
+                </motion.div>
             </div>
+
+            {/* CELEBRAÇÃO DE UMA META */}
+
+            <AnimatePresence>
+                {isCelebrating && celebrationData && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="
+                            absolute inset-0 z-[100]
+                            flex items-center justify-center
+                            overflow-hidden bg-[#0b0b2b]/95
+                            px-7 backdrop-blur-md
+                        "
+                    >
+                        <motion.div
+                            initial={{ scale: 0.4, opacity: 0 }}
+                            animate={{
+                                scale: [0.4, 1.1, 1],
+                                opacity: [0, 0.5, 0.2],
+                            }}
+                            transition={{
+                                duration: 1.3,
+                                ease: "easeOut",
+                            }}
+                            className="absolute h-64 w-64 rounded-full bg-[#a875ff] blur-[70px]"
+                        />
+
+                        {[...Array(16)].map((_, index) => {
+                            const angle = (index / 16) * Math.PI * 2;
+                            const distance = 95 + (index % 3) * 35;
+
+                            return (
+                                <motion.span
+                                    key={index}
+                                    initial={{
+                                        x: 0,
+                                        y: 0,
+                                        opacity: 0,
+                                        scale: 0,
+                                    }}
+                                    animate={{
+                                        x: Math.cos(angle) * distance,
+                                        y: Math.sin(angle) * distance,
+                                        opacity: [0, 1, 0],
+                                        scale: [0, 1, 0.4],
+                                    }}
+                                    transition={{
+                                        duration: 1.8,
+                                        delay: 0.15 + (index % 5) * 0.05,
+                                        ease: "easeOut",
+                                    }}
+                                    className="absolute h-1.5 w-1.5 rounded-full bg-[#fff3c7]"
+                                />
+                            );
+                        })}
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 18, scale: 0.92 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{
+                                delay: 0.2,
+                                duration: 0.6,
+                                ease: [0.16, 1, 0.3, 1],
+                            }}
+                            className="relative z-10 flex w-full max-w-xs flex-col items-center text-center"
+                        >
+                            <motion.div
+                                animate={
+                                    reduceMotion
+                                        ? undefined
+                                        : {
+                                              rotate: [0, -7, 7, -3, 0],
+                                              scale: [1, 1.08, 1],
+                                          }
+                                }
+                                transition={{
+                                    duration: 1.1,
+                                    delay: 0.4,
+                                }}
+                                className="
+                                    mb-6 flex h-20 w-20 items-center
+                                    justify-center rounded-[28px]
+                                    border border-[#fff3c7]/25
+                                    bg-[#fff3c7] text-[#0b0b2b]
+                                    shadow-[0_0_55px_rgba(255,243,199,0.15)]
+                                "
+                            >
+                                <Heart size={34} fill="currentColor" />
+                            </motion.div>
+
+                            <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#c4aaff]">
+                                Novo destino alcançado
+                            </p>
+
+                            <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-tight">
+                                {celebrationData.completed.label}
+                            </h2>
+
+                            <p className="mt-4 text-sm leading-relaxed text-[#fff3c7]/55">
+                                Mais uma lembrança para guardar e mais um capítulo da nossa história.
+                            </p>
+
+                            <div className="mt-7 w-full rounded-2xl border border-[#a875ff]/25 bg-[#171536]/90 p-4">
+                                <div className="flex items-center justify-center gap-2 text-[#c4aaff]">
+                                    <Plane size={15} />
+
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">
+                                        Próxima parada
+                                    </span>
+                                </div>
+
+                                <p className="mt-2 text-xl font-black text-[#fff3c7]">
+                                    {celebrationData.next.label}
+                                </p>
+
+                                <p className="mt-1 text-[10px] text-[#fff3c7]/40">
+                                    A próxima aventura já nos espera.
+                                </p>
+                            </div>
+
+                            <motion.div
+                                animate={
+                                    reduceMotion
+                                        ? undefined
+                                        : { y: [0, -4, 0] }
+                                }
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                }}
+                                className="mt-6 text-[#a875ff]"
+                            >
+                                <Sparkles size={20} />
+                            </motion.div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }
