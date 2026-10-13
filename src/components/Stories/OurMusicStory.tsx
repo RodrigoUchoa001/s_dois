@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Heart, Music2, Sparkles } from "lucide-react";
+import { Heart, Music2, Sparkles, Headphones } from "lucide-react";
 import { couple } from "../../data/couple";
 import {
     getMusicPlayedTimes,
@@ -20,46 +20,117 @@ export function OurMusicStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative h-full w-full overflow-hidden bg-gradient-to-b from-[#17152F] via-[#542642] to-[#9B493F] text-[#FFF0D5]"
+            transition={{ duration: 0.8 }}
+            className="
+                relative isolate h-full w-full overflow-hidden
+                bg-[#17152F] text-[#FFF0D5]
+            "
         >
-            {/* =====================================================
-                DECORAÇÃO DE FUNDO
-            ====================================================== */}
+            {/* ==================================================
+                CÉU
+            ================================================== */}
 
-            {/* Luz quente no horizonte superior */}
+            <div className="absolute inset-0 -z-30 bg-gradient-to-b from-[#17152F] via-[#42223F] to-[#A54F49]" />
+
+            {/* Luz difusa no horizonte */}
+
             <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 0.3, scale: 1 }}
-                transition={{ duration: 1.2 }}
-                className="absolute -left-32 -top-24 h-80 w-80 rounded-full bg-[#C6534D] blur-[110px]"
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 0.8, scale: 1 }}
+                transition={{ duration: 1.8 }}
+                className="
+                    pointer-events-none absolute -z-20
+                    left-1/2 top-[28%] h-72 w-72
+                    -translate-x-1/2 rounded-full
+                    bg-[#FF8C62]/20 blur-[100px]
+                "
             />
 
-            {/* Reflexo alaranjado na parte inferior */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 0.32, scale: 1 }}
-                transition={{ duration: 1.2, delay: 0.2 }}
-                className="absolute -bottom-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#FF9A52] blur-[110px]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.45 }}
+                transition={{ duration: 2, delay: 0.4 }}
+                className="
+                    pointer-events-none absolute -z-20
+                    -bottom-20 left-1/2 h-72 w-[130%]
+                    -translate-x-1/2 rounded-full
+                    bg-[#F7A05A]/20 blur-[90px]
+                "
             />
 
-            {/* Luz dourada atrás da capa */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 0.2, scale: 1 }}
-                transition={{ duration: 1.4, delay: 0.3 }}
-                className="absolute right-[-80px] top-[25%] h-72 w-72 rounded-full bg-[#FFD99B] blur-[100px]"
-            />
+            {/* ==================================================
+                ESTRELAS
+            ================================================== */}
 
-            {/* =====================================================
+            {[
+                { x: "12%", y: "13%", delay: 0.2, size: 3 },
+                { x: "29%", y: "19%", delay: 0.7, size: 2 },
+                { x: "73%", y: "12%", delay: 0.4, size: 3 },
+                { x: "85%", y: "23%", delay: 1.1, size: 2 },
+                { x: "19%", y: "34%", delay: 1.3, size: 2 },
+                { x: "91%", y: "38%", delay: 0.8, size: 3 },
+                { x: "62%", y: "8%", delay: 1.5, size: 2 },
+            ].map((star, index) => (
+                <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{
+                        opacity: [0.3, 0.9, 0.3],
+                        scale: [0.8, 1.2, 0.8],
+                    }}
+                    transition={{
+                        delay: star.delay,
+                        duration: 3 + index * 0.25,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
+                    className="pointer-events-none absolute z-0"
+                    style={{
+                        left: star.x,
+                        top: star.y,
+                        width: star.size,
+                        height: star.size,
+                    }}
+                >
+                    <div className="h-full w-full rounded-full bg-[#FFE7B5] shadow-[0_0_8px_rgba(255,217,155,0.7)]" />
+                </motion.div>
+            ))}
+
+            {/* Brilho decorativo */}
+
+            <motion.div
+                initial={{ opacity: 0, rotate: -30 }}
+                animate={{ opacity: 0.8, rotate: 0 }}
+                transition={{ delay: 1, duration: 0.8 }}
+                className="pointer-events-none absolute left-[9%] top-[25%] z-0"
+            >
+                <Sparkles
+                    size={15}
+                    className="text-[#FFD99B]"
+                />
+            </motion.div>
+
+            <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 0.8, scale: 1 }}
+                transition={{ delay: 1.2, duration: 0.8 }}
+                className="pointer-events-none absolute right-[12%] top-[31%] z-0"
+            >
+                <Sparkles
+                    size={12}
+                    className="text-[#FFB875]"
+                />
+            </motion.div>
+
+            {/* ==================================================
                 SOL POENTE
-            ====================================================== */}
+            ================================================== */}
 
             <motion.div
                 initial={{
                     opacity: 0,
-                    y: 24,
-                    scale: 0.8,
+                    y: 30,
+                    scale: 0.85,
                 }}
                 animate={{
                     opacity: 1,
@@ -67,342 +138,318 @@ export function OurMusicStory() {
                     scale: 1,
                 }}
                 transition={{
-                    delay: 0.4,
-                    duration: 1.2,
+                    delay: 0,
+                    duration: 1,
                     ease: "easeOut",
                 }}
-                className="pointer-events-none absolute right-[-30px] top-[24%] z-0"
+                className="
+                    pointer-events-none absolute z-0
+                    left-1/2 top-[57%] pr-6
+                    -translate-x-1/2
+                "
                 aria-hidden="true"
             >
                 <motion.div
-                    animate={{
-                        y: [0, -4, 0],
-                    }}
+                    animate={{ y: [0, -3, 0] }}
                     transition={{
-                        duration: 6,
+                        duration: 7,
                         repeat: Infinity,
                         ease: "easeInOut",
                     }}
-                    className="relative h-44 w-44"
+                    className="relative h-40 w-40 sm:h-48 sm:w-48"
                 >
-                    {/* Halo luminoso */}
-                    <div className="absolute inset-[-35px] rounded-full bg-[#FF9A52]/15 blur-[35px]" />
+                    {/* Halo solar */}
 
-                    {/* Brilho externo */}
-                    <div className="absolute inset-[-12px] rounded-full bg-[#FFB875]/10 blur-[18px]" />
+                    <div className="absolute -inset-10 rounded-full bg-[#FF9966]/15 blur-3xl" />
+
+                    <div className="absolute -inset-4 rounded-full bg-[#FFB875]/15 blur-2xl" />
 
                     {/* Disco solar */}
-                    <div className="absolute inset-4 overflow-hidden rounded-full bg-gradient-to-b from-[#FFE3A6] via-[#FFAD62] to-[#F16D54] shadow-[0_0_45px_rgba(255,154,82,0.25)]">
-                        {/* Textura luminosa */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-[#D94D55]/20" />
 
-                        {/* Faixas sutis no sol */}
-                        <div className="absolute bottom-[24%] left-0 h-[2px] w-full bg-[#D85D55]/20" />
-                        <div className="absolute bottom-[34%] left-0 h-[2px] w-full bg-[#D85D55]/15" />
-                        <div className="absolute bottom-[44%] left-0 h-[1px] w-full bg-[#FFF0D5]/20" />
+                    <div
+                        className="
+                            absolute inset-0 overflow-hidden rounded-full
+                            bg-gradient-to-b from-[#FFE8AE]
+                            via-[#FFB66F] to-[#F16F5B]
+                            shadow-[0_0_55px_rgba(255,154,82,0.25)]
+                        "
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-[#B83C55]/20" />
+
+                        <div className="absolute bottom-[17%] left-0 h-[2px] w-full bg-[#B94B52]/20" />
+                        <div className="absolute bottom-[25%] left-0 h-[3px] w-full bg-[#B94B52]/25" />
+                        <div className="absolute bottom-[34%] left-0 h-[2px] w-full bg-[#B94B52]/20" />
+                        <div className="absolute bottom-[43%] left-0 h-[1px] w-full bg-[#FFF0D5]/30" />
                     </div>
-
-                    {/* Raios discretos */}
-                    <div className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 -translate-y-3 bg-[#FFD99B]/70" />
-                    <div className="absolute right-3 top-5 h-px w-2 rotate-45 bg-[#FFD99B]/70" />
-                    <div className="absolute left-3 top-5 h-px w-2 -rotate-45 bg-[#FFD99B]/70" />
-
-                    {/* Pequeno brilho */}
-                    <motion.div
-                        animate={{
-                            opacity: [0.35, 0.8, 0.35],
-                            scale: [0.9, 1.1, 0.9],
-                        }}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                        }}
-                        className="absolute right-0 top-12 h-2 w-2 rounded-full bg-[#FFE3A6] shadow-[0_0_12px_#FFD99B]"
-                    />
                 </motion.div>
             </motion.div>
 
-            {/* =====================================================
-                BRILHOS
-            ====================================================== */}
+            {/* ==================================================
+                PAISAGEM / MONTANHAS
+            ================================================== */}
 
-            <motion.div
-                initial={{
-                    opacity: 0,
-                    rotate: -20,
-                }}
-                animate={{
-                    opacity: 1,
-                    rotate: 0,
-                }}
-                transition={{ delay: 0.8 }}
-                className="absolute left-[12%] top-[14%] z-[1]"
+            <div
+                className="
+                    pointer-events-none absolute inset-x-0 bottom-0
+                    z-[1] h-[43%]
+                "
+                aria-hidden="true"
             >
-                <Sparkles
-                    size={18}
-                    fill="#FFD99B"
-                    className="text-[#FFD99B]"
-                />
-            </motion.div>
+                <svg
+                    viewBox="0 0 390 360"
+                    preserveAspectRatio="none"
+                    className="absolute bottom-0 h-full w-full"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    {/* Montanhas distantes */}
 
-            <motion.div
-                initial={{
-                    opacity: 0,
-                    scale: 0,
-                }}
-                animate={{
-                    opacity: 1,
-                    scale: 1,
-                }}
-                transition={{ delay: 1 }}
-                className="absolute right-[20%] top-[12%] z-[1]"
-            >
-                <Sparkles
-                    size={11}
-                    fill="#FF9A52"
-                    className="text-[#FF9A52]"
-                />
-            </motion.div>
+                    <path
+                        d="M0 145 L45 111 L78 137 L125 75 L164 124 L209 94 L258 139 L302 91 L346 130 L390 100 L390 360 L0 360 Z"
+                        fill="#70364A"
+                        opacity="0.48"
+                    />
 
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.2 }}
-                className="absolute bottom-[28%] left-[15%] z-[1]"
-            >
-                <Sparkles
-                    size={12}
-                    fill="#FFB875"
-                    className="text-[#FFB875]"
-                />
-            </motion.div>
+                    {/* Camada intermediária */}
 
-            {/* =====================================================
+                    <path
+                        d="M0 184 L43 154 L84 176 L137 126 L176 166 L222 141 L269 177 L321 133 L357 166 L390 146 L390 360 L0 360 Z"
+                        fill="#542642"
+                        opacity="0.85"
+                    />
+
+                    {/* Montanha frontal */}
+
+                    <path
+                        d="M0 220 L52 181 L101 213 L151 174 L201 218 L247 183 L300 215 L347 179 L390 202 L390 360 L0 360 Z"
+                        fill="#351D36"
+                    />
+
+                    {/* Horizonte iluminado */}
+
+                    <path
+                        d="M0 218 Q90 200 195 216 T390 208"
+                        stroke="#FFB875"
+                        strokeOpacity="0.3"
+                        strokeWidth="1.5"
+                    />
+
+                    {/* Primeiro plano */}
+
+                    <path
+                        d="M0 270 Q90 239 162 267 T300 258 T390 267 L390 360 L0 360 Z"
+                        fill="#24182F"
+                    />
+                </svg>
+
+                {/* Névoa quente */}
+
+                <div className="absolute inset-x-0 top-[20%] h-20 bg-gradient-to-b from-[#FF9A67]/10 to-transparent blur-xl" />
+
+                {/* Escurecimento para leitura */}
+
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#24182F]/10 to-[#17152F]/95" />
+            </div>
+
+            {/* ==================================================
                 FAIXA LATERAL
-            ====================================================== */}
+            ================================================== */}
 
-            <SideRibbon text="NOSSA MÚSICA" bg_color="bg-[#17152f]" />
+            <SideRibbon text="NOSSA MÚSICA" bg_color="bg-[#FFCB91]/10" />
 
-            {/* =====================================================
-                CONTEÚDO
-            ====================================================== */}
+            {/* ==================================================
+                CONTEÚDO PRINCIPAL
+            ================================================== */}
 
-            <div className="relative z-10 flex h-full w-full flex-col px-7 pb-10 pr-14 pt-8">
-                <StoryHeader text="Uma música nossa" />
+            <div className="relative z-10 flex h-full w-full flex-col px-7 pb-7 pr-14 pt-7 sm:px-9 sm:pr-16 sm:pt-8">
 
-                {/* =================================================
-                    INTRODUÇÃO
-                ================================================= */}
+                {/* Cabeçalho */}
 
                 <motion.div
-                    initial={{
-                        opacity: 0,
-                        y: 20,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        delay: 0.3,
-                        duration: 0.6,
-                    }}
-                    className="mt-9"
+                    initial={{ opacity: 0, y: -12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7 }}
                 >
-                    <p className="max-w-xs text-base font-medium leading-relaxed text-[#FFF0D5]/80">
+                    <StoryHeader text="Uma música nossa" />
+                </motion.div>
+
+                {/* Texto da história */}
+
+                <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25, duration: 0.8 }}
+                    className="mt-6 max-w-sm"
+                >
+                    <span className="mb-3 block text-[10px] font-bold uppercase tracking-[0.3em] text-[#FFCB91]/80">
+                        Uma lembrança ao entardecer
+                    </span>
+
+                    <p className="text-[15px] font-medium leading-[1.8] text-[#FFF0D5]/85 sm:text-base">
                         Entre o céu pintado pelo pôr do sol e o nosso{" "}
-                        <span className="font-semibold text-[#FFD99B]">
+                        <span className="font-bold text-[#FFD99B]">
                             primeiro beijo
                         </span>
                         , essa música encontrou seu lugar na nossa história.
                     </p>
                 </motion.div>
 
-                {/* =================================================
-                    CAPA + MÚSICA
-                ================================================= */}
+                {/* ==================================================
+                    CAPA DA MÚSICA
+                ================================================== */}
 
-                <motion.div
-                    initial={{
-                        opacity: 0,
-                        scale: 0.75,
-                        y: 30,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        scale: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        delay: 0.45,
-                        duration: 0.8,
-                        type: "spring",
-                        stiffness: 100,
-                        damping: 14,
-                    }}
-                    className="mt-6 flex items-center gap-5"
-                >
-                    {/* Moldura da capa */}
+                <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center pt-6">
+
+                    {/* Capa */}
                     <motion.div
+                        initial={{
+                            opacity: 0,
+                            y: 35,
+                            scale: 0.8,
+                            rotate: -4,
+                        }}
                         animate={{
-                            rotate: [-2, 2, -2],
-                            y: [0, -3, 0],
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            rotate: 0,
                         }}
                         transition={{
-                            duration: 5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
+                            delay: 0.45,
+                            duration: 0.9,
+                            type: "spring",
+                            stiffness: 90,
+                            damping: 15,
                         }}
-                        className="relative shrink-0"
+                        className="relative"
                     >
-                        {/* Brilho quente atrás da capa */}
-                        <div className="absolute inset-2 rounded-[24px] bg-[#FF9A52]/30 blur-xl" />
+                        {/* Luz atrás da capa */}
 
-                        {/* Moldura dourada */}
-                        <div className="relative rounded-[24px] border-2 border-[#FFD99B]/30 bg-[#FFF0D5]/[0.06] p-2 backdrop-blur-sm">
-                            <img
+                        <div className="absolute -inset-7 rounded-[32px] bg-[#FF9A67]/20 blur-2xl" />
+
+                        {/* Moldura */}
+
+                        <div className="relative rounded-[27px] border border-[#FFE1B1]/45 bg-[#FFE1B1]/10 p-2 shadow-[0_20px_70px_rgba(14,9,30,0.35)] backdrop-blur-sm">
+                            <motion.img
+                                animate={{
+                                    y: [0, -4, 0],
+                                }}
+                                transition={{
+                                    duration: 5,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                }}
                                 src={couple.song.cover}
-                                alt={couple.song.title}
-                                className="h-32 w-32 rounded-[18px] object-cover"
+                                alt={`Capa de ${couple.song.title}`}
+                                className="
+                                    h-36 w-36 rounded-[20px]
+                                    object-cover sm:h-40 sm:w-40
+                                "
                             />
 
-                            {/* Ícone musical */}
-                            <div className="absolute -bottom-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#542642] bg-[#FF9A52]">
+                            {/* Selo musical */}
+
+                            <div className="absolute -bottom-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-[#542642] bg-[#FFAD70] shadow-lg">
                                 <Music2
-                                    size={17}
-                                    className="text-[#FFF0D5]"
+                                    size={18}
+                                    className="text-[#542642]"
                                 />
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Informações da música */}
-                    <div className="min-w-0">
-                        <motion.h2
-                            initial={{
-                                opacity: 0,
-                                x: 15,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                x: 0,
-                            }}
-                            transition={{ delay: 0.65 }}
-                            className="text-xl font-black leading-tight tracking-[-0.02em] text-[#FFF0D5]"
-                        >
+                    {/* Nome da música */}
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.7, duration: 0.7 }}
+                        className="mt-3 text-center"
+                    >
+                        <h2 className="text-2xl font-black tracking-[-0.04em] text-[#111111] sm:text-3xl">
                             {couple.song.title}
-                        </motion.h2>
+                        </h2>
 
-                        <motion.p
-                            initial={{
-                                opacity: 0,
-                                x: 15,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                x: 0,
-                            }}
-                            transition={{ delay: 0.8 }}
-                            className="mt-1 text-sm font-medium text-[#FFF0D5]/65"
-                        >
+                        <p className="mt-1 text-sm font-medium tracking-wide text-[#111111]/65">
                             {couple.song.artist}
-                        </motion.p>
-
-                        <motion.div
-                            initial={{
-                                opacity: 0,
-                                x: 15,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                x: 0,
-                            }}
-                            transition={{ delay: 0.95 }}
-                            className="mt-4 flex items-center gap-2"
-                        >
-                            <div className="h-[2px] w-7 bg-[#FF9A52]" />
-
-                            <span className="text-xs font-black uppercase tracking-[0.15em] text-[#FFD99B]">
-                                nossa música
-                            </span>
-                        </motion.div>
-                    </div>
-                </motion.div>
-
-                {/* =================================================
-                    CONTADOR DE REPRODUÇÕES
-                ================================================= */}
-
-                <motion.div
-                    initial={{
-                        opacity: 0,
-                        y: 25,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        delay: 1.05,
-                        duration: 0.6,
-                    }}
-                    className="mt-auto"
-                >
-                    <div className="relative rounded-[28px] border-2 border-[#FFD99B]/20 bg-[#351D36]/60 p-5 shadow-[0_0_35px_rgba(255,154,82,0.08)] backdrop-blur-md">
-                        <Heart
-                            size={16}
-                            fill="#FF9A52"
-                            className="absolute -right-2 -top-2 rotate-12 text-[#FF9A52]"
-                        />
-
-                        <p className="text-sm font-medium leading-relaxed text-[#FFF0D5]/70">
-                            Se tocasse no repeat desde o primeiro
-                            dia, já teria tocado
                         </p>
+                    </motion.div>
 
-                        <div className="mt-4 flex items-center gap-3">
+                    {/* Indicador decorativo */}
+
+                    <motion.div
+                        initial={{ opacity: 0, scaleX: 0 }}
+                        animate={{ opacity: 1, scaleX: 1 }}
+                        transition={{ delay: 0.9, duration: 0.8 }}
+                        className="mt-4 flex items-center gap-2"
+                    >
+                        <span className="h-1 w-1 rounded-full bg-[#FFD99B]/70" />
+                        <span className="h-px w-10 bg-gradient-to-r from-transparent via-[#FFD99B]/70 to-transparent" />
+                        <Heart
+                            size={11}
+                            fill="#FFAD70"
+                            className="text-[#FFAD70]"
+                        />
+                        <span className="h-px w-10 bg-gradient-to-r from-transparent via-[#FFD99B]/70 to-transparent" />
+                        <span className="h-1 w-1 rounded-full bg-[#FFD99B]/70" />
+                    </motion.div>
+                </div>
+
+                {/* ==================================================
+                    CONTADOR DE REPRODUÇÕES
+                ================================================== */}
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.85, duration: 0.8 }}
+                className="relative shrink-0"
+            >
+                {/* Card do contador */}
+                <div className="relative overflow-hidden rounded-[24px] border border-[#FFE1B1]/20 bg-[#21172F]/75 px-5 py-4 shadow-[0_12px_40px_rgba(10,8,25,0.2)] backdrop-blur-xl">
+
+                    {/* Reflexo */}
+                    <div className="pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full bg-[#FF9A67]/10 blur-2xl" />
+
+                    <div className="relative flex flex-col items-center gap-3">
+                        <div className="flex items-center gap-3">
+                            {/* Ícone */}
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#FFD99B]/15 bg-[#FFAD70]/10">
+                                <Headphones
+                                    size={18}
+                                    className="text-[#FFD99B]"
+                                />
+                            </div>
+
+                            {/* Texto */}
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFE1B1]/60">
+                                    Se tocasse no repeat
+                                </p>
+
+                                <p className="mt-1 text-xs leading-relaxed text-[#FFF0D5]/75">
+                                    desde o primeiro dia, já teria tocado...
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Contador */}
+                        <div className="flex shrink-0 items-baseline gap-1.5">
                             <OdometerCounter value={playedTimes} />
 
-                            <span className="text-xl font-black uppercase tracking-[0.08em] text-[#FFD99B]">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#FFD99B]">
                                 vezes
                             </span>
                         </div>
                     </div>
-                </motion.div>
-            </div>
-
-            {/* =====================================================
-                ELEMENTO MUSICAL DECORATIVO
-            ====================================================== */}
-
-            <motion.div
-                initial={{
-                    opacity: 0,
-                    scale: 0,
-                    rotate: -20,
-                }}
-                animate={{
-                    opacity: 1,
-                    scale: 1,
-                    rotate: 12,
-                }}
-                transition={{
-                    delay: 0.7,
-                    duration: 0.7,
-                    type: "spring",
-                }}
-                className="pointer-events-none absolute bottom-[15%] right-[8%] z-0"
-            >
-                <div className="relative h-20 w-20 rounded-[24px] border-2 border-[#FF9A52]/40">
-                    <div className="absolute inset-3 rounded-[16px] bg-[#FF9A52]/10" />
-
-                    <Music2
-                        size={30}
-                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#FFD99B]"
-                    />
                 </div>
+
+                {/* Legenda abaixo do card */}
+                <p className="mt-3 text-center text-[9px] font-medium tracking-[0.15em] text-[#FFE1B1]/40">
+                    UMA CANÇÃO, UMA MEMÓRIA, NÓS DOIS
+                </p>
             </motion.div>
+            </div>
         </motion.div>
     );
 }
