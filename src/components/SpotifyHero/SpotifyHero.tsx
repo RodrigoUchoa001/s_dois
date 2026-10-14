@@ -10,7 +10,6 @@ import { useState } from "react";
 
 import { couple } from "../../data/couple";
 import { CoupleCounter } from "./CoupleCounter";
-import { CoupleMessage } from "./CoupleMessage";
 import { MusicPlayer } from "../MusicPlayer/MusicPlayer";
 import { WrappedBox } from "./WrappedBox";
 
@@ -276,20 +275,6 @@ export function SpotifyHero() {
                     <div className="p-1">
                         <CoupleCounter />
                     </div>
-                </motion.div>
-
-                {/* ========================================
-                    MENSAGEM
-                ======================================== */}
-
-                <motion.div
-                    initial={{ opacity: 0, y: 25 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                    className="mt-5 overflow-hidden rounded-[32px] border-2 border-[#fff3c7]/10 bg-white/[0.04] backdrop-blur-md"
-                >
-                    <CoupleMessage />
                 </motion.div>
 
                 {/* ========================================
