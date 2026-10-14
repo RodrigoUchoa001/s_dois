@@ -241,10 +241,10 @@ export function SpotifyHero() {
                 ======================================== */}
 
                 <motion.div
-                    initial={{ opacity: 0, y: 25 }}
+                    initial={{ opacity: 1, y: 25 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.6 }}
+                    // transition={{ duration: 0.6 }}
                     className="relative mt-6 overflow-hidden rounded-[32px] border-2 border-[#fff3c7]/10 bg-white/[0.04] backdrop-blur-md"
                 >
                     {/* Imagem */}
@@ -282,10 +282,10 @@ export function SpotifyHero() {
                 ======================================== */}
 
                 <motion.div
-                    initial={{ opacity: 0, y: 25 }}
+                    initial={{ opacity: 1, y: 25 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.6, delay: 0.15 }}
+                    // transition={{ duration: 0.6, delay: 0.15 }}
                     className="mt-5 overflow-hidden rounded-[32px] border-2 border-[#fff3c7]/10 bg-white/[0.04] backdrop-blur-md"
                 >
                     <WrappedBox />
