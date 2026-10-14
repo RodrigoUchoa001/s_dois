@@ -16,18 +16,24 @@ export function MusicIntro({ onEnter }: MusicIntroProps) {
             transition={{ duration: 0.7 }}
         >
             {/* Glow */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 0.22, scale: 1 }}
-                transition={{ duration: 1.4 }}
-                className="pointer-events-none absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-[#8064ff] blur-[130px]"
-            />
-
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 0.16, scale: 1 }}
-                transition={{ duration: 1.5, delay: 0.15 }}
-                className="pointer-events-none absolute -bottom-40 -right-40 h-[30rem] w-[30rem] rounded-full bg-[#a875ff] blur-[130px]"
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 overflow-hidden"
+                style={{
+                    background: `
+                        radial-gradient(
+                            ellipse at 15% 15%,
+                            rgba(128, 100, 255, 0.18),
+                            transparent 48%
+                        ),
+                        radial-gradient(
+                            ellipse at 85% 85%,
+                            rgba(168, 117, 255, 0.14),
+                            transparent 45%
+                        ),
+                        #0b0b2b
+                    `,
+                }}
             />
 
             {/* Estrelas */}
@@ -111,16 +117,10 @@ export function MusicIntro({ onEnter }: MusicIntroProps) {
                     className="relative"
                 >
                     <motion.div
-                        animate={{
-                            scale: [1, 1.08, 1],
-                            opacity: [0.25, 0.45, 0.25],
-                        }}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                        }}
-                        className="absolute inset-[-18px] rounded-[34px] bg-[#a875ff] blur-2xl"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 0.25, scale: 1 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="absolute inset-[-10px] rounded-[34px] bg-[#a875ff]/20"
                     />
 
                     <motion.div
@@ -130,7 +130,7 @@ export function MusicIntro({ onEnter }: MusicIntroProps) {
                             repeat: Infinity,
                             ease: "easeInOut",
                         }}
-                        className="relative flex h-24 w-24 rotate-3 items-center justify-center rounded-[30px] border-2 border-[#a875ff]/40 bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.3)] backdrop-blur-md"
+                        className="relative flex h-24 w-24 rotate-3 items-center justify-center rounded-[30px] border-2 border-[#a875ff]/40 bg-white/[0.04] shadow-lg backdrop-blur-md"
                     >
                         <div className="absolute inset-3 rounded-[22px] bg-[#a875ff]/10" />
 

@@ -1,3 +1,4 @@
+
 import { motion } from "motion/react";
 import { CalendarDays, Sparkles } from "lucide-react";
 import { couple } from "../../../data/couple";
@@ -14,70 +15,67 @@ export function TimelineStory() {
             exit={{ opacity: 0 }}
             className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-[#0b0b2b] px-6 pb-16 pt-8 text-[#fff3c7] scrollbar-none"
         >
-            {/* Glows */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 0.18, scale: 1 }}
-                transition={{ duration: 1.2 }}
-                className="pointer-events-none absolute -right-40 -top-32 h-80 w-80 rounded-full bg-[#8064ff] blur-[110px]"
+            {/* Iluminação estática: evita blur animado e caro */}
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-32 -top-24 h-80 w-80 rounded-full"
+                style={{
+                    background:
+                        "radial-gradient(circle, rgba(128,100,255,0.15) 0%, rgba(128,100,255,0.05) 40%, transparent 72%)",
+                }}
             />
 
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 0.12, scale: 1 }}
-                transition={{ duration: 1.2, delay: 0.2 }}
-                className="pointer-events-none absolute -bottom-40 -left-32 h-80 w-80 rounded-full bg-[#8064ff] blur-[120px]"
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-32 -left-28 h-80 w-80 rounded-full"
+                style={{
+                    background:
+                        "radial-gradient(circle, rgba(128,100,255,0.12) 0%, rgba(128,100,255,0.04) 40%, transparent 72%)",
+                }}
             />
 
-            {/* Estrelas */}
-            <motion.div
-                initial={{ opacity: 0, rotate: -30, scale: 0 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                transition={{ delay: 0.7, type: "spring" }}
-                className="absolute left-[12%] top-[12%]"
+            {/* Detalhes decorativos estáticos */}
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-[12%] top-[12%]"
             >
                 <Sparkles
                     size={15}
                     fill="#fff3c7"
                     className="text-[#fff3c7]"
                 />
-            </motion.div>
+            </div>
 
-            <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.9, type: "spring" }}
-                className="absolute right-[16%] top-[32%]"
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute right-[16%] top-[32%]"
             >
                 <Sparkles
                     size={11}
                     fill="#a875ff"
                     className="text-[#a875ff]"
                 />
-            </motion.div>
+            </div>
 
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.1 }}
-                className="absolute bottom-[18%] right-[10%]"
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute bottom-[18%] right-[10%]"
             >
                 <Sparkles
                     size={13}
                     fill="#a875ff"
                     className="text-[#a875ff]"
                 />
-            </motion.div>
-            
+            </div>
 
             <div className="relative">
                 <StoryHeader text="Nossa história" />
 
                 {/* Cabeçalho */}
                 <motion.div
-                    initial={{ opacity: 0, y: 25 }}
+                    initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25, duration: 0.6 }}
+                    transition={{ delay: 0.2, duration: 0.4 }}
                     className="mt-10"
                 >
                     <div className="mb-5 flex items-center gap-3">
@@ -115,11 +113,14 @@ export function TimelineStory() {
                         initial={{ scaleY: 0 }}
                         animate={{ scaleY: 1 }}
                         transition={{
-                            delay: 0.55,
-                            duration: 1.2,
+                            delay: 0.45,
+                            duration: 0.9,
                             ease: "easeOut",
                         }}
-                        style={{ transformOrigin: "top" }}
+                        style={{
+                            transformOrigin: "top",
+                            willChange: "transform",
+                        }}
                         className="absolute bottom-0 left-1/2 top-0 z-0 w-[3px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#a875ff] via-[#a875ff]/50 to-[#a875ff]/10"
                     />
 
@@ -136,11 +137,14 @@ export function TimelineStory() {
 
                 {/* Final */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                        delay: 0.8 + timeline.events.length * 0.12,
-                        duration: 0.6,
+                        delay: Math.min(
+                            0.7 + timeline.events.length * 0.08,
+                            1.5
+                        ),
+                        duration: 0.4,
                     }}
                     className="mt-14 flex flex-col items-center text-center"
                 >

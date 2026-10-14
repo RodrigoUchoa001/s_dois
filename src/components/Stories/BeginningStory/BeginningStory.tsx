@@ -23,18 +23,18 @@ const months = [
 const weekdays = ["D", "S", "T", "Q", "Q", "S", "S"];
 
 const stars = [
-    { top: "7%", left: "82%", size: 3, delay: 0.2 },
-    { top: "13%", left: "64%", size: 2, delay: 1.1 },
-    { top: "22%", left: "91%", size: 3, delay: 0.6 },
-    { top: "29%", left: "7%", size: 2, delay: 1.5 },
-    { top: "36%", left: "88%", size: 2, delay: 0.9 },
-    { top: "47%", left: "4%", size: 3, delay: 0.4 },
-    { top: "55%", left: "94%", size: 2, delay: 1.8 },
-    { top: "66%", left: "8%", size: 2, delay: 0.7 },
-    { top: "73%", left: "90%", size: 3, delay: 1.3 },
-    { top: "82%", left: "13%", size: 2, delay: 0.3 },
-    { top: "91%", left: "79%", size: 2, delay: 1.6 },
-    { top: "17%", left: "17%", size: 2, delay: 1.2 },
+    { top: "7%", left: "82%", size: 3 },
+    { top: "13%", left: "64%", size: 2 },
+    { top: "22%", left: "91%", size: 3 },
+    { top: "29%", left: "7%", size: 2 },
+    { top: "36%", left: "88%", size: 2 },
+    { top: "47%", left: "4%", size: 3 },
+    { top: "55%", left: "94%", size: 2 },
+    { top: "66%", left: "8%", size: 2 },
+    { top: "73%", left: "90%", size: 3 },
+    { top: "82%", left: "13%", size: 2 },
+    { top: "91%", left: "79%", size: 2 },
+    { top: "17%", left: "17%", size: 2 },
 ];
 
 function getCalendarDays(year: number, month: number) {
@@ -116,95 +116,66 @@ export function BeginningStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="relative h-full w-full overflow-hidden bg-[#080D24] px-6 pb-8 pt-8 text-[#F1F2FF]"
         >
-            {/* Fundo: nebulosas */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 0.19, scale: 1 }}
-                transition={{ duration: 1.5 }}
-                className="pointer-events-none absolute -right-36 top-0 h-80 w-80 rounded-full bg-[#7057FF] blur-[110px]"
+            {/* Fundo espacial: gradientes estáticos, sem blur pesado */}
+            <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                    background: `
+                        radial-gradient(
+                            ellipse at 90% 8%,
+                            rgba(112, 87, 255, 0.16),
+                            transparent 36%
+                        ),
+                        radial-gradient(
+                            ellipse at 5% 85%,
+                            rgba(68, 59, 186, 0.18),
+                            transparent 38%
+                        ),
+                        radial-gradient(
+                            ellipse at 35% 42%,
+                            rgba(121, 240, 226, 0.045),
+                            transparent 32%
+                        )
+                    `,
+                }}
             />
 
-            <motion.div
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 0.13, scale: 1 }}
-                transition={{ duration: 1.8, delay: 0.2 }}
-                className="pointer-events-none absolute -bottom-40 -left-36 h-96 w-96 rounded-full bg-[#443BBA] blur-[120px]"
-            />
-
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.08 }}
-                transition={{ duration: 2, delay: 0.5 }}
-                className="pointer-events-none absolute left-[25%] top-[35%] h-40 w-40 rounded-full bg-[#79F0E2] blur-[100px]"
-            />
-
-            {/* Estrelas */}
+            {/* Estrelas estáticas */}
             {stars.map((star, index) => (
-                <motion.div
+                <Star
                     key={index}
-                    className="pointer-events-none absolute z-0"
+                    aria-hidden="true"
+                    className="pointer-events-none absolute z-0 text-[#C5C9FF]"
                     style={{
                         top: star.top,
                         left: star.left,
+                        width: star.size * 2,
+                        height: star.size * 2,
+                        fill: "#C5C9FF",
+                        opacity: index % 3 === 0 ? 0.8 : 0.45,
                     }}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{
-                        opacity: [0.25, 0.9, 0.25],
-                        scale: [0.8, 1.2, 0.8],
-                    }}
-                    transition={{
-                        duration: 2.5 + (index % 3),
-                        delay: star.delay,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                >
-                    <Star
-                        size={star.size * 2}
-                        fill="#C5C9FF"
-                        strokeWidth={0}
-                        className="text-[#C5C9FF]"
-                    />
-                </motion.div>
+                    strokeWidth={0}
+                />
             ))}
 
-            {/* Órbita decorativa no fundo */}
-            <motion.div
-                initial={{ opacity: 0, rotate: -20, scale: 0.8 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                transition={{ duration: 1.5, delay: 0.4 }}
-                className="pointer-events-none absolute -right-16 top-[26%] h-40 w-40 rounded-full border border-[#9185FF]/10"
-            >
-                <div className="absolute -left-1 top-[35%] h-2 w-2 rounded-full bg-[#9185FF]/50 shadow-[0_0_12px_#9185FF]" />
-            </motion.div>
+            {/* Órbitas decorativas estáticas */}
+            <div className="pointer-events-none absolute -right-16 top-[26%] h-40 w-40 rounded-full border border-[#9185FF]/10">
+                <div className="absolute -left-1 top-[35%] h-2 w-2 rounded-full bg-[#9185FF]/50" />
+            </div>
 
-            <motion.div
-                initial={{ opacity: 0, rotate: 25, scale: 0.8 }}
-                animate={{ opacity: 1, rotate: 8, scale: 1 }}
-                transition={{ duration: 1.5, delay: 0.6 }}
-                className="pointer-events-none absolute -left-20 bottom-[13%] h-44 w-44 rounded-full border border-[#79F0E2]/10"
-            />
+            <div className="pointer-events-none absolute -left-20 bottom-[13%] h-44 w-44 rotate-[8deg] rounded-full border border-[#79F0E2]/10" />
 
-            {/* Brilhos decorativos */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8, type: "spring" }}
-                className="absolute right-[14%] top-[16%] text-[#B9B5FF]"
-            >
+            {/* Brilhos decorativos estáticos */}
+            <div className="pointer-events-none absolute right-[14%] top-[16%] text-[#B9B5FF]">
                 <Sparkles size={15} fill="currentColor" />
-            </motion.div>
+            </div>
 
-            <motion.div
-                initial={{ opacity: 0, rotate: -30, scale: 0 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                transition={{ delay: 1, type: "spring" }}
-                className="absolute left-[5%] top-[38%] text-[#79F0E2]"
-            >
+            <div className="pointer-events-none absolute left-[5%] top-[38%] text-[#79F0E2]">
                 <Sparkles size={13} fill="currentColor" />
-            </motion.div>
+            </div>
 
             <SideRibbon
                 text="O COMEÇO"
@@ -216,9 +187,9 @@ export function BeginningStory() {
 
                 {/* Dia 1 */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
+                    transition={{ delay: 0.1, duration: 0.35 }}
                     className="mt-8"
                 >
                     <div className="flex items-center gap-2">
@@ -234,9 +205,9 @@ export function BeginningStory() {
 
                 {/* Mês e ano */}
                 <motion.div
-                    initial={{ opacity: 0, y: 25 }}
+                    initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.7 }}
+                    transition={{ delay: 0.18, duration: 0.4 }}
                     className="mt-4 flex items-end gap-3"
                 >
                     <h1 className="min-w-0 flex-1 text-[clamp(2.7rem,12vw,3rem)] font-black uppercase leading-[0.82] tracking-[-0.07em] text-[#F1F2FF]">
@@ -250,15 +221,22 @@ export function BeginningStory() {
 
                 {/* Calendário */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
+                    transition={{ delay: 0.28, duration: 0.4 }}
                     className="relative mt-7"
                 >
-                    {/* Halo atrás do calendário */}
-                    <div className="pointer-events-none absolute -inset-x-2 -inset-y-3 rounded-2xl bg-[#6155C9]/[0.07] blur-xl" />
+                    {/* Halo suave, sem filtro blur */}
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -inset-x-2 -inset-y-3 rounded-2xl"
+                        style={{
+                            background:
+                                "radial-gradient(ellipse at center, rgba(97,85,201,0.10), transparent 75%)",
+                        }}
+                    />
 
-                    <div className="relative rounded-2xl border border-[#A6A8FF]/10 bg-[#111735]/55 px-2 pb-2 pt-3 backdrop-blur-sm">
+                    <div className="relative rounded-2xl border border-[#A6A8FF]/10 bg-[#111735]/90 px-2 pb-2 pt-3">
                         {/* Dias da semana */}
                         <div className="grid grid-cols-7 border-b border-[#A6A8FF]/15 pb-2">
                             {weekdays.map((weekdayLabel, index) => (
@@ -283,97 +261,42 @@ export function BeginningStory() {
                                     >
                                         {isStartDay && (
                                             <>
-                                                {/* Halo luminoso */}
-                                                <motion.div
-                                                    initial={{
-                                                        opacity: 0,
-                                                        scale: 0.4,
-                                                    }}
-                                                    animate={{
-                                                        opacity: [0.25, 0.55, 0.25],
-                                                        scale: [0.9, 1.15, 0.9],
-                                                    }}
-                                                    transition={{
-                                                        delay: 1,
-                                                        duration: 2.8,
-                                                        repeat: Infinity,
-                                                        ease: "easeInOut",
-                                                    }}
-                                                    className="absolute h-9 w-9 rounded-full bg-[#8B7CFF]/30 blur-md"
+                                                {/* Halo estático do dia especial */}
+                                                <div
+                                                    aria-hidden="true"
+                                                    className="absolute h-9 w-9 rounded-full bg-[#8B7CFF]/15"
                                                 />
 
                                                 {/* Círculo principal */}
-                                                <motion.div
-                                                    initial={{
-                                                        opacity: 0,
-                                                        scale: 0.4,
+                                                <div
+                                                    aria-hidden="true"
+                                                    className="absolute h-8 w-8 rounded-full border border-[#A99EFF] bg-[#7767FF]/20"
+                                                    style={{
+                                                        boxShadow:
+                                                            "0 0 12px rgba(139,124,255,0.22)",
                                                     }}
-                                                    animate={{
-                                                        opacity: 1,
-                                                        scale: 1,
-                                                    }}
-                                                    transition={{
-                                                        delay: 1,
-                                                        type: "spring",
-                                                        stiffness: 180,
-                                                        damping: 14,
-                                                    }}
-                                                    className="absolute h-8 w-8 rounded-full border border-[#A99EFF] bg-[#7767FF]/20 shadow-[0_0_15px_rgba(139,124,255,0.28)]"
                                                 />
 
                                                 {/* Órbita inclinada */}
-                                                <motion.div
-                                                    initial={{
-                                                        opacity: 0,
-                                                        scale: 0.6,
-                                                        rotate: -35,
-                                                    }}
-                                                    animate={{
-                                                        opacity: 0.8,
-                                                        scale: 1,
-                                                        rotate: -15,
-                                                    }}
-                                                    transition={{
-                                                        delay: 1.2,
-                                                        duration: 0.8,
-                                                    }}
-                                                    className="absolute h-9 w-10 rounded-full border border-[#B9B5FF]/55"
+                                                <div
+                                                    aria-hidden="true"
+                                                    className="absolute h-9 w-10 -rotate-[15deg] rounded-full border border-[#B9B5FF]/55"
                                                 />
 
                                                 {/* Pequeno satélite */}
-                                                <motion.div
-                                                    initial={{
-                                                        opacity: 0,
-                                                        scale: 0,
+                                                <div
+                                                    aria-hidden="true"
+                                                    className="absolute right-[calc(50%-19px)] top-[calc(50%-14px)] h-1.5 w-1.5 rounded-full bg-[#79F0E2]"
+                                                    style={{
+                                                        boxShadow:
+                                                            "0 0 6px rgba(121,240,226,0.65)",
                                                     }}
-                                                    animate={{
-                                                        opacity: 1,
-                                                        scale: 1,
-                                                    }}
-                                                    transition={{
-                                                        delay: 1.5,
-                                                        type: "spring",
-                                                    }}
-                                                    className="absolute right-[calc(50%-19px)] top-[calc(50%-14px)] h-1.5 w-1.5 rounded-full bg-[#79F0E2] shadow-[0_0_8px_#79F0E2]"
                                                 />
                                             </>
                                         )}
 
-                                        {calendarDay && (
-                                            <motion.span
-                                                initial={
-                                                    calendarDay === day
-                                                        ? { opacity: 0, scale: 0.5 }
-                                                        : { opacity: 0.5 }
-                                                }
-                                                animate={{
-                                                    opacity: 1,
-                                                    scale: 1,
-                                                }}
-                                                transition={{
-                                                    delay: 0.55 + index * 0.012,
-                                                    duration: 0.25,
-                                                }}
+                                        {calendarDay !== null && (
+                                            <span
                                                 className={`relative z-10 text-sm font-bold ${
                                                     isStartDay
                                                         ? "text-white"
@@ -381,7 +304,7 @@ export function BeginningStory() {
                                                 }`}
                                             >
                                                 {calendarDay}
-                                            </motion.span>
+                                            </span>
                                         )}
                                     </div>
                                 );
@@ -392,13 +315,9 @@ export function BeginningStory() {
 
                 {/* Identificação da data */}
                 <motion.div
-                    initial={{ opacity: 0, x: 20, rotate: 2 }}
-                    animate={{ opacity: 1, x: 0, rotate: -2 }}
-                    transition={{
-                        delay: 1.1,
-                        duration: 0.6,
-                        type: "spring",
-                    }}
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.45, duration: 0.35 }}
                     className="mt-3 flex items-center justify-end gap-2"
                 >
                     <span className="text-xs font-black uppercase tracking-wide text-[#B9B5FF]">
@@ -408,18 +327,18 @@ export function BeginningStory() {
                     <Heart
                         size={19}
                         fill="#9185FF"
-                        className="text-[#B9B5FF] drop-shadow-[0_0_8px_rgba(145,133,255,0.65)]"
+                        className="text-[#B9B5FF]"
+                        style={{
+                            filter: "drop-shadow(0 0 5px rgba(145,133,255,0.45))",
+                        }}
                     />
                 </motion.div>
 
                 {/* Texto final */}
                 <motion.div
-                    initial={{ opacity: 0, y: 25 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                        delay: 1.3,
-                        duration: 0.7,
-                    }}
+                    transition={{ delay: 0.55, duration: 0.4 }}
                     className="mt-3"
                 >
                     <h2 className="max-w-sm text-[clamp(2.1rem,9vw,2.6rem)] font-black leading-[0.95] tracking-[-0.055em] text-[#F1F2FF]">
@@ -445,20 +364,15 @@ export function BeginningStory() {
 
                 {/* Assinatura */}
                 <motion.div
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.7, duration: 0.6 }}
+                    transition={{ delay: 0.7, duration: 0.35 }}
                     className="mt-7 flex items-center gap-3"
                 >
                     <div className="relative h-px w-10 bg-gradient-to-r from-[#9185FF] to-[#79F0E2]/60">
-                        <motion.div
-                            animate={{ x: [0, 36, 0], opacity: [0, 1, 0] }}
-                            transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                            }}
-                            className="absolute -top-[2px] h-1 w-1 rounded-full bg-white shadow-[0_0_7px_#A99EFF]"
+                        <div
+                            aria-hidden="true"
+                            className="absolute -top-[2px] left-8 h-1 w-1 rounded-full bg-white"
                         />
                     </div>
 

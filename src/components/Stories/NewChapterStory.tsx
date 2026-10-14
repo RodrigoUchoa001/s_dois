@@ -14,13 +14,7 @@ import {
     CalendarDays,
     Star,
 } from "lucide-react";
-import {
-    useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SideRibbon } from "../SideRibbon/SideRibbon";
 import { couple } from "../../data/couple";
@@ -72,6 +66,17 @@ const MONTHS = [
     "JUL", "AGO", "SET", "OUT", "NOV", "DEZ",
 ];
 
+const STAR_POSITIONS = [
+    [12, 19],
+    [84, 12],
+    [91, 34],
+    [7, 57],
+    [79, 73],
+    [23, 87],
+    [63, 9],
+    [47, 24],
+];
+
 function addMonths(date: Date, months: number) {
     const result = new Date(date);
     const originalDay = result.getDate();
@@ -103,10 +108,7 @@ function differenceInDays(from: Date, to: Date) {
         to.getDate(),
     );
 
-    return Math.max(
-        0,
-        Math.ceil((toUTC - fromUTC) / 86_400_000),
-    );
+    return Math.max(0, Math.ceil((toUTC - fromUTC) / 86_400_000));
 }
 
 function getMilestoneState(now: Date): MilestoneState {
@@ -149,10 +151,7 @@ function getMilestoneState(now: Date): MilestoneState {
     const progress =
         totalDays <= 0
             ? 0
-            : Math.min(
-                  100,
-                  Math.max(0, (elapsedDays / totalDays) * 100),
-              );
+            : Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
 
     return {
         previous,
@@ -180,6 +179,27 @@ function getExactProgress(now: Date, from: Date, to: Date) {
     );
 }
 
+/*
+ * Calcula a posição diretamente na curva quadrática SVG.
+ * Evita consultar o DOM e atualizar estado via useLayoutEffect
+ * a cada segundo do contador.
+ */
+function getRoutePoint(progress: number): Point {
+    const t = Math.min(1, Math.max(0, progress));
+    const inverse = 1 - t;
+
+    return {
+        x:
+            inverse * inverse * 18 +
+            2 * inverse * t * 160 +
+            t * t * 302,
+        y:
+            inverse * inverse * 67 +
+            2 * inverse * t * -15 +
+            t * t * 70,
+    };
+}
+
 export function NextChapterStory({
     isOpen = true,
 }: {
@@ -189,7 +209,6 @@ export function NextChapterStory({
     const reduceMotion = useReducedMotion();
 
     const previousMilestoneRef = useRef<string | null>(null);
-
     const celebrationTimeoutRef =
         useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -200,25 +219,24 @@ export function NextChapterStory({
         next: Milestone;
     } | null>(null);
 
-    const milestone = useMemo(
-        () => getMilestoneState(now),
-        [now],
-    );
+    const milestone = useMemo(() => getMilestoneState(now), [now]);
 
     /*
-     * Relógio do countdown.
+     * Atualiza o relógio apenas enquanto a tela está aberta.
      */
     useEffect(() => {
+        if (!isOpen) return;
+
         const interval = setInterval(() => {
             setNow(new Date());
         }, 1000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [isOpen]);
 
     /*
-     * Detecta quando a próxima meta muda.
-     * A meta anterior acaba de ser concluída.
+     * Detecta a conclusão de um marco sem observar objetos
+     * recriados a cada atualização do relógio.
      */
     useEffect(() => {
         const key = `${milestone.next.months}-${milestone.next.label}`;
@@ -249,7 +267,8 @@ export function NextChapterStory({
     }, [
         milestone.next.months,
         milestone.next.label,
-        milestone.previous,
+        milestone.previous.months,
+        milestone.previous.label,
         isOpen,
     ]);
 
@@ -261,9 +280,6 @@ export function NextChapterStory({
         };
     }, []);
 
-    /*
-     * Countdown.
-     */
     const countdown = useMemo(() => {
         const difference = Math.max(
             0,
@@ -288,97 +304,63 @@ export function NextChapterStory({
         milestone.nextDate,
     );
 
-    /*
-     * A posição do avião é calculada diretamente a partir da curva SVG.
-     * Assim, ele segue o trajeto real em vez de se mover em linha reta.
-     */
-    const routePathRef = useRef<SVGPathElement>(null);
-
-    const [planePosition, setPlanePosition] = useState<Point>({
-        x: 18,
-        y: 67,
-    });
-
-    useLayoutEffect(() => {
-        const path = routePathRef.current;
-
-        if (!path) return;
-
-        const length = path.getTotalLength();
-        const point = path.getPointAtLength(length * exactProgress);
-
-        setPlanePosition({
-            x: point.x,
-            y: point.y,
-        });
-    }, [exactProgress]);
-
     const routeProgress = Math.max(0, Math.min(1, exactProgress));
+
+    const planePosition = useMemo(
+        () => getRoutePoint(routeProgress),
+        [routeProgress],
+    );
 
     return (
         <motion.div
             key="next-chapter"
-            initial={{ opacity: 0, scale: 1.02 }}
+            initial={reduceMotion ? false : { opacity: 0, scale: 1.01 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.55, ease: "easeOut" }}
-            className="
-                relative h-full w-full overflow-hidden
-                bg-[#0b0b2b] text-[#fff3c7]
-            "
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.99 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35, ease: "easeOut" }}
+            className="relative h-full w-full overflow-hidden bg-[#0b0b2b] text-[#fff3c7]"
         >
-            {/* FUNDO NOTURNO */}
+            {/* FUNDO NOTURNO: gradientes estáticos e leves */}
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 overflow-hidden"
+            >
+                <div
+                    className="absolute -right-28 -top-32 h-80 w-80 rounded-full"
+                    style={{
+                        background:
+                            "radial-gradient(circle, rgba(128,100,255,0.17) 0%, rgba(128,100,255,0.06) 42%, transparent 72%)",
+                    }}
+                />
 
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="absolute -right-28 -top-32 h-80 w-80 rounded-full bg-[#8064ff]/20 blur-[110px]" />
+                <div
+                    className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full"
+                    style={{
+                        background:
+                            "radial-gradient(circle, rgba(168,117,255,0.13) 0%, rgba(168,117,255,0.04) 42%, transparent 72%)",
+                    }}
+                />
 
-                <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-[#a875ff]/15 blur-[120px]" />
-
-                <div className="absolute left-[35%] top-[38%] h-48 w-48 rounded-full bg-[#8064ff]/[0.06] blur-[90px]" />
-
-                {[
-                    [12, 19],
-                    [84, 12],
-                    [91, 34],
-                    [7, 57],
-                    [79, 73],
-                    [23, 87],
-                    [63, 9],
-                    [47, 24],
-                ].map(([x, y], index) => (
-                    <motion.span
+                {STAR_POSITIONS.map(([x, y], index) => (
+                    <span
                         key={index}
-                        animate={
-                            reduceMotion
-                                ? undefined
-                                : {
-                                      opacity: [0.2, 0.75, 0.2],
-                                      scale: [0.8, 1.15, 0.8],
-                                  }
-                        }
-                        transition={{
-                            duration: 2.5 + index * 0.3,
-                            repeat: Infinity,
-                            delay: index * 0.2,
-                        }}
-                        className="absolute h-1 w-1 rounded-full bg-[#cbb8ff]"
-                        style={{
-                            left: `${x}%`,
-                            top: `${y}%`,
-                        }}
+                        className="absolute h-1 w-1 rounded-full bg-[#cbb8ff]/60"
+                        style={{ left: `${x}%`, top: `${y}%` }}
                     />
                 ))}
             </div>
 
-            <SideRibbon text="Próximo capítulo" bg_color="bg-[#a875ff]/10" />
+            <SideRibbon
+                text="Próximo capítulo"
+                bg_color="bg-[#a875ff]/10"
+            />
 
             <div className="relative z-10 flex h-full flex-col px-6 pb-6 pr-14 pt-7">
                 {/* CABEÇALHO */}
-
                 <motion.div
-                    initial={{ opacity: 0, y: -12 }}
+                    initial={reduceMotion ? false : { opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
+                    transition={{ delay: reduceMotion ? 0 : 0.1, duration: 0.35 }}
                 >
                     <div className="mb-3 flex items-center gap-2">
                         <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#a875ff]/30 bg-[#a875ff]/10 text-[#cbb8ff]">
@@ -403,52 +385,24 @@ export function NextChapterStory({
                             </p>
                         </div>
 
-                        <motion.div
-                            animate={
-                                reduceMotion
-                                    ? undefined
-                                    : {
-                                          rotate: [8, -4, 8],
-                                          y: [0, -3, 0],
-                                      }
-                            }
-                            transition={{
-                                duration: 5,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                            }}
-                            className="
-                                mb-1 flex h-14 w-14 shrink-0
-                                items-center justify-center rounded-2xl
-                                border border-[#a875ff]/25
-                                bg-gradient-to-br from-[#a875ff]/20
-                                to-[#8064ff]/5
-                                shadow-[0_0_25px_rgba(168,117,255,0.08)]
-                            "
-                        >
+                        <div className="mb-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#a875ff]/25 bg-[#a875ff]/10">
                             <Heart
                                 size={25}
                                 fill="#a875ff"
                                 className="text-[#a875ff]"
                             />
-                        </motion.div>
+                        </div>
                     </div>
                 </motion.div>
 
                 {/* BILHETE DE EMBARQUE */}
-
                 <motion.div
-                    initial={{ opacity: 0, y: 18 }}
+                    initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25, duration: 0.5 }}
-                    className="
-                        relative mt-5 overflow-hidden rounded-[22px]
-                        border border-[#c4aaff]/25 bg-[#171536]/90
-                        shadow-[0_18px_45px_rgba(0,0,0,0.25)]
-                        backdrop-blur-md
-                    "
+                    transition={{ delay: reduceMotion ? 0 : 0.2, duration: 0.4 }}
+                    className="relative mt-5 overflow-hidden rounded-[22px] border border-[#c4aaff]/25 bg-[#171536]"
                 >
-                    <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#a875ff]/10 to-transparent" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#a875ff]/10 to-transparent" />
 
                     <div className="relative flex items-center justify-between border-b border-dashed border-[#fff3c7]/15 px-4 py-3">
                         <div className="flex items-center gap-2">
@@ -472,14 +426,9 @@ export function NextChapterStory({
                                 </p>
 
                                 <div className="mt-1.5 flex items-baseline gap-1.5">
-                                    <motion.span
-                                        key={countdown.days}
-                                        initial={{ opacity: 0.5, y: 4 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="text-4xl font-black leading-none tracking-tight tabular-nums"
-                                    >
+                                    <span className="text-4xl font-black leading-none tracking-tight tabular-nums">
                                         {countdown.days}
-                                    </motion.span>
+                                    </span>
 
                                     <span className="text-xs font-bold text-[#fff3c7]/55">
                                         dias
@@ -495,12 +444,7 @@ export function NextChapterStory({
                                 ].map((unit) => (
                                     <div
                                         key={unit.label}
-                                        className="
-                                            flex min-w-[38px] flex-col
-                                            items-center rounded-xl border
-                                            border-[#fff3c7]/10
-                                            bg-[#0b0b2b]/60 px-2 py-2
-                                        "
+                                        className="flex min-w-[38px] flex-col items-center rounded-xl border border-[#fff3c7]/10 bg-[#0b0b2b]/60 px-2 py-2"
                                     >
                                         <span className="font-mono text-sm font-black tabular-nums">
                                             {String(unit.value).padStart(2, "0")}
@@ -545,24 +489,19 @@ export function NextChapterStory({
                         </div>
 
                         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-                            <motion.div
-                                className="h-full rounded-full bg-gradient-to-r from-[#8064ff] to-[#c4aaff]"
-                                animate={{ width: `${percentage}%` }}
-                                transition={{ duration: 0.6, ease: "easeOut" }}
-                                style={{
-                                    boxShadow: "0 0 12px rgba(168,117,255,0.35)",
-                                }}
+                            <div
+                                className="h-full rounded-full bg-gradient-to-r from-[#8064ff] to-[#c4aaff] transition-[width] duration-500 ease-out"
+                                style={{ width: `${percentage}%` }}
                             />
                         </div>
                     </div>
                 </motion.div>
 
                 {/* ROTA DOS MARCOS */}
-
                 <motion.div
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.45, duration: 0.5 }}
+                    transition={{ delay: reduceMotion ? 0 : 0.35, duration: 0.4 }}
                     className="mt-5 flex min-h-0 flex-1 flex-col"
                 >
                     <div className="flex items-center justify-between">
@@ -605,13 +544,12 @@ export function NextChapterStory({
                                 d={ROUTE_PATH}
                                 fill="none"
                                 stroke="#a875ff"
-                                strokeWidth="7"
+                                strokeWidth="5"
                                 strokeLinecap="round"
-                                opacity="0.08"
+                                opacity="0.1"
                             />
 
                             <path
-                                ref={routePathRef}
                                 d={ROUTE_PATH}
                                 fill="none"
                                 stroke="rgba(255,243,199,0.17)"
@@ -627,102 +565,55 @@ export function NextChapterStory({
                                 strokeWidth="2.5"
                                 strokeLinecap="round"
                                 pathLength={1}
-                                initial={{ pathLength: 0 }}
+                                initial={reduceMotion ? false : { pathLength: 0 }}
                                 animate={{ pathLength: routeProgress }}
-                                transition={{ duration: 0.7, ease: "linear" }}
+                                transition={{
+                                    duration: reduceMotion ? 0 : 0.4,
+                                    ease: "linear",
+                                }}
                             />
                         </svg>
 
                         {/* PARTIDA */}
-
                         <div
-                            className="
-                                absolute z-10 flex h-6 w-6
-                                -translate-x-1/2 -translate-y-1/2
-                                items-center justify-center rounded-full
-                                border border-[#fff3c7]/20 bg-[#242044]
-                            "
+                            className="absolute z-10 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#fff3c7]/20 bg-[#242044]"
                             style={{ left: "5.625%", top: "67%" }}
                         >
                             <Check size={12} className="text-[#fff3c7]/70" />
                         </div>
 
                         {/* AVIÃO */}
-
                         <motion.div
-                            className="
-                                absolute z-30
-                                -translate-x-1/2 -translate-y-1/2
-                            "
+                            className="absolute z-30 -translate-x-1/2 -translate-y-1/2"
                             animate={{
                                 left: `${(planePosition.x / 320) * 100}%`,
                                 top: `${planePosition.y}%`,
                             }}
-                            transition={
-                                reduceMotion
-                                    ? { duration: 0 }
-                                    : { duration: 0.85, ease: "easeInOut" }
-                            }
+                            transition={{
+                                duration: reduceMotion ? 0 : 0.4,
+                                ease: "linear",
+                            }}
                         >
-                            <motion.div
-                                animate={
-                                    reduceMotion
-                                        ? undefined
-                                        : { y: [0, -2, 0] }
-                                }
-                                transition={{
-                                    duration: 2.2,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                }}
-                                className="
-                                    relative flex h-8 w-8 items-center
-                                    justify-center rounded-full
-                                    border border-[#d9ccff]/40
-                                    bg-[#a875ff] text-[#0b0b2b]
-                                    shadow-[0_0_22px_rgba(168,117,255,0.35)]
-                                "
-                            >
-                                <span className="absolute inset-[-5px] rounded-full border border-[#a875ff]/30" />
+                            <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[#d9ccff]/40 bg-[#a875ff] text-[#0b0b2b] shadow-[0_0_14px_rgba(168,117,255,0.25)]">
+                                <span className="absolute inset-[-4px] rounded-full border border-[#a875ff]/25" />
 
                                 <Plane
                                     size={15}
                                     fill="currentColor"
                                     className="-rotate-12"
                                 />
-                            </motion.div>
+                            </div>
                         </motion.div>
 
                         {/* DESTINO */}
-
                         <div
-                            className="
-                                absolute z-10 flex h-7 w-7
-                                -translate-x-1/2 -translate-y-1/2
-                                items-center justify-center rounded-full
-                                border border-[#a875ff]/40
-                                bg-[#a875ff]/15 text-[#cbb8ff]
-                            "
+                            className="absolute z-10 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#a875ff]/40 bg-[#a875ff]/15 text-[#cbb8ff]"
                             style={{ left: "94.375%", top: "67%" }}
                         >
-                            <motion.span
-                                animate={
-                                    reduceMotion
-                                        ? undefined
-                                        : { scale: [1, 1.08, 1] }
-                                }
-                                transition={{
-                                    duration: 2.5,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                }}
-                            >
-                                <Star size={13} fill="currentColor" />
-                            </motion.span>
+                            <Star size={13} fill="currentColor" />
                         </div>
 
-                        {/* ETIQUETAS DA ROTA */}
-
+                        {/* ETIQUETAS */}
                         <div className="absolute bottom-0 left-0 flex max-w-[42%] items-center gap-2">
                             <div className="h-7 w-0.5 rounded-full bg-[#fff3c7]/25" />
 
@@ -751,7 +642,6 @@ export function NextChapterStory({
                     </div>
 
                     {/* MARCOS COMO DESTINOS */}
-
                     <div className="mt-2">
                         <div className="mb-2 flex items-center justify-between">
                             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#fff3c7]/40">
@@ -765,11 +655,7 @@ export function NextChapterStory({
 
                         <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                             {MILESTONES.map((item, index) => {
-                                const date = addMonths(
-                                    START_DATE,
-                                    item.months,
-                                );
-
+                                const date = addMonths(START_DATE, item.months);
                                 const completed = date <= now;
                                 const next =
                                     item.months === milestone.next.months;
@@ -791,10 +677,7 @@ export function NextChapterStory({
                                         `}
                                     >
                                         {next && (
-                                            <motion.div
-                                                className="absolute inset-x-0 top-0 h-0.5 bg-[#a875ff]"
-                                                layoutId="next-milestone-marker"
-                                            />
+                                            <div className="absolute inset-x-0 top-0 h-0.5 bg-[#a875ff]" />
                                         )}
 
                                         <div className="flex items-center justify-between gap-1">
@@ -857,13 +740,7 @@ export function NextChapterStory({
                 </motion.div>
 
                 {/* RODAPÉ */}
-
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.8 }}
-                    className="mt-1 flex items-center justify-center gap-2 pt-1"
-                >
+                <div className="mt-1 flex items-center justify-center gap-2 pt-1">
                     <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#a875ff]/20" />
 
                     <Heart
@@ -877,99 +754,65 @@ export function NextChapterStory({
                     </p>
 
                     <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#a875ff]/20" />
-                </motion.div>
+                </div>
             </div>
 
             {/* CELEBRAÇÃO DE UMA META */}
-
             <AnimatePresence>
                 {isCelebrating && celebrationData && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="
-                            absolute inset-0 z-[100]
-                            flex items-center justify-center
-                            overflow-hidden bg-[#0b0b2b]/95
-                            px-7 backdrop-blur-md
-                        "
+                        className="absolute inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#0b0b2b]/[0.97] px-7"
                     >
-                        <motion.div
-                            initial={{ scale: 0.4, opacity: 0 }}
-                            animate={{
-                                scale: [0.4, 1.1, 1],
-                                opacity: [0, 0.5, 0.2],
-                            }}
-                            transition={{
-                                duration: 1.3,
-                                ease: "easeOut",
-                            }}
-                            className="absolute h-64 w-64 rounded-full bg-[#a875ff] blur-[70px]"
-                        />
+                        {/* Sem blur grande nem partículas excessivas */}
+                        {!reduceMotion &&
+                            [...Array(8)].map((_, index) => {
+                                const angle = (index / 8) * Math.PI * 2;
+                                const distance = 65 + (index % 3) * 22;
 
-                        {[...Array(16)].map((_, index) => {
-                            const angle = (index / 16) * Math.PI * 2;
-                            const distance = 95 + (index % 3) * 35;
-
-                            return (
-                                <motion.span
-                                    key={index}
-                                    initial={{
-                                        x: 0,
-                                        y: 0,
-                                        opacity: 0,
-                                        scale: 0,
-                                    }}
-                                    animate={{
-                                        x: Math.cos(angle) * distance,
-                                        y: Math.sin(angle) * distance,
-                                        opacity: [0, 1, 0],
-                                        scale: [0, 1, 0.4],
-                                    }}
-                                    transition={{
-                                        duration: 1.8,
-                                        delay: 0.15 + (index % 5) * 0.05,
-                                        ease: "easeOut",
-                                    }}
-                                    className="absolute h-1.5 w-1.5 rounded-full bg-[#fff3c7]"
-                                />
-                            );
-                        })}
+                                return (
+                                    <motion.span
+                                        key={index}
+                                        initial={{
+                                            x: 0,
+                                            y: 0,
+                                            opacity: 0,
+                                            scale: 0.5,
+                                        }}
+                                        animate={{
+                                            x: Math.cos(angle) * distance,
+                                            y: Math.sin(angle) * distance,
+                                            opacity: [0, 0.8, 0],
+                                            scale: [0.5, 1, 0.4],
+                                        }}
+                                        transition={{
+                                            duration: 1.2,
+                                            delay: 0.1 + (index % 4) * 0.04,
+                                            ease: "easeOut",
+                                        }}
+                                        className="absolute h-1.5 w-1.5 rounded-full bg-[#fff3c7]"
+                                    />
+                                );
+                            })}
 
                         <motion.div
-                            initial={{ opacity: 0, y: 18, scale: 0.92 }}
+                            initial={
+                                reduceMotion
+                                    ? false
+                                    : { opacity: 0, y: 12, scale: 0.96 }
+                            }
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             transition={{
-                                delay: 0.2,
-                                duration: 0.6,
-                                ease: [0.16, 1, 0.3, 1],
+                                duration: reduceMotion ? 0 : 0.4,
+                                ease: "easeOut",
                             }}
                             className="relative z-10 flex w-full max-w-xs flex-col items-center text-center"
                         >
-                            <motion.div
-                                animate={
-                                    reduceMotion
-                                        ? undefined
-                                        : {
-                                              rotate: [0, -7, 7, -3, 0],
-                                              scale: [1, 1.08, 1],
-                                          }
-                                }
-                                transition={{
-                                    duration: 1.1,
-                                    delay: 0.4,
-                                }}
-                                className="
-                                    mb-6 flex h-20 w-20 items-center
-                                    justify-center rounded-[28px]
-                                    border border-[#fff3c7]/25
-                                    bg-[#fff3c7] text-[#0b0b2b]
-                                    shadow-[0_0_55px_rgba(255,243,199,0.15)]
-                                "
-                            >
+                            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[28px] border border-[#fff3c7]/25 bg-[#fff3c7] text-[#0b0b2b]">
                                 <Heart size={34} fill="currentColor" />
-                            </motion.div>
+                            </div>
 
                             <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#c4aaff]">
                                 Novo destino alcançado
@@ -983,7 +826,7 @@ export function NextChapterStory({
                                 Mais uma lembrança para guardar e mais um capítulo da nossa história.
                             </p>
 
-                            <div className="mt-7 w-full rounded-2xl border border-[#a875ff]/25 bg-[#171536]/90 p-4">
+                            <div className="mt-7 w-full rounded-2xl border border-[#a875ff]/25 bg-[#171536] p-4">
                                 <div className="flex items-center justify-center gap-2 text-[#c4aaff]">
                                     <Plane size={15} />
 
@@ -1001,21 +844,10 @@ export function NextChapterStory({
                                 </p>
                             </div>
 
-                            <motion.div
-                                animate={
-                                    reduceMotion
-                                        ? undefined
-                                        : { y: [0, -4, 0] }
-                                }
-                                transition={{
-                                    duration: 2,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                }}
+                            <Sparkles
+                                size={20}
                                 className="mt-6 text-[#a875ff]"
-                            >
-                                <Sparkles size={20} />
-                            </motion.div>
+                            />
                         </motion.div>
                     </motion.div>
                 )}

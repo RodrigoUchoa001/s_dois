@@ -337,7 +337,7 @@ export function StoriesScreen({
                             {currentStory === 6 && (
                                 <GalleryStory />
                             )}
-
+                            
                             {currentStory === 7 && (
                                 <OurMusicStory />
                             )}

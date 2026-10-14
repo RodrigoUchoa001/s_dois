@@ -10,7 +10,7 @@ export function MoonStory() {
     const moon = getMoonPhase(
         couple.startDay,
         couple.startMonth,
-        couple.startYear
+        couple.startYear,
     );
 
     const phaseName = getMoonPhaseName(moon.phase);
@@ -20,33 +20,28 @@ export function MoonStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="relative flex h-full w-full flex-col overflow-hidden bg-[#080D24] px-7 pb-8 pr-14 pt-8 text-[#F1F2FF]"
         >
             {/* Céu noturno */}
             <Stars />
 
-            <motion.div
-                className="pointer-events-none absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-[#8064ff]/15 blur-3xl"
-                animate={{
-                    scale: [1, 1.15, 1],
-                    opacity: [0.4, 0.7, 0.4],
-                }}
-                transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-            />
-
-            <motion.div
-                className="pointer-events-none absolute -left-28 bottom-10 h-64 w-64 rounded-full bg-[#5147C9]/15 blur-[90px]"
-                animate={{
-                    opacity: [0.3, 0.55, 0.3],
-                }}
-                transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
+            {/* Nebulosas estáticas: sem animação de escala ou blur pulsante */}
+            <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                    background: `
+                        radial-gradient(
+                            ellipse at 100% 30%,
+                            rgba(128, 100, 255, 0.13),
+                            transparent 38%
+                        ),
+                        radial-gradient(
+                            ellipse at 0% 85%,
+                            rgba(81, 71, 201, 0.14),
+                            transparent 38%
+                        )
+                    `,
                 }}
             />
 
@@ -61,14 +56,13 @@ export function MoonStory() {
 
             {/* Conteúdo principal */}
             <div className="relative z-10 flex h-full flex-col pr-6">
-                {/* Header */}
                 <StoryHeader text="Naquela noite" />
 
                 {/* Título */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15, duration: 0.5 }}
+                    transition={{ delay: 0.1, duration: 0.35 }}
                 >
                     <h1 className="mt-5 max-w-[330px] text-4xl font-black uppercase leading-[0.9] tracking-tight">
                         A lua estava
@@ -80,19 +74,21 @@ export function MoonStory() {
 
                 {/* Lua */}
                 <div className="relative flex flex-1 items-center justify-center">
-                    {/* Halo astronômico */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4, duration: 1 }}
-                        className="pointer-events-none absolute h-64 w-64 rounded-full bg-[#8B7CFF]/[0.07] blur-3xl"
+                    {/* Halo estático */}
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute h-56 w-56 rounded-full"
+                        style={{
+                            background:
+                                "radial-gradient(circle, rgba(139,124,255,0.12) 0%, rgba(139,124,255,0.04) 48%, transparent 72%)",
+                        }}
                     />
 
                     <motion.div
                         initial={{
                             opacity: 0,
-                            scale: 0.6,
-                            y: 30,
+                            scale: 0.85,
+                            y: 16,
                         }}
                         animate={{
                             opacity: 1,
@@ -100,55 +96,31 @@ export function MoonStory() {
                             y: 0,
                         }}
                         transition={{
-                            delay: 0.3,
-                            duration: 0.8,
-                            type: "spring",
-                            stiffness: 80,
+                            delay: 0.2,
+                            duration: 0.55,
+                            ease: "easeOut",
                         }}
                         className="relative z-10"
                     >
-                        {/* Órbita decorativa */}
-                        <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{
-                                duration: 80,
-                                repeat: Infinity,
-                                ease: "linear",
-                            }}
-                            className="pointer-events-none absolute -inset-5 rounded-full border border-[#A99EFF]/10"
-                        >
-                            <span className="absolute left-[18%] top-[9%] h-1.5 w-1.5 rounded-full bg-[#79F0E2]/80 shadow-[0_0_9px_#79F0E2]" />
-                        </motion.div>
+                        {/* Órbita estática */}
+                        <div className="pointer-events-none absolute -inset-5 rounded-full border border-[#A99EFF]/15">
+                            <span
+                                className="absolute left-[18%] top-[9%] h-1.5 w-1.5 rounded-full bg-[#79F0E2]/80"
+                                style={{
+                                    boxShadow:
+                                        "0 0 6px rgba(121,240,226,0.45)",
+                                }}
+                            />
+                        </div>
 
-                        <motion.div
-                            animate={{
-                                rotate: [0, 10, 0],
-                                scale: [1, 1.15, 1],
-                            }}
-                            transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                            }}
-                            className="absolute -left-5 top-8 text-[#A99EFF]"
-                        >
+                        {/* Brilhos estáticos */}
+                        <div className="absolute -left-5 top-8 text-[#A99EFF]">
                             <Sparkles size={22} />
-                        </motion.div>
+                        </div>
 
-                        <motion.div
-                            animate={{
-                                rotate: [0, -10, 0],
-                                scale: [1, 1.15, 1],
-                            }}
-                            transition={{
-                                duration: 3.5,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                            }}
-                            className="absolute -right-4 bottom-12 text-[#F1F2FF]"
-                        >
+                        <div className="absolute -right-4 bottom-12 text-[#F1F2FF]/80">
                             <Sparkles size={16} />
-                        </motion.div>
+                        </div>
 
                         <Moon phase={moon.phase} />
                     </motion.div>
@@ -156,16 +128,16 @@ export function MoonStory() {
 
                 {/* Informações */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                        delay: 0.6,
-                        duration: 0.5,
+                        delay: 0.4,
+                        duration: 0.4,
                     }}
                     className="relative z-20"
                 >
                     {/* Card da fase */}
-                    <div className="rounded-3xl border border-[#A6A8FF]/20 bg-[#101631]/95 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+                    <div className="rounded-3xl border border-[#A6A8FF]/20 bg-[#101631]/95 p-5 shadow-[0_8px_24px_rgba(0,0,0,0.22)]">
                         <div className="flex items-end justify-between gap-3">
                             <div className="min-w-0">
                                 <p className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#A99EFF]">
@@ -179,10 +151,7 @@ export function MoonStory() {
 
                             <div className="shrink-0 rounded-2xl border border-[#B9B5FF]/30 bg-[#766BFF]/20 px-3 py-2 text-center">
                                 <span className="block text-xl font-black leading-none text-[#F1F2FF]">
-                                    {Math.round(
-                                        moon.illumination * 100
-                                    )}
-                                    %
+                                    {Math.round(moon.illumination * 100)}%
                                 </span>
 
                                 <span className="text-[8px] font-black uppercase tracking-wider text-[#C5C9FF]">
@@ -213,18 +182,24 @@ export function MoonStory() {
 }
 
 /* =========================================================
-   PAISAGEM: MONTANHAS E TELESCÓPIO
+   PAISAGEM: MONTANHAS
    ========================================================= */
 
 function MountainLandscape() {
     return (
         <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
-            {/* Brilho distante no horizonte */}
-            <div className="absolute -bottom-2 left-[10%] h-40 w-[80%] rounded-full bg-[#6255CB]/10 blur-[65px]" />
+            {/* Brilho distante substituído por gradiente */}
+            <div
+                className="absolute inset-x-0 bottom-[10%] h-40"
+                style={{
+                    background:
+                        "radial-gradient(ellipse at 50% 100%, rgba(98,85,203,0.12), transparent 72%)",
+                }}
+            />
 
             {/* Estrelas próximas às montanhas */}
-            <div className="absolute bottom-[30%] left-[12%] h-1 w-1 rounded-full bg-[#C5C9FF]/70 shadow-[0_0_7px_#A99EFF]" />
-            <div className="absolute bottom-[26%] right-[13%] h-1 w-1 rounded-full bg-[#79F0E2]/60 shadow-[0_0_7px_#79F0E2]" />
+            <div className="absolute bottom-[30%] left-[12%] h-1 w-1 rounded-full bg-[#C5C9FF]/70" />
+            <div className="absolute bottom-[26%] right-[13%] h-1 w-1 rounded-full bg-[#79F0E2]/60" />
 
             {/* Montanhas distantes */}
             <svg
@@ -337,21 +312,10 @@ function MountainLandscape() {
                 />
             </svg>
 
-            {/* Pequeno brilho no céu */}
-            <motion.div
-                animate={{
-                    opacity: [0.3, 0.8, 0.3],
-                    scale: [0.9, 1.15, 0.9],
-                }}
-                transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="absolute bottom-[29%] left-[39%] text-[#A99EFF]/70"
-            >
+            {/* Brilho estático próximo ao horizonte */}
+            <div className="absolute bottom-[29%] left-[39%] text-[#A99EFF]/60">
                 <Sparkles size={12} />
-            </motion.div>
+            </div>
         </div>
     );
 }
@@ -376,23 +340,23 @@ function Moon({ phase }: { phase: number }) {
 
     return (
         <div className="relative h-56 w-56 sm:h-64 sm:w-64">
-            {/* Glow externo */}
-            <motion.div
-                animate={{
-                    scale: [1, 1.08, 1],
-                    opacity: [0.3, 0.5, 0.3],
+            {/* Glow externo estático */}
+            <div
+                aria-hidden="true"
+                className="absolute inset-[-24px] rounded-full"
+                style={{
+                    background:
+                        "radial-gradient(circle, rgba(185,181,255,0.10), transparent 70%)",
                 }}
-                transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="absolute inset-[-30px] rounded-full bg-[#B9B5FF]/10 blur-3xl"
             />
 
             <svg
                 viewBox="0 0 256 256"
-                className="relative h-full w-full drop-shadow-[0_0_25px_rgba(185,181,255,0.22)]"
+                className="relative h-full w-full"
+                style={{
+                    filter:
+                        "drop-shadow(0 0 16px rgba(185,181,255,0.18))",
+                }}
             >
                 <defs>
                     <radialGradient
@@ -533,12 +497,12 @@ function MoonPhases({
     ];
 
     return (
-        <div className="mt-4 flex items-center justify-between rounded-2xl border border-[#A6A8FF]/15 bg-[#101631]/95 px-2 py-2.5 backdrop-blur-xl">
+        <div className="mt-4 flex items-center justify-between rounded-2xl border border-[#A6A8FF]/15 bg-[#101631]/95 px-2 py-2.5">
             {phases.map((phase, index) => {
                 const distance = Math.abs(phase - currentPhase);
                 const circularDistance = Math.min(
                     distance,
-                    1 - distance
+                    1 - distance,
                 );
 
                 const isCurrent = circularDistance < 0.0625;
@@ -546,22 +510,25 @@ function MoonPhases({
                 return (
                     <motion.div
                         key={index}
-                        initial={{
-                            opacity: 0,
-                            scale: 0.7,
-                        }}
-                        animate={{
-                            opacity: 1,
-                            scale: 1,
-                        }}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{
-                            delay: 0.75 + index * 0.05,
+                            delay: 0.5 + index * 0.035,
+                            duration: 0.25,
                         }}
                         className={`relative flex h-8 w-8 items-center justify-center rounded-full ${
                             isCurrent
-                                ? "bg-[#766BFF]/30 ring-1 ring-[#A99EFF]/70 shadow-[0_0_12px_rgba(139,124,255,0.22)]"
+                                ? "bg-[#766BFF]/30 ring-1 ring-[#A99EFF]/70"
                                 : ""
                         }`}
+                        style={
+                            isCurrent
+                                ? {
+                                      boxShadow:
+                                          "0 0 8px rgba(139,124,255,0.18)",
+                                  }
+                                : undefined
+                        }
                     >
                         <MiniMoon phase={phase} />
                     </motion.div>
@@ -571,11 +538,7 @@ function MoonPhases({
     );
 }
 
-function MiniMoon({
-    phase,
-}: {
-    phase: number;
-}) {
+function MiniMoon({ phase }: { phase: number }) {
     const illumination =
         (1 - Math.cos(phase * Math.PI * 2)) / 2;
 
@@ -584,7 +547,7 @@ function MiniMoon({
 
     if (isFull) {
         return (
-            <div className="h-5 w-5 rounded-full bg-[#F3EAD0] shadow-[0_0_8px_rgba(243,234,208,0.35)]" />
+            <div className="h-5 w-5 rounded-full bg-[#F3EAD0]" />
         );
     }
 
@@ -609,7 +572,7 @@ function MiniMoon({
 }
 
 /* =========================================================
-   ESTRELAS
+   ESTRELAS ESTÁTICAS
    ========================================================= */
 
 function Stars() {
@@ -630,28 +593,19 @@ function Stars() {
     return (
         <div className="pointer-events-none absolute inset-0 z-0">
             {stars.map((star, index) => (
-                <motion.div
+                <div
                     key={index}
-                    initial={{
-                        opacity: 0.2,
-                        scale: 0.8,
-                    }}
-                    animate={{
-                        opacity: [0.2, 0.8, 0.2],
-                        scale: [0.8, 1.1, 0.8],
-                    }}
-                    transition={{
-                        duration: 2 + index * 0.3,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
                     className="absolute rounded-full bg-[#C5C9FF]"
                     style={{
                         left: star.left,
                         top: star.top,
                         width: star.size,
                         height: star.size,
-                        boxShadow: `0 0 ${star.size * 2}px rgba(169,158,255,0.35)`,
+                        opacity: index % 3 === 0 ? 0.8 : 0.45,
+                        boxShadow:
+                            star.size >= 4
+                                ? "0 0 5px rgba(169,158,255,0.3)"
+                                : undefined,
                     }}
                 />
             ))}

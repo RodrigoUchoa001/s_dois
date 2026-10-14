@@ -15,7 +15,6 @@ type SeasonData = {
     accent: string;
 };
 
-
 const seasons: Record<Season, SeasonData> = {
     spring: {
         name: "PRIMAVERA",
@@ -47,41 +46,37 @@ const seasons: Record<Season, SeasonData> = {
     },
 };
 
+const skyBackgrounds: Record<Season, string> = {
+    spring:
+        "linear-gradient(180deg, #F5E8F7 0%, #F8EEF3 48%, #DCECDF 100%)",
+    summer:
+        "linear-gradient(180deg, #A9DDF5 0%, #D5EDFA 48%, #FBE0B2 100%)",
+    autumn:
+        "linear-gradient(180deg, #F4D7BB 0%, #F6E1CB 48%, #EAC5A5 100%)",
+    winter:
+        "linear-gradient(180deg, #D5E7F8 0%, #EAF2FA 52%, #D1E0F0 100%)",
+};
+
+const textColors: Record<Season, string> = {
+    spring: "#493650",
+    summer: "#49372C",
+    autumn: "#50372D",
+    winter: "#2D4059",
+};
 
 export function SeasonStory() {
     const season = getSeason(
         couple.startDay,
-        couple.startMonth
+        couple.startMonth,
     );
 
     const data = seasons[season];
-
-    
-    const skyBackgrounds: Record<Season, string> = {
-        spring:
-            "linear-gradient(180deg, #F5E8F7 0%, #F8EEF3 48%, #DCECDF 100%)",
-        summer:
-            "linear-gradient(180deg, #A9DDF5 0%, #D5EDFA 48%, #FBE0B2 100%)",
-        autumn:
-            "linear-gradient(180deg, #F4D7BB 0%, #F6E1CB 48%, #EAC5A5 100%)",
-        winter:
-            "linear-gradient(180deg, #D5E7F8 0%, #EAF2FA 52%, #D1E0F0 100%)",
-    };
-
-    const textColors: Record<Season, string> = {
-        spring: "#493650",
-        summer: "#49372C",
-        autumn: "#50372D",
-        winter: "#2D4059",
-    };
-
     const textColor = textColors[season];
-
 
     const seasonsTogether = getSeasonsTogether(
         couple.startDay,
         couple.startMonth,
-        couple.startYear
+        couple.startYear,
     );
 
     return (
@@ -89,52 +84,44 @@ export function SeasonStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative flex h-full w-full flex-col overflow-hidden text-[#493650]"
+            transition={{ duration: 0.3 }}
+            className="relative flex h-full w-full flex-col overflow-hidden"
             style={{
                 background: skyBackgrounds[season],
                 color: textColor,
-                transition: "background 1s ease, color 1s ease",
             }}
         >
             {/* =====================================================
                 CÉU E ILUMINAÇÃO
             ====================================================== */}
 
-            <motion.div
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 0.18, scale: 1 }}
-                transition={{ duration: 1.2 }}
-                className="pointer-events-none absolute -left-28 -top-28 h-80 w-80 rounded-full blur-[100px]"
-                style={{ backgroundColor: data.accent }}
+            {/* Luzes sazonais com gradientes estáticos */}
+            <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                    background: `
+                        radial-gradient(
+                            ellipse at 0% 0%,
+                            ${data.accent}20,
+                            transparent 42%
+                        ),
+                        radial-gradient(
+                            ellipse at 70% 100%,
+                            ${data.accent}16,
+                            transparent 45%
+                        )
+                    `,
+                }}
             />
 
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.12 }}
-                transition={{ duration: 1.4, delay: 0.2 }}
-                className="pointer-events-none absolute -bottom-20 left-1/3 h-80 w-80 rounded-full blur-[110px]"
-                style={{ backgroundColor: data.accent }}
-            />
-
+            {/* Brilhos decorativos estáticos */}
             <div className="pointer-events-none absolute right-[12%] top-[12%] text-[#D9D7FF]/70">
                 <Sparkles size={16} />
             </div>
 
-            <motion.div
-                animate={{
-                    opacity: [0.25, 0.7, 0.25],
-                    scale: [0.85, 1.15, 0.85],
-                }}
-                transition={{
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="pointer-events-none absolute left-[12%] top-[27%] text-[#D9D7FF]/70"
-            >
+            <div className="pointer-events-none absolute left-[12%] top-[27%] text-[#D9D7FF]/70">
                 <Sparkles size={13} />
-            </motion.div>
+            </div>
 
             <SideRibbon text={data.name} />
 
@@ -147,32 +134,32 @@ export function SeasonStory() {
 
                 {/* Título e contador */}
                 <motion.div
-                    initial={{ opacity: 0, y: 22 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25, duration: 0.55 }}
+                    transition={{ delay: 0.1, duration: 0.35 }}
                     className="relative z-20 mt-7 shrink-0"
                 >
-                    <p className="text-sm font-medium text-[#D5DCFF]/65">
+                    <p className="text-sm font-medium text-[#493650]/60">
                         E era
                     </p>
 
                     <motion.h1
-                        initial={{ opacity: 0, x: -12 }}
+                        initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4, duration: 0.6 }}
+                        transition={{ delay: 0.18, duration: 0.35 }}
                         className="mt-2 text-[clamp(2.8rem,12vw,4rem)] font-black leading-[0.85] tracking-[-0.07em]"
                         style={{
                             color: data.accent,
-                            textShadow: `0 0 32px ${data.accent}22`,
+                            textShadow: `0 0 20px ${data.accent}18`,
                         }}
                     >
                         {data.name}
                     </motion.h1>
 
                     <motion.div
-                        initial={{ opacity: 0, x: -12 }}
+                        initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.65, duration: 0.5 }}
+                        transition={{ delay: 0.28, duration: 0.35 }}
                         className="mt-4 flex items-center gap-2.5"
                     >
                         <div
@@ -197,11 +184,11 @@ export function SeasonStory() {
                 ================================================= */}
 
                 <motion.div
-                    initial={{ opacity: 0, y: 22, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
-                        delay: 0.45,
-                        duration: 0.8,
+                        delay: 0.25,
+                        duration: 0.45,
                         ease: "easeOut",
                     }}
                     className="relative z-0 min-h-0 flex-1"
@@ -216,13 +203,13 @@ export function SeasonStory() {
                 ================================================= */}
 
                 <motion.div
-                    initial={{ opacity: 0, y: 18 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.55 }}
+                    transition={{ delay: 0.4, duration: 0.4 }}
                     className="relative z-20 mt-2 shrink-0"
                 >
                     <div
-                        className="relative rounded-[25px] border bg-[#111831]/90 p-4 shadow-[0_12px_35px_rgba(0,0,0,0.2)] backdrop-blur-xl"
+                        className="relative rounded-[25px] border bg-[#111831]/95 p-4 shadow-[0_8px_24px_rgba(0,0,0,0.16)]"
                         style={{
                             borderColor: `${data.accent}35`,
                         }}
@@ -232,7 +219,6 @@ export function SeasonStory() {
                             className="absolute left-5 top-0 h-px w-12 -translate-y-px"
                             style={{
                                 backgroundColor: data.accent,
-                                boxShadow: `0 0 10px ${data.accent}`,
                             }}
                         />
 
@@ -254,10 +240,12 @@ export function SeasonStory() {
                             className="h-px w-5"
                             style={{ backgroundColor: data.accent }}
                         />
+
                         <Sparkles
                             size={11}
                             style={{ color: data.accent }}
                         />
+
                         <span
                             className="h-px w-5"
                             style={{ backgroundColor: data.accent }}
@@ -307,7 +295,7 @@ function getSeason(day: number, month: number): Season {
 function getSeasonsTogether(
     startDay: number,
     startMonth: number,
-    startYear: number
+    startYear: number,
 ) {
     const now = new Date();
 
@@ -315,7 +303,7 @@ function getSeasonsTogether(
 
     const currentSeason = getSeason(
         now.getDate(),
-        now.getMonth() + 1
+        now.getMonth() + 1,
     );
 
     const seasonOrder: Record<Season, number> = {

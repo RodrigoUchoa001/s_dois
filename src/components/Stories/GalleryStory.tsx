@@ -17,6 +17,16 @@ import { StoryHeader } from "./StoryHeader";
 const CREAM = "#fff3c7";
 const LILAC = "#a875ff";
 
+const BACKGROUND_STARS = [
+    { x: "12%", y: "22%", s: 2 },
+    { x: "82%", y: "17%", s: 3 },
+    { x: "89%", y: "38%", s: 2 },
+    { x: "9%", y: "62%", s: 2 },
+    { x: "77%", y: "76%", s: 2 },
+    { x: "22%", y: "84%", s: 3 },
+    { x: "68%", y: "10%", s: 2 },
+];
+
 export function GalleryStory() {
     const gallery = couple.wrapped.gallery;
 
@@ -93,55 +103,43 @@ export function GalleryStory() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.4 }}
             className="
                 relative h-full w-full overflow-hidden
                 bg-[#0b0b2b] text-[#fff3c7]
             "
         >
-            {/* FUNDO */}
+            {/* FUNDO ESTÁTICO */}
 
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <div
-                    className="
-                        absolute -left-32 -top-28 h-80 w-80
-                        rounded-full bg-[#8064ff]/15 blur-[100px]
-                    "
-                />
-                <div
-                    className="
-                        absolute -bottom-36 -right-28 h-96 w-96
-                        rounded-full bg-[#a875ff]/10 blur-[110px]
-                    "
-                />
-                <div
-                    className="
-                        absolute left-1/2 top-[42%]
-                        h-72 w-72 -translate-x-1/2
-                        rounded-full bg-[#8064ff]/[0.07]
-                        blur-[100px]
-                    "
+                    className="absolute inset-0"
+                    style={{
+                        background: `
+                            radial-gradient(
+                                ellipse at 5% 5%,
+                                rgba(128, 100, 255, 0.12),
+                                transparent 42%
+                            ),
+                            radial-gradient(
+                                ellipse at 95% 90%,
+                                rgba(168, 117, 255, 0.10),
+                                transparent 45%
+                            ),
+                            radial-gradient(
+                                ellipse at 50% 45%,
+                                rgba(128, 100, 255, 0.045),
+                                transparent 55%
+                            )
+                        `,
+                    }}
                 />
 
-                {/* Pontinhos que lembram um céu noturno */}
+                {/* ESTRELAS DECORATIVAS ESTÁTICAS */}
 
-                {[
-                    { x: "12%", y: "22%", s: 2 },
-                    { x: "82%", y: "17%", s: 3 },
-                    { x: "89%", y: "38%", s: 2 },
-                    { x: "9%", y: "62%", s: 2 },
-                    { x: "77%", y: "76%", s: 2 },
-                    { x: "22%", y: "84%", s: 3 },
-                    { x: "68%", y: "10%", s: 2 },
-                ].map((star, index) => (
-                    <motion.div
+                {BACKGROUND_STARS.map((star, index) => (
+                    <div
                         key={index}
-                        animate={{ opacity: [0.25, 0.8, 0.25] }}
-                        transition={{
-                            duration: 2.5 + index * 0.35,
-                            repeat: Infinity,
-                            delay: index * 0.3,
-                        }}
                         className="
                             absolute rounded-full
                             bg-[#c4aaff]
@@ -151,6 +149,7 @@ export function GalleryStory() {
                             top: star.y,
                             width: star.s,
                             height: star.s,
+                            opacity: index % 2 === 0 ? 0.45 : 0.7,
                         }}
                     />
                 ))}
@@ -161,15 +160,15 @@ export function GalleryStory() {
             <div className="relative z-10 flex h-full w-full flex-col px-6 pb-6 pr-14 pt-7">
                 <StoryHeader text="Nossos momentos" />
 
-                {/* CABEÇALHO DA PÁGINA DO ÁLBUM */}
+                {/* CABEÇALHO DO ÁLBUM */}
 
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentGroup}
-                        initial={{ opacity: 0, y: 12 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.22 }}
                         className="mt-5"
                     >
                         <div className="flex items-start justify-between gap-3">
@@ -209,13 +208,9 @@ export function GalleryStory() {
                                 </p>
                             </div>
 
-                            <motion.div
-                                animate={{ rotate: [8, 14, 8] }}
-                                transition={{
-                                    duration: 5,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                }}
+                            {/* ÍCONE DECORATIVO SEM ANIMAÇÃO INFINITA */}
+
+                            <div
                                 className="
                                     mt-1 shrink-0 rounded-xl
                                     border border-[#a875ff]/20
@@ -224,10 +219,10 @@ export function GalleryStory() {
                             >
                                 <Heart
                                     size={20}
-                                    fill="#a875ff"
+                                    fill={LILAC}
                                     className="text-[#a875ff]"
                                 />
-                            </motion.div>
+                            </div>
                         </div>
 
                         {/* PROGRESSO DAS FOTOS */}
@@ -249,7 +244,7 @@ export function GalleryStory() {
                                                     ? 1
                                                     : 0,
                                         }}
-                                        transition={{ duration: 0.3 }}
+                                        transition={{ duration: 0.2 }}
                                         className="
                                             h-full origin-left rounded-full
                                             bg-[#a875ff]
@@ -257,7 +252,7 @@ export function GalleryStory() {
                                         style={{
                                             boxShadow:
                                                 index === currentPhoto
-                                                    ? "0 0 10px rgba(168,117,255,0.6)"
+                                                    ? "0 0 6px rgba(168,117,255,0.4)"
                                                     : "none",
                                         }}
                                     />
@@ -278,15 +273,9 @@ export function GalleryStory() {
                 {/* ÁREA DO SCRAPBOOK */}
 
                 <div className="relative flex min-h-0 flex-1 items-center justify-center">
-                    {/* MARCAÇÕES DECORATIVAS AO REDOR DO ÁLBUM */}
+                    {/* SELO DECORATIVO ESTÁTICO */}
 
-                    <motion.div
-                        animate={{ rotate: [0, 8, 0], y: [0, -4, 0] }}
-                        transition={{
-                            duration: 5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                        }}
+                    <div
                         className="
                             pointer-events-none absolute left-[2%]
                             top-[12%] z-0 -rotate-12
@@ -295,34 +284,28 @@ export function GalleryStory() {
                         <div className="flex h-[58px] w-[58px] flex-col items-center justify-center rounded-full border border-dashed border-[#a875ff]/40 bg-[#a875ff]/[0.07]">
                             <Star
                                 size={15}
-                                fill="#a875ff"
+                                fill={LILAC}
                                 className="text-[#a875ff]"
                             />
                             <span className="mt-1 text-[7px] font-black uppercase tracking-[0.13em] text-[#c4aaff]">
                                 especiais
                             </span>
                         </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.div
-                        animate={{ rotate: [-7, -2, -7] }}
-                        transition={{
-                            duration: 6,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                        }}
+                    <div
                         className="
                             pointer-events-none absolute right-[1%]
-                            top-[18%] z-0
+                            top-[18%] z-0 rotate-[-4deg]
                         "
                     >
                         <Sparkles
                             size={23}
                             className="text-[#a875ff]/65"
                         />
-                    </motion.div>
+                    </div>
 
-                    {/* PÁGINAS E FOTOS ANTERIORES */}
+                    {/* FOTOS DAS CAMADAS TRASEIRAS */}
 
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                         {group.images
@@ -341,33 +324,32 @@ export function GalleryStory() {
                                             opacity: 0,
                                             scale: scale - 0.05,
                                             rotate: rotation + 5,
-                                            y: 22 * layer,
+                                            y: 18 * layer,
                                         }}
                                         animate={{
                                             opacity: 1,
                                             scale,
                                             rotate: rotation,
-                                            y: 16 * layer,
+                                            y: 14 * layer,
                                         }}
                                         exit={{
                                             opacity: 0,
-                                            scale: 0.8,
-                                            y: 35,
+                                            scale: 0.85,
+                                            y: 25,
                                         }}
                                         transition={{
-                                            duration: 0.35,
-                                            delay: index * 0.06,
+                                            duration: 0.25,
+                                            delay: index * 0.04,
                                         }}
                                         className="
                                             absolute w-[78%]
                                             rounded-sm bg-[#e9e0ff]
                                             p-2 pb-3
-                                            shadow-[0_18px_45px_rgba(0,0,0,0.3)]
+                                            shadow-[0_12px_28px_rgba(0,0,0,0.25)]
                                         "
                                         style={{
                                             zIndex: 5 - layer,
-                                            aspectRatio:
-                                                image.imageAspect,
+                                            aspectRatio: image.imageAspect,
                                         }}
                                     >
                                         <img
@@ -394,9 +376,9 @@ export function GalleryStory() {
                             key={`${currentGroup}-${currentPhoto}`}
                             initial={{
                                 opacity: 0,
-                                x: direction > 0 ? 260 : -260,
-                                rotate: direction > 0 ? 9 : -9,
-                                scale: 0.92,
+                                x: direction > 0 ? 220 : -220,
+                                rotate: direction > 0 ? 8 : -8,
+                                scale: 0.94,
                             }}
                             animate={{
                                 opacity: 1,
@@ -406,9 +388,9 @@ export function GalleryStory() {
                             }}
                             exit={{
                                 opacity: 0,
-                                x: direction > 0 ? -220 : 220,
-                                rotate: direction > 0 ? -10 : 10,
-                                scale: 0.9,
+                                x: direction > 0 ? -180 : 180,
+                                rotate: direction > 0 ? -8 : 8,
+                                scale: 0.92,
                             }}
                             transition={{
                                 type: "spring",
@@ -434,8 +416,7 @@ export function GalleryStory() {
                             <div
                                 className="
                                     absolute inset-0 translate-y-2
-                                    rounded-sm bg-[#8064ff]/20
-                                    blur-md
+                                    rounded-sm bg-[#8064ff]/15
                                 "
                             />
 
@@ -446,7 +427,7 @@ export function GalleryStory() {
                                     relative h-full w-full
                                     rounded-sm bg-[#f5efff]
                                     p-2 pb-3
-                                    shadow-[0_25px_65px_rgba(0,0,0,0.45)]
+                                    shadow-[0_18px_40px_rgba(0,0,0,0.35)]
                                 "
                             >
                                 {/* FITA ADESIVA */}
@@ -454,7 +435,7 @@ export function GalleryStory() {
                                 <motion.div
                                     initial={{
                                         opacity: 0,
-                                        y: -8,
+                                        y: -6,
                                         rotate: -8,
                                     }}
                                     animate={{
@@ -463,8 +444,8 @@ export function GalleryStory() {
                                         rotate: -5,
                                     }}
                                     transition={{
-                                        delay: 0.25,
-                                        duration: 0.3,
+                                        delay: 0.18,
+                                        duration: 0.25,
                                     }}
                                     className="
                                         pointer-events-none absolute
@@ -495,8 +476,6 @@ export function GalleryStory() {
                                         "
                                     />
 
-                                    {/* EFEITO DE FOTO REVELADA */}
-
                                     <div
                                         className="
                                             pointer-events-none absolute
@@ -504,13 +483,13 @@ export function GalleryStory() {
                                         "
                                     />
 
-                                    {/* SELO DECORATIVO */}
+                                    {/* SELO DA FOTO */}
 
                                     <motion.div
                                         initial={{
                                             opacity: 0,
-                                            scale: 0.5,
-                                            rotate: -20,
+                                            scale: 0.7,
+                                            rotate: -12,
                                         }}
                                         animate={{
                                             opacity: 1,
@@ -518,17 +497,16 @@ export function GalleryStory() {
                                             rotate: 10,
                                         }}
                                         transition={{
-                                            delay: 0.35,
-                                            type: "spring",
+                                            delay: 0.22,
+                                            duration: 0.25,
                                         }}
                                         className="
                                             pointer-events-none absolute
                                             bottom-3 left-3
                                             flex h-9 w-9 items-center
                                             justify-center rounded-full
-                                            border border-white/50
-                                            bg-[#0b0b2b]/55
-                                            backdrop-blur-sm
+                                            border border-white/40
+                                            bg-[#0b0b2b]/80
                                         "
                                     >
                                         <Heart
@@ -539,7 +517,7 @@ export function GalleryStory() {
                                     </motion.div>
                                 </div>
 
-                                {/* LEGENDA ESCRITA NO PAPEL */}
+                                {/* LEGENDA NO PAPEL */}
 
                                 <div
                                     className="
@@ -578,10 +556,13 @@ export function GalleryStory() {
                     <AnimatePresence>
                         {showSwipeHint && (
                             <motion.div
-                                initial={{ opacity: 0, y: 8 }}
+                                initial={{ opacity: 0, y: 6 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 8 }}
-                                transition={{ delay: 1, duration: 0.4 }}
+                                exit={{ opacity: 0, y: 6 }}
+                                transition={{
+                                    delay: 0.8,
+                                    duration: 0.3,
+                                }}
                                 className="
                                     pointer-events-none absolute
                                     bottom-[3%] left-1/2 z-30
@@ -593,8 +574,8 @@ export function GalleryStory() {
                                         flex items-center gap-2
                                         whitespace-nowrap rounded-full
                                         border border-[#a875ff]/20
-                                        bg-[#0b0b2b]/80 px-3.5 py-2
-                                        shadow-lg backdrop-blur-md
+                                        bg-[#0b0b2b]/95 px-3.5 py-2
+                                        shadow-lg
                                     "
                                 >
                                     <ChevronLeft
@@ -613,12 +594,12 @@ export function GalleryStory() {
                         )}
                     </AnimatePresence>
 
-                    {/* PEQUENA ANOTAÇÃO DECORATIVA */}
+                    {/* ANOTAÇÃO DECORATIVA */}
 
                     <motion.div
-                        initial={{ opacity: 0, rotate: 10, scale: 0.8 }}
+                        initial={{ opacity: 0, rotate: 10, scale: 0.85 }}
                         animate={{ opacity: 1, rotate: 6, scale: 1 }}
-                        transition={{ delay: 0.6, duration: 0.4 }}
+                        transition={{ delay: 0.4, duration: 0.3 }}
                         className="
                             pointer-events-none absolute
                             bottom-[12%] right-[1%] z-10
@@ -631,7 +612,7 @@ export function GalleryStory() {
                                 flex-col items-center justify-center
                                 rounded-sm border border-[#a875ff]/20
                                 bg-[#a875ff]/10
-                                shadow-lg backdrop-blur-sm
+                                shadow-md
                             "
                         >
                             <Heart
@@ -652,9 +633,9 @@ export function GalleryStory() {
                     <motion.button
                         type="button"
                         whileHover={
-                            currentGroup > 0 ? { scale: 1.07 } : undefined
+                            currentGroup > 0 ? { scale: 1.05 } : undefined
                         }
-                        whileTap={{ scale: 0.92 }}
+                        whileTap={{ scale: 0.94 }}
                         onClick={previousGroup}
                         disabled={currentGroup === 0}
                         aria-label="Álbum anterior"
@@ -707,7 +688,7 @@ export function GalleryStory() {
                                         opacity:
                                             index === currentGroup ? 1 : 0.35,
                                     }}
-                                    whileTap={{ scale: 0.85 }}
+                                    whileTap={{ scale: 0.9 }}
                                     className="
                                         h-1.5 rounded-full
                                         bg-[#a875ff]
@@ -721,10 +702,10 @@ export function GalleryStory() {
                         type="button"
                         whileHover={
                             currentGroup < totalGroups - 1
-                                ? { scale: 1.07 }
+                                ? { scale: 1.05 }
                                 : undefined
                         }
-                        whileTap={{ scale: 0.92 }}
+                        whileTap={{ scale: 0.94 }}
                         onClick={nextGroup}
                         disabled={currentGroup === totalGroups - 1}
                         aria-label="Próximo álbum"
