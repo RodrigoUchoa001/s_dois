@@ -10,6 +10,7 @@ const PLACES = [
     "Mirante da Arara",
     "Estação Villa",
     "Pizzaria do gordinho",
+    "Balneário das Serras",
     // "Aqui em casa 🤤",
     "Atta"
 ];
