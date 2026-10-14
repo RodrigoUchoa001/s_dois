@@ -26,7 +26,7 @@ export function SpotifyHero() {
             <div
                 className="absolute inset-0 bg-cover bg-center opacity-20 blur-3xl"
                 style={{
-                    backgroundImage: `url(${couple.song.cover})`,
+                    backgroundImage: `url(${couple.mainImage1})`,
                 }}
             />
 
@@ -161,7 +161,7 @@ export function SpotifyHero() {
                         className="relative overflow-hidden rounded-[24px]"
                     >
                         <img
-                            src={couple.song.cover}
+                            src={couple.mainImage1}
                             alt={`Capa da música ${couple.song.title}`}
                             className="aspect-square w-full object-cover"
                         />
@@ -250,7 +250,7 @@ export function SpotifyHero() {
                     {/* Imagem */}
                     <div className="relative h-64 overflow-hidden">
                         <img
-                            src={couple.song.cover}
+                            src={couple.mainImage2}
                             alt={`Capa da música ${couple.song.title}`}
                             className="h-full w-full object-cover"
                         />

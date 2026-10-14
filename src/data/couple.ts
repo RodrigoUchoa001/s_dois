@@ -18,6 +18,11 @@ export const couple = {
         cover: `${import.meta.env.BASE_URL}images/music_cover.jpg`,
     },
 
+    mainImage1: `${import.meta.env.BASE_URL}images/main1.jpeg`,
+    mainImage2: `${import.meta.env.BASE_URL}images/main2.jpeg`,
+
+    endImage1: `${import.meta.env.BASE_URL}images/end1.jpeg`,
+
     message: `
         Algumas histórias começam de maneira inesperada.
 

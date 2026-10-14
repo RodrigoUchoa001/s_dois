@@ -35,9 +35,7 @@ export function FinalShareStory() {
 
     const coverImage = couple.song.cover;
 
-    const couplePhoto =
-        couple.wrapped.gallery.photoStack[0]?.images[0]?.src
-        ?? coverImage;
+    const couplePhoto = couple.endImage1;
     
     const cardRef = useRef<HTMLDivElement>(null);
     const [isSharing, setIsSharing] = useState(false);

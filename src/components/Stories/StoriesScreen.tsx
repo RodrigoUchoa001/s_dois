@@ -14,7 +14,6 @@ import { OurMusicStory } from "./OurMusicStory";
 import { MoonStory } from "./MoonStory";
 import { SeasonStory } from "./SeasonStory/SeasonStory";
 import { TimelineStory } from "./TimelineStory/TimelineStory";
-import { GalleryStory } from "./GalleryStory";
 import { BeginningStory } from "./BeginningStory/BeginningStory";
 import { StarMapStory } from "./StarMapStory/StarMapStory";
 import { NextChapterStory } from "./NewChapterStory";
@@ -43,7 +42,7 @@ export function StoriesScreen({
     const pressTimer = useRef<number | null>(null);
     const isLongPress = useRef(false);
 
-    const totalStories = 14;
+    const totalStories = 13;
     const storyDuration = 8000;
 
     const minutesTogether = getMinutesTogether();
@@ -176,7 +175,7 @@ export function StoriesScreen({
             if (progress >= 1) {
                 // Stories 6 (Gallery) e 8 (Timeline):
                 // não avançam automaticamente.
-                if (currentStory !== 6 && currentStory !== 8 && currentStory !== 9 && currentStory !== 10) {
+                if (currentStory !== 7 && currentStory !== 8 && currentStory !== 9) {
                     nextStory();
                 }
 
@@ -335,36 +334,32 @@ export function StoriesScreen({
                             {currentStory === 5 && (
                                 <StarMapStory />
                             )}
-
-                            {currentStory === 6 && (
-                                <GalleryStory />
-                            )}
                             
-                            {currentStory === 7 && (
+                            {currentStory === 6 && (
                                 <OurMusicStory />
                             )}
 
-                            {currentStory === 8 && (
+                            {currentStory === 7 && (
                                 <TimelineStory />
                             )}
 
-                            {currentStory === 9 && (
+                            {currentStory === 8 && (
                                 <DateNightRouletteStory />
                             )}
 
-                            {currentStory === 10 && (
+                            {currentStory === 9 && (
                                 <LoveLetterStory />
                             )}
 
-                            {currentStory === 11 && (
+                            {currentStory === 10 && (
                                 <NextChapterStory />
                             )}
 
-                            {currentStory === 12 && (
+                            {currentStory === 11 && (
                                 <FinalStory animatedMinutes={animatedMinutes}  />
                             )}
 
-                            {currentStory === 13 && (
+                            {currentStory === 12 && (
                                 <FinalShareStory />
                             )}
                         </AnimatePresence>
