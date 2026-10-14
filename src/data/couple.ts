@@ -331,7 +331,7 @@ export const couple = {
                     eventDescription: `
                     Sim, o dia.
 
-                    O dia que escolhei pra pedir você em namoro.
+                    O dia que escolhi pra pedir você em namoro.
 
                     No podia ser em outro lugar, que não fosse o nosso lugarzinho especial, né?
 
@@ -349,7 +349,7 @@ export const couple = {
 
                     Mas no final deu tudo certo, você aceitou ❤️
 
-                    Você não consegue imaginar o quão feliz eu fiquei nesse momento. É sério.
+                    Você nem imagina o quão feliz eu fiquei nesse momento. Sério.
 
                     Foi o momento mais feliz da minha vida. Saber que você aceitou estar ao meu lado, no dias bons e ruins, e a partir daqui, começarmos a construir a nossa história.
 
@@ -410,7 +410,7 @@ export const couple = {
 
                     Pedimos aquele carneiro, esse tava top hein.
 
-                    Nesse dia, teve até música ao vivo. Só antigas
+                    Nesse dia, teve até música ao vivo. Só as antigas.
 
                     Mais um dia incrível ao seu lado 😍
                     `,
@@ -433,7 +433,7 @@ export const couple = {
 
                     Sua família me recebeu tão bem, e tinha tanta comida que não sabia nem por onde começar.
 
-                    Nesse dia, tiramos a, na minha opinião, a nossa melhor fotinha.
+                    Nesse dia, tiramos, na minha opinião, a nossa melhor fotinha.
                     `,
                 },
                 {
@@ -499,9 +499,9 @@ export const couple = {
                     eventDescription: `
                     Pintei até as paredes pra receber você kkkkkkkkkkkkkk
 
-                    Não me arrependo lindinha
+                    Não me arrependo lindinha.
 
-                    Nenhum esforço pra você é suficiente para o que você merece (acho que eu ja disse isso né? kkkkkkk)
+                    Nenhum esforço é suficiente para o que você merece (acho que eu ja disse isso antes né? kkkkkkk)
                     `,
                 },
                 {
