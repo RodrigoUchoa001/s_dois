@@ -41,7 +41,7 @@ const seasons: Record<Season, SeasonData> = {
         name: "INVERNO",
         shortName: "inverno",
         description:
-            "Começamos no inverno e, desde então, já vimos muitas estações passarem juntos.",
+            "Começamos no inverno e, desde então, já vimos muitas estações passarem juntos. (Sim, tem neve aqui em cima, mas aqui não neva mesmo kkkkkkkkk)",
         accent: "#628BBE",
     },
 };
