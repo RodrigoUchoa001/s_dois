@@ -140,11 +140,17 @@ function EventCard({
                             : "justify-start text-left"
                     }`}
                 >
-                    <div className="h-[2px] w-5 bg-[#a875ff]" />
+                    {align === "left" && (
+                        <div className="h-[2px] w-5 bg-[#a875ff]" />
+                    )}
 
                     <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#fff3c7]/65">
                         {date}
                     </p>
+
+                    {align === "right" && (
+                        <div className="h-[2px] w-5 bg-[#a875ff]" />
+                    )}
                 </div>
 
                 {/* Card */}
