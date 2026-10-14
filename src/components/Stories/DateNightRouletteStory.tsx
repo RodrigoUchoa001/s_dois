@@ -149,7 +149,7 @@ export function DateNightRouletteStory() {
     }
 
     return (
-        <section className="absolute inset-0 flex flex-col items-center overflow-y-auto overflow-x-hidden bg-[#09091f] px-5 pb-8 pt-8 text-[#fff4d6] sm:justify-center sm:py-10">
+        <section className="absolute inset-x-0 bottom-0 top-7 flex flex-col items-center overflow-y-auto overflow-x-hidden scrollbar-none bg-[#09091f] px-5 pb-8 pt-8 text-[#fff4d6] sm:justify-center sm:py-10">
             {/* Fundo decorativo estático: evita blur e animações desnecessárias. */}
             <div
                 aria-hidden="true"

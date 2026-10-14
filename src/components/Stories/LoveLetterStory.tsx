@@ -65,7 +65,7 @@ export function LoveLetterStory() {
             </div>
 
             {/* Área rolável: a barra de progresso do StoriesScreen fica acima */}
-            <div className="absolute inset-x-0 bottom-0 top-7 overflow-y-auto overscroll-contain">
+            <div className="absolute inset-x-0 bottom-0 top-7 overflow-y-auto overscroll-contain scrollbar-none">
                 <div className="mx-auto flex min-h-full w-full max-w-lg flex-col items-center justify-center px-5 py-5 sm:px-8 sm:py-4">
                     {/* Cabeçalho compacto */}
                     <motion.header
