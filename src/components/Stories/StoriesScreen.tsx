@@ -21,6 +21,7 @@ import { NextChapterStory } from "./NewChapterStory";
 import { FinalStory } from "./FinalStory";
 import { FinalShareStory } from "./FinalShareStory";
 import { DateNightRouletteStory } from "./DateNightRouletteStory";
+import { LoveLetterStory } from "./LoveLetterStory";
 
 interface StoriesScreenProps {
     isOpen: boolean;
@@ -42,7 +43,7 @@ export function StoriesScreen({
     const pressTimer = useRef<number | null>(null);
     const isLongPress = useRef(false);
 
-    const totalStories = 13;
+    const totalStories = 14;
     const storyDuration = 8000;
 
     const minutesTogether = getMinutesTogether();
@@ -175,7 +176,7 @@ export function StoriesScreen({
             if (progress >= 1) {
                 // Stories 6 (Gallery) e 8 (Timeline):
                 // não avançam automaticamente.
-                if (currentStory !== 6 && currentStory !== 8 && currentStory !== 9) {
+                if (currentStory !== 6 && currentStory !== 8 && currentStory !== 9 && currentStory !== 10) {
                     nextStory();
                 }
 
@@ -352,14 +353,18 @@ export function StoriesScreen({
                             )}
 
                             {currentStory === 10 && (
-                                <NextChapterStory />
+                                <LoveLetterStory />
                             )}
 
                             {currentStory === 11 && (
-                                <FinalStory animatedMinutes={animatedMinutes}  />
+                                <NextChapterStory />
                             )}
 
                             {currentStory === 12 && (
+                                <FinalStory animatedMinutes={animatedMinutes}  />
+                            )}
+
+                            {currentStory === 13 && (
                                 <FinalShareStory />
                             )}
                         </AnimatePresence>
