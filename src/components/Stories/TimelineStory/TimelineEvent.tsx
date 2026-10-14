@@ -45,7 +45,6 @@ export function TimelineEvent({ event, index }: Props) {
                 {isLeft && (
                     <EventCard
                         event={event}
-                        index={index}
                         align="right"
                     />
                 )}
@@ -56,7 +55,6 @@ export function TimelineEvent({ event, index }: Props) {
                 {!isLeft && (
                     <EventCard
                         event={event}
-                        index={index}
                         align="left"
                     />
                 )}
@@ -96,11 +94,9 @@ export function TimelineEvent({ event, index }: Props) {
 
 function EventCard({
     event,
-    index,
     align,
 }: {
     event: TimelineEventData;
-    index: number;
     align: "left" | "right";
 }) {
     const date = `${String(event.date.day).padStart(2, "0")} ${
@@ -174,9 +170,11 @@ function EventCard({
                         aria-label={`Abrir imagem: ${event.imageDescription}`}
                     >
                         <motion.img
-                            layoutId={`timeline-image-${index}`}
                             src={event.image}
                             alt={event.imageDescription}
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
                             className="h-full w-full object-cover"
                         />
 
@@ -196,7 +194,7 @@ function EventCard({
                             {event.imageDescription}
                         </h2>
 
-                        <p className="mt-2 text-xs font-medium leading-relaxed text-[#fff3c7]/55">
+                        <p className="text-xs font-medium whitespace-pre-line wrap-words leading-relaxed text-[#fff3c7]/55">
                             {event.eventDescription}
                         </p>
                     </div>
@@ -214,10 +212,11 @@ function EventCard({
                         className="fixed inset-0 z-[100] flex items-center justify-center bg-[#05051b]/95 p-4 backdrop-blur-sm"
                         onClick={() => setIsImageOpen(false)}
                     >
-                        <motion.img
-                            layoutId={`timeline-image-${index}`}
+                        <img
                             src={event.image}
                             alt={event.imageDescription}
+                            decoding="async"
+                            draggable={false}
                             className="max-h-[90vh] max-w-full rounded-[24px] border-2 border-[#fff3c7]/10 object-contain shadow-2xl"
                         />
                     </motion.div>
