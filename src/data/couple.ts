@@ -131,7 +131,7 @@ export const couple = {
                         year: 2026,
                     },
                     image: `${import.meta.env.BASE_URL}images/tl2.jpeg`,
-                    // imageAspect: "4/3",
+                    imageAspect: "4/3",
                     imageDescription: "Posse do concurso",
                     eventDescription: `
                     Nunca vou me conformar com essa foto.
