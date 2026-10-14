@@ -134,7 +134,7 @@ export function LoveLetterStory() {
 
                                 {/* Saudação */}
                                 <p className="mb-3 font-serif text-lg italic text-[#e8c98b]">
-                                    Meu amor,
+                                    Oi amor! ❤️❤️❤️
                                 </p>
 
                                 {/* Mensagem original */}

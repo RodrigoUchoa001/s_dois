@@ -1,7 +1,7 @@
 export const couple = {
     names: {
-        man: 'Fulano',
-        woman: 'Sicrano'
+        man: 'Rodrigo',
+        woman: 'Camila'
     },
     startDay: 17,
     startMonth: 7,
@@ -24,10 +24,17 @@ export const couple = {
     endImage1: `${import.meta.env.BASE_URL}images/end1.jpeg`,
 
     message: `
-        Algumas histórias começam de maneira inesperada.
+        Tudo bem com você? Espero que sim bb
 
-        A nossa começou naquele dia, quando nossos caminhos se cruzaram e nossas vidas se entrelaçaram de uma forma que jamais poderíamos imaginar. Desde então, cada momento ao seu lado tem sido uma aventura maravilhosa, repleta de risos, aprendizados e amor.
-        A cada dia que passa, sinto-me mais grato por ter você ao meu lado. Você é a razão do meu sorriso, a inspiração para os meus sonhos e o amor da minha vida. Juntos, enfrentamos desafios, celebramos conquistas e construímos memórias que ficarão para sempre em nossos corações.
+        Espero que tenha gostado da homenagem que fiz pra gente kkkkkk foi meio complicadinho, mas me diverti muito fazendo isso.
+
+        Devo dizer que passei por várias emoções enquanto montava esse site. É muito interessante ver essas métricazinhas, os dias, os momentos, as lembranças, os dias bons e ruins que aumentam a cada dia que passa entre a gente.
+
+        A timeline foi a mais parte mais emotiva pra mim. Sim, só se passaram 3 meses kkkkkkkk Só que, mesmo assim, ver as lembranças que criamos nesse pouco espaço de tempo, ainda é suficiente pra me fazer chorar.
+        
+        Eu amo tanto você. Sei que vacilo de vez em quando, que te magoo, que te deixo triste, decepcionada ou estressada. Peço, sinceramente, desculpas por todo mal que já fiz a você. Estou tentanto melhorar, por mim, e principalmente por você, e por nós. É tão difícil deixar antigos padrões pra trás. Mas uma certeza eu tenho: quero estar sempre melhorando, por nós.
+
+        Espero, sinceramente, que possamos sempre nos entender, nos perdoar, e enfim, seguir em frente, juntos.
      `,
     wrapped: {
         // etapas: minutos juntos, galeria de imagens, mapa estelar do inicio do namoro
