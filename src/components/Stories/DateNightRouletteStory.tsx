@@ -143,11 +143,6 @@ export function DateNightRouletteStory() {
         );
     }
 
-    function resetWheel() {
-        if (isSpinning) return;
-        setSelectedPlace(null);
-    }
-
     return (
         <section className="absolute inset-x-0 bottom-0 top-7 flex flex-col items-center overflow-y-auto overflow-x-hidden scrollbar-none bg-[#09091f] px-5 pb-8 pt-8 text-[#fff4d6] sm:justify-center sm:py-10">
             {/* Fundo decorativo estático: evita blur e animações desnecessárias. */}
@@ -364,7 +359,7 @@ export function DateNightRouletteStory() {
                 {/* Botão principal */}
                 <button
                     type="button"
-                    onClick={selectedPlace ? resetWheel : spinWheel}
+                    onClick={spinWheel}
                     disabled={isSpinning || places.length < 2}
                     className="mt-3 flex min-h-[58px] w-full items-center justify-center gap-2 rounded-full bg-[#fff4d6] px-6 py-4 text-sm font-extrabold text-[#17122e] shadow-[0_8px_30px_rgba(0,0,0,0.18)] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
                 >
