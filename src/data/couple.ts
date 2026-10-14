@@ -157,5 +157,18 @@ export const couple = {
                 },
             ],
         }
+    },
+    dateNight: {
+        places: [
+            "Dom Bistrô",
+            "Beco da Picanha",
+            "Pizza Quadrada",
+            "Mirante da Arara",
+            "Estação Villa",
+            "Pizzaria do gordinho",
+            "Balneário das Serras",
+            // "Aqui em casa 🤤",
+            "Atta"
+        ]
     }
 };

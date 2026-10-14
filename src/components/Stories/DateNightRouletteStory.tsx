@@ -2,18 +2,7 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Heart, RotateCw, Sparkles } from "lucide-react";
-
-const PLACES = [
-    "Dom Bistrô",
-    "Beco da Picanha",
-    "Pizza Quadrada",
-    "Mirante da Arara",
-    "Estação Villa",
-    "Pizzaria do gordinho",
-    "Balneário das Serras",
-    // "Aqui em casa 🤤",
-    "Atta"
-];
+import { couple } from "../../data/couple";
 
 const COLORS = [
     "#8064ff",
@@ -81,8 +70,10 @@ function normalizeDegrees(degrees: number) {
 export function DateNightRouletteStory() {
     const prefersReducedMotion = useReducedMotion();
 
+    const datePlaces = couple.dateNight.places;
+
     const places = useMemo(
-        () => PLACES.map((place) => place.trim()).filter(Boolean),
+        () => datePlaces.map((place) => place.trim()).filter(Boolean),
         [],
     );
 
@@ -192,9 +183,9 @@ export function DateNightRouletteStory() {
                 </div>
 
                 <h1 className="max-w-[350px] text-[clamp(2rem,9vw,3.2rem)] font-black uppercase leading-[0.95] tracking-[-0.055em] text-[#fff4d6]">
-                    Onde vamos
+                    Pra onde vamos
                     <br />
-                    sair hoje?
+                    na próxima?
                 </h1>
 
                 <p className="mt-3 max-w-xs text-sm leading-relaxed text-[#fff4d6]/55">
