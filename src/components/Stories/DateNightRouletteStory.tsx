@@ -10,7 +10,7 @@ const PLACES = [
     "Mirante da Arara",
     "Estação Villa",
     "Pizzaria do gordinho",
-    "Aqui em casa 🤤",
+    // "Aqui em casa 🤤",
     "Atta"
 ];
 
@@ -181,7 +181,7 @@ export function DateNightRouletteStory() {
             </div>
 
             {/* Cabeçalho */}
-            <header className="relative z-10 mb-5 flex w-full max-w-md flex-col items-center text-center sm:mb-7">
+            <header className="relative z-10 mb-5 mt-10 flex w-full max-w-md flex-col items-center text-center sm:mb-7">
                 <div className="mb-3 flex items-center gap-2 text-[#e8c98b]/80">
                     <Heart size={14} />
                     <span className="text-[10px] font-semibold uppercase tracking-[0.32em]">
@@ -189,10 +189,6 @@ export function DateNightRouletteStory() {
                     </span>
                     <Heart size={14} />
                 </div>
-
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.32em] text-[#a875ff]">
-                    A sorte está lançada
-                </p>
 
                 <h1 className="max-w-[350px] text-[clamp(2rem,9vw,3.2rem)] font-black uppercase leading-[0.95] tracking-[-0.055em] text-[#fff4d6]">
                     Onde vamos
@@ -397,10 +393,6 @@ export function DateNightRouletteStory() {
                         </>
                     )}
                 </button>
-
-                <p className="mt-3 text-center text-[10px] uppercase tracking-[0.22em] text-[#fff4d6]/30">
-                    Feito para decidir juntos
-                </p>
             </div>
         </section>
     );
