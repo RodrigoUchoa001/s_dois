@@ -188,7 +188,7 @@ export function FinalShareStory() {
                     {/* Nomes sobre a imagem */}
                     <div className="absolute bottom-5 left-5 right-5">
                         <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.3em] text-white/70">
-                            Nossa história, em números
+                            Nossa história
                         </p>
 
                         <h2 className="text-3xl font-black leading-none tracking-tight">
@@ -208,7 +208,7 @@ export function FinalShareStory() {
                         <p className="max-w-[230px] text-[10px] font-medium uppercase leading-relaxed tracking-[0.19em] text-white/55">
                             Ainda é só o começo.
                             <br />
-                            O melhor continua sendo nosso.
+                            O melhor ainda está por vir.
                         </p>
 
                         <motion.div
