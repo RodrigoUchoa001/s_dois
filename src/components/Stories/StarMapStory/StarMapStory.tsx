@@ -33,7 +33,7 @@ const RADIUS = 142;
  * Pedro II - PI
  */
 const LOCATION = {
-    name: "Pedro II, PI, Brasil",
+    name: "Pedro II",
     coordinates: "4°25′29″ S · 41°27′31″ W",
     latitude: -4.4247,
     longitude: -41.4586,
@@ -609,7 +609,7 @@ export function StarMapStory() {
 
             {/* SIDE RIBBON */}
 
-            <SideRibbon text="NOSSO CÉU" />
+            <SideRibbon text="NOSSO CÉU" bg_color="bg-[#B7A0FF]/30" />
 
             {/* CONTEÚDO */}
 
@@ -761,8 +761,8 @@ export function StarMapStory() {
                                     </p>
 
                                     <p
-                                        className="mt-1 text-lg font-black"
-                                        style={{ color: COLORS.ink }}
+                                        className="mt-1 text-xs"
+                                        style={{ color: COLORS.muted }}
                                     >
                                         {formatTime(startDate)}
                                     </p>
@@ -786,7 +786,7 @@ export function StarMapStory() {
                                     </p>
 
                                     <p
-                                        className="mt-1 text-sm font-black"
+                                        className="mt-1 text-lg font-black"
                                         style={{ color: COLORS.ink }}
                                     >
                                         {LOCATION.name}

@@ -182,14 +182,10 @@ export function DateNightRouletteStory() {
                     <br />
                     na próxima?
                 </h1>
-
-                <p className="mt-3 max-w-xs text-sm leading-relaxed text-[#fff4d6]/55">
-                    Uma roleta, duas pessoas e um encontro para lembrar.
-                </p>
             </header>
 
             {/* Roleta */}
-            <div className="relative z-10 flex w-full max-w-[390px] flex-col items-center">
+            <div className="relative z-10 flex w-full max-w-[390px] flex-col items-center pt-5" onClick={spinWheel}>
                 <div className="relative w-full max-w-[360px]">
                     {/* Ponteiro fixo no topo */}
                     <div
@@ -350,7 +346,7 @@ export function DateNightRouletteStory() {
                             >
                                 {isSpinning
                                     ? "Deixem a sorte decidir..."
-                                    : "Girem a roleta e descubram o próximo encontro."}
+                                    : "Gire a roleta e descubram o próximo encontro."}
                             </motion.p>
                         )}
                     </AnimatePresence>

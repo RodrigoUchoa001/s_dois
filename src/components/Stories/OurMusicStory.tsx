@@ -316,7 +316,7 @@ export function OurMusicStory() {
 
                 {/* CAPA DA MÚSICA */}
 
-                <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center pt-6">
+                <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center">
                     <motion.div
                         initial={{
                             opacity: 0,
@@ -485,12 +485,6 @@ export function OurMusicStory() {
                             </div>
                         </div>
                     </div>
-
-                    {/* LEGENDA */}
-
-                    <p className="mt-3 text-center text-[9px] font-medium tracking-[0.15em] text-[#FFE1B1]/40">
-                        UMA CANÇÃO, UMA MEMÓRIA, NÓS DOIS
-                    </p>
                 </motion.div>
             </div>
         </motion.div>

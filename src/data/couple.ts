@@ -44,7 +44,7 @@ export const couple = {
         timeline: {
             // "events.length momentos"
             title: "Nossa jornada",
-            description: "Os momentos que nos trouxeram até aqui",
+            description: "Os momentos que nos trouxeram até aqui.",
             events: [
                 {
                     date: {

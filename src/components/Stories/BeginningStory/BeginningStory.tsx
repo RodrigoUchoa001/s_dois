@@ -1,6 +1,6 @@
 
 import { motion } from "motion/react";
-import { Heart, Sparkles, Star } from "lucide-react";
+import { Sparkles, Star } from "lucide-react";
 import { couple } from "../../../data/couple";
 import { SideRibbon } from "../../SideRibbon/SideRibbon";
 import { StoryHeader } from "../StoryHeader";
@@ -313,33 +313,12 @@ export function BeginningStory() {
                     </div>
                 </motion.div>
 
-                {/* Identificação da data */}
-                <motion.div
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.45, duration: 0.35 }}
-                    className="mt-3 flex items-center justify-end gap-2"
-                >
-                    <span className="text-xs font-black uppercase tracking-wide text-[#B9B5FF]">
-                        o dia 1
-                    </span>
-
-                    <Heart
-                        size={19}
-                        fill="#9185FF"
-                        className="text-[#B9B5FF]"
-                        style={{
-                            filter: "drop-shadow(0 0 5px rgba(145,133,255,0.45))",
-                        }}
-                    />
-                </motion.div>
-
                 {/* Texto final */}
                 <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.55, duration: 0.4 }}
-                    className="mt-3"
+                    className="mt-3 pt-10"
                 >
                     <h2 className="max-w-sm text-[clamp(2.1rem,9vw,2.6rem)] font-black leading-[0.95] tracking-[-0.055em] text-[#F1F2FF]">
                         Tudo começou

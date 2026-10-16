@@ -364,16 +364,6 @@ export function MinutesTogetherStory({
                             {couple.wrapped.minutesTogether.message}
                         </p>
                     </div>
-
-                    <p
-                        className="
-                            mt-3 text-center text-[9px]
-                            font-bold uppercase tracking-[0.23em]
-                            text-[#BDAFFF]/40
-                        "
-                    >
-                        Dois caminhos, um tempo compartilhado
-                    </p>
                 </motion.div>
             </div>
 

@@ -41,7 +41,7 @@ const seasons: Record<Season, SeasonData> = {
         name: "INVERNO",
         shortName: "inverno",
         description:
-            "Começamos no inverno e, desde então, já vimos muitas estações passarem juntos. (Sim, tem neve aqui em cima, mas aqui não neva mesmo kkkkkkkkk)",
+            "Começamos no inverno e, desde então, já vimos muitas estações passarem juntos. (Sim, aqui não neva mesmo kkkkkkkkk)",
         accent: "#628BBE",
     },
 };
@@ -123,7 +123,7 @@ export function SeasonStory() {
                 <Sparkles size={13} />
             </div>
 
-            <SideRibbon text={data.name} />
+            <SideRibbon text={data.name} bg_color={`bg-[${data.accent}]`} />
 
             {/* =====================================================
                 CONTEÚDO

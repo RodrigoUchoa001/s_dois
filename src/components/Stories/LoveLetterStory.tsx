@@ -78,10 +78,6 @@ export function LoveLetterStory() {
                             <span className="h-px w-7 bg-[#e8c98b]/40" />
                         </div>
 
-                        <p className="text-[9px] font-bold uppercase tracking-[0.35em] text-[#a875ff] sm:text-[10px]">
-                            Um pedacinho do meu coração
-                        </p>
-
                         <h1 className="mt-2 text-[clamp(1.8rem,5.5vh,2.7rem)] font-black leading-none tracking-[-0.055em] text-[#fff3c7]">
                             Uma carta{" "}
                             <span className="font-serif font-medium italic text-[#e8c98b]">
@@ -165,20 +161,6 @@ export function LoveLetterStory() {
                             </div>
                         </div>
                     </motion.article>
-
-                    {/* Rodapé */}
-                    <motion.footer
-                        {...entrance(0.25)}
-                        className="relative z-10 mt-4 flex shrink-0 flex-col items-center gap-1.5 pb-1 text-center"
-                    >
-                        <div className="flex items-center gap-2 text-[#a875ff]/65">
-                            <Heart size={10} />
-                            <span className="text-[9px] font-bold uppercase tracking-[0.28em]">
-                                Só para você
-                            </span>
-                            <Heart size={10} />
-                        </div>
-                    </motion.footer>
                 </div>
             </div>
         </section>

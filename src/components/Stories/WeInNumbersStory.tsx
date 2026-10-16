@@ -7,7 +7,6 @@ import {
     Moon,
     Sun,
     Activity,
-    Orbit,
 } from "lucide-react";
 
 import {
@@ -423,19 +422,6 @@ export function WeInNumbersStory() {
                             >
                                 Cada momento conta.
                             </p>
-                        </div>
-
-                        {/* ÍCONE ORBITAL ESTÁTICO */}
-
-                        <div
-                            className="
-                                flex h-9 w-9 items-center
-                                justify-center rounded-full
-                                border border-[#9DABFF]/25
-                                bg-[#8B9DFF]/10 text-[#B9C7FF]
-                            "
-                        >
-                            <Orbit size={18} strokeWidth={1.5} />
                         </div>
                     </div>
 
