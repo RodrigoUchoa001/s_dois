@@ -1,14 +1,18 @@
-
 import { useEffect, useState } from "react";
 
 import { AnimatePresence, motion } from "motion/react";
 
-import { Clock3, MapPin, Navigation } from "lucide-react";
+import {
+    Clock3, 
+    MapPin,
+    Navigation,
+} from "lucide-react";
 
 import { couple } from "../../../data/couple";
 import { SideRibbon } from "../../SideRibbon/SideRibbon";
 
 import {
+    NAMED_STARS,
     VISIBLE_STARS,
     getVisibleConstellations,
     projectStar,
@@ -95,13 +99,18 @@ function StarMap({
     phase,
     rotation,
     date,
+    showStarNames,
 }: {
     phase: Phase;
     rotation: number;
     date: Date;
+    showStarNames: boolean;
 }) {
     const arrival = phase === "arrival";
     const traveling = phase === "traveling";
+
+    // Mantém as estrelas e seus nomes sincronizados.
+    const skyDate = traveling ? getToday() : date;
 
     return (
         <motion.div
@@ -216,19 +225,69 @@ function StarMap({
                         <StarPoint
                             key={star.id}
                             star={star}
-                            date={
-                                phase === "traveling"
-                                    ? getToday()
-                                    : date
-                            }
+                            date={skyDate}
                         />
                     ))}
                 </g>
 
+                {/* NOMES DAS ESTRELAS CONHECIDAS */}
+
+                {showStarNames && (
+                    <g
+                        fontFamily="Arial, sans-serif"
+                        fontSize="7"
+                        fontWeight="600"
+                        fill={COLORS.ink}
+                        textAnchor="start"
+                    >
+                        {NAMED_STARS.map((star) => {
+                            const position = projectStar(
+                                star,
+                                skyDate,
+                                LOCATION.latitude,
+                                LOCATION.longitude,
+                                MAP_SIZE,
+                                RADIUS,
+                            );
+
+                            // Ignora estrelas abaixo do horizonte.
+                            if (!position) return null;
+
+                            return (
+                                <g key={star.id}>
+                                    <circle
+                                        cx={position.x}
+                                        cy={position.y}
+                                        r={1.5}
+                                        fill="#FFE5A3"
+                                    />
+
+                                    <text
+                                        x={
+                                            position.x +
+                                            (star.labelDx ?? 5)
+                                        }
+                                        y={
+                                            position.y +
+                                            (star.labelDy ?? -5)
+                                        }
+                                        stroke="#10152F"
+                                        strokeWidth={2.5}
+                                        strokeLinejoin="round"
+                                        paintOrder="stroke"
+                                    >
+                                        {star.name}
+                                    </text>
+                                </g>
+                            );
+                        })}
+                    </g>
+                )}
+
                 {/* CONSTELAÇÕES */}
 
                 <ConstellationLines
-                    date={date}
+                    date={skyDate}
                     arrival={arrival}
                 />
 
@@ -375,32 +434,34 @@ function ConstellationLines({
                             date,
                         );
 
-                        return segments.map((points, segmentIndex) => (
-                            <motion.polyline
-                                key={`${constellation.id}-${lineIndex}-${segmentIndex}`}
-                                points={points}
-                                fill="none"
-                                stroke={COLORS.lilac}
-                                strokeWidth="0.8"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                initial={{
-                                    pathLength: 0,
-                                    opacity: 0,
-                                }}
-                                animate={{
-                                    pathLength: arrival ? 1 : 0,
-                                    opacity: arrival ? 0.8 : 0,
-                                }}
-                                transition={{
-                                    delay:
-                                        constellationIndex * 0.015 +
-                                        lineIndex * 0.08,
-                                    duration: 0.9,
-                                    ease: "easeInOut",
-                                }}
-                            />
-                        ));
+                        return segments.map(
+                            (points, segmentIndex) => (
+                                <motion.polyline
+                                    key={`${constellation.id}-${lineIndex}-${segmentIndex}`}
+                                    points={points}
+                                    fill="none"
+                                    stroke={COLORS.lilac}
+                                    strokeWidth="0.8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    initial={{
+                                        pathLength: 0,
+                                        opacity: 0,
+                                    }}
+                                    animate={{
+                                        pathLength: arrival ? 1 : 0,
+                                        opacity: arrival ? 0.8 : 0,
+                                    }}
+                                    transition={{
+                                        delay:
+                                            constellationIndex * 0.015 +
+                                            lineIndex * 0.08,
+                                        duration: 0.9,
+                                        ease: "easeInOut",
+                                    }}
+                                />
+                            ),
+                        );
                     }),
             )}
         </>
@@ -491,6 +552,9 @@ export function StarMapStory() {
 
     const [startDate] = useState<Date>(() => getStartDate());
 
+    // Controla a exibição dos nomes das estrelas.
+    const [showStarNames] = useState(true);
+
     /* =====================================================
        INÍCIO DA ANIMAÇÃO
     ===================================================== */
@@ -528,8 +592,7 @@ export function StarMapStory() {
             const eased =
                 progress < 0.5
                     ? 2 * progress * progress
-                    : 1 -
-                      Math.pow(-2 * progress + 2, 2) / 2;
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
             const timestamp =
                 startTimestamp +
@@ -566,9 +629,7 @@ export function StarMapStory() {
                 text-[#fff3c7]
             "
         >
-            {/* =================================================
-                BRILHOS SUAVES
-            ================================================= */}
+            {/* BRILHOS SUAVES */}
 
             <motion.div
                 className="
@@ -609,7 +670,10 @@ export function StarMapStory() {
 
             {/* SIDE RIBBON */}
 
-            <SideRibbon text="NOSSO CÉU" bg_color="bg-[#B7A0FF]/30" />
+            <SideRibbon
+                text="NOSSO CÉU"
+                bg_color="bg-[#B7A0FF]/30"
+            />
 
             {/* CONTEÚDO */}
 
@@ -672,6 +736,7 @@ export function StarMapStory() {
                     phase={phase}
                     rotation={mapRotation}
                     date={displayDate}
+                    showStarNames={phase === "arrival" && showStarNames}
                 />
 
                 {/* INFORMAÇÕES */}
