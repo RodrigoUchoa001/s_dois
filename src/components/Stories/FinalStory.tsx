@@ -123,7 +123,7 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
                     />
 
                     <span
-                        className="relative font-serif text-[clamp(4.5rem,19vw,6rem)] font-medium leading-[1.12] tracking-[-0.08em] text-transparent"
+                        className="relative font-serif text-[clamp(4.5rem,19vw,6rem)] font-medium leading-[1.12] tracking-[-0.08em] text-transparent px-1"
                         style={{
                             backgroundImage:
                                 "linear-gradient(135deg, #fff2c9 5%, #e8c98b 42%, #a875ff 100%)",
