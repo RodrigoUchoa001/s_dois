@@ -361,20 +361,18 @@ export function NextChapterStory({
                     }}
                     className="shrink-0"
                 >
-                    <div className="flex items-end justify-between gap-3">
+                    <div className="flex items-end justify-between pt-7 pb-6">
                         <div>
-                            <h1 className="text-3xl font-black leading-[0.95] tracking-tight">
-                                O próximo
+                            <p className="text-sm font-medium uppercase leading-[0.95] tracking-[0.22em] text-white">
+                                próximo capítulo
+                            </p>
+                            <h1 className="mt-2 text-2xl font-bold leading-[0.95] text-[#c4aaff] sm:text-3xl">
+                                Contagem regressiva para 
                                 <br />
-                                capítulo<span className="text-[#a875ff]">.</span>
-                            </h1>
-                        </div>
+                                {milestone.next.label} 
+                            </h1>                           
 
-                        <Heart
-                            size={27}
-                            fill="#a875ff"
-                            className="mb-1 shrink-0 text-[#a875ff]"
-                        />
+                        </div>
                     </div>
                 </motion.div>
 
