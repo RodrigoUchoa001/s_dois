@@ -123,7 +123,7 @@ export function SeasonStory() {
                 <Sparkles size={13} />
             </div>
 
-            <SideRibbon text={data.name} bg_color={`bg-[${data.accent}]`} />
+            <SideRibbon text={data.name} bg_color={`bg-[#628BBE]`} />
 
             {/* =====================================================
                 CONTEÚDO
