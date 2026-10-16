@@ -19,6 +19,8 @@ import {
     type RealStar,
 } from "./astronomy";
 
+import { StarMapExport } from "./StarMapExport";
+
 /* =========================================================
    TIPOS
 ========================================================= */
@@ -624,8 +626,10 @@ export function StarMapStory() {
         <div
             className="
                 relative flex min-h-screen w-full flex-col
-                items-center justify-center overflow-hidden
-                bg-[#0b0b2b] px-6 py-10 pr-15
+                items-center justify-start
+                overflow-x-hidden overflow-y-auto scrollbar-none
+                bg-[#0b0b2b]
+                px-6 py-10 pr-15
                 text-[#fff3c7]
             "
         >
@@ -920,6 +924,12 @@ export function StarMapStory() {
                         </motion.p>
                     )}
                 </AnimatePresence>
+                {phase === "arrival" && (
+                    <StarMapExport
+                        date={startDate}
+                        location={LOCATION}
+                    />
+                )}
             </div>
         </div>
     );
