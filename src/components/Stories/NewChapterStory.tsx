@@ -4,16 +4,14 @@ import {
     motion,
     useReducedMotion,
 } from "motion/react";
+
 import {
     Plane,
     Heart,
     Check,
     Sparkles,
-    Ticket,
-    Clock3,
-    CalendarDays,
-    Star,
 } from "lucide-react";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SideRibbon } from "../SideRibbon/SideRibbon";
@@ -179,10 +177,8 @@ function getExactProgress(now: Date, from: Date, to: Date) {
     );
 }
 
-/*
- * Calcula a posição diretamente na curva quadrática SVG.
- * Evita consultar o DOM e atualizar estado via useLayoutEffect
- * a cada segundo do contador.
+/**
+ * Calcula a posição do avião diretamente na curva quadrática SVG.
  */
 function getRoutePoint(progress: number): Point {
     const t = Math.min(1, Math.max(0, progress));
@@ -209,6 +205,7 @@ export function NextChapterStory({
     const reduceMotion = useReducedMotion();
 
     const previousMilestoneRef = useRef<string | null>(null);
+
     const celebrationTimeoutRef =
         useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -221,9 +218,7 @@ export function NextChapterStory({
 
     const milestone = useMemo(() => getMilestoneState(now), [now]);
 
-    /*
-     * Atualiza o relógio apenas enquanto a tela está aberta.
-     */
+    // Atualiza o relógio somente enquanto a tela está aberta.
     useEffect(() => {
         if (!isOpen) return;
 
@@ -234,10 +229,7 @@ export function NextChapterStory({
         return () => clearInterval(interval);
     }, [isOpen]);
 
-    /*
-     * Detecta a conclusão de um marco sem observar objetos
-     * recriados a cada atualização do relógio.
-     */
+    // Detecta a conclusão de uma meta.
     useEffect(() => {
         const key = `${milestone.next.months}-${milestone.next.label}`;
 
@@ -317,10 +309,13 @@ export function NextChapterStory({
             initial={reduceMotion ? false : { opacity: 0, scale: 1.01 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={reduceMotion ? undefined : { opacity: 0, scale: 0.99 }}
-            transition={{ duration: reduceMotion ? 0 : 0.35, ease: "easeOut" }}
+            transition={{
+                duration: reduceMotion ? 0 : 0.35,
+                ease: "easeOut",
+            }}
             className="relative h-full w-full overflow-hidden bg-[#0b0b2b] text-[#fff3c7]"
         >
-            {/* FUNDO NOTURNO: gradientes estáticos e leves */}
+            {/* Fundo noturno discreto */}
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 overflow-hidden"
@@ -329,7 +324,7 @@ export function NextChapterStory({
                     className="absolute -right-28 -top-32 h-80 w-80 rounded-full"
                     style={{
                         background:
-                            "radial-gradient(circle, rgba(128,100,255,0.17) 0%, rgba(128,100,255,0.06) 42%, transparent 72%)",
+                            "radial-gradient(circle, rgba(128,100,255,0.14) 0%, rgba(128,100,255,0.04) 42%, transparent 72%)",
                     }}
                 />
 
@@ -337,14 +332,14 @@ export function NextChapterStory({
                     className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full"
                     style={{
                         background:
-                            "radial-gradient(circle, rgba(168,117,255,0.13) 0%, rgba(168,117,255,0.04) 42%, transparent 72%)",
+                            "radial-gradient(circle, rgba(168,117,255,0.10) 0%, rgba(168,117,255,0.03) 42%, transparent 72%)",
                     }}
                 />
 
                 {STAR_POSITIONS.map(([x, y], index) => (
                     <span
                         key={index}
-                        className="absolute h-1 w-1 rounded-full bg-[#cbb8ff]/60"
+                        className="absolute h-1 w-1 rounded-full bg-[#cbb8ff]/45"
                         style={{ left: `${x}%`, top: `${y}%` }}
                     />
                 ))}
@@ -355,23 +350,17 @@ export function NextChapterStory({
                 bg_color="bg-[#a875ff]/10"
             />
 
-            <div className="relative z-10 flex h-full flex-col px-6 pb-6 pr-14 pt-7">
-                {/* CABEÇALHO */}
+            <div className="relative z-10 flex h-full flex-col overflow-y-auto px-5 pb-5 pr-14 pt-7 sm:px-6 sm:pb-6 sm:pr-14 scrollbar-none">
+                {/* Cabeçalho */}
                 <motion.div
                     initial={reduceMotion ? false : { opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: reduceMotion ? 0 : 0.1, duration: 0.35 }}
+                    transition={{
+                        delay: reduceMotion ? 0 : 0.1,
+                        duration: 0.35,
+                    }}
+                    className="shrink-0"
                 >
-                    <div className="mb-3 flex items-center gap-2">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#a875ff]/30 bg-[#a875ff]/10 text-[#cbb8ff]">
-                            <Plane size={16} />
-                        </span>
-
-                        <span className="text-[9px] font-black uppercase tracking-[0.24em] text-[#cbb8ff]">
-                            Passaporte da nossa história
-                        </span>
-                    </div>
-
                     <div className="flex items-end justify-between gap-3">
                         <div>
                             <h1 className="text-3xl font-black leading-[0.95] tracking-tight">
@@ -379,149 +368,94 @@ export function NextChapterStory({
                                 <br />
                                 capítulo<span className="text-[#a875ff]">.</span>
                             </h1>
-
-                            <p className="mt-3 max-w-[255px] text-xs leading-relaxed text-[#fff3c7]/55">
-                                Ainda temos tantos destinos para viver juntos.
-                            </p>
                         </div>
 
-                        <div className="mb-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#a875ff]/25 bg-[#a875ff]/10">
-                            <Heart
-                                size={25}
-                                fill="#a875ff"
-                                className="text-[#a875ff]"
-                            />
-                        </div>
+                        <Heart
+                            size={27}
+                            fill="#a875ff"
+                            className="mb-1 shrink-0 text-[#a875ff]"
+                        />
                     </div>
                 </motion.div>
 
-                {/* BILHETE DE EMBARQUE */}
+                {/* Meta em destaque */}
                 <motion.div
                     initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: reduceMotion ? 0 : 0.2, duration: 0.4 }}
-                    className="relative mt-5 overflow-hidden rounded-[22px] border border-[#c4aaff]/25 bg-[#171536]"
+                    transition={{
+                        delay: reduceMotion ? 0 : 0.2,
+                        duration: 0.4,
+                    }}
+                    className="relative mt-6 shrink-0 rounded-2xl border border-[#a875ff]/20 bg-[#151436]/80 px-5 py-5"
                 >
-                    <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#a875ff]/10 to-transparent" />
+                    <div className="flex items-center gap-2 text-[#c4aaff]">
+                        <Plane size={15} strokeWidth={1.8} />
 
-                    <div className="relative flex items-center justify-between border-b border-dashed border-[#fff3c7]/15 px-4 py-3">
-                        <div className="flex items-center gap-2">
-                            <Ticket size={15} className="text-[#c4aaff]" />
+                        <p className="text-[9px] font-bold uppercase tracking-[0.22em]">
+                            Nossa próxima meta
+                        </p>
+                    </div>
 
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#fff3c7]/55">
-                                Bilhete para o futuro
-                            </span>
+                    <div className="mt-3 flex items-end justify-between gap-3">
+                        <div className="min-w-0">
+                            <h2 className="text-4xl font-black leading-none tracking-tight text-[#fff3c7] sm:text-5xl">
+                                {milestone.next.label}
+                            </h2>
+
+                            <p className="mt-2 text-xs text-[#fff3c7]/50">
+                                {formatDate(milestone.nextDate)}
+                            </p>
                         </div>
 
-                        <span className="rounded-full border border-[#a875ff]/25 bg-[#a875ff]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#cbb8ff]">
-                            {milestone.next.label}
+                        
+                    </div>
+
+                    <div className="mt-5 flex items-center gap-3">
+                        <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
+                            <div
+                                className="h-full rounded-full bg-[#a875ff] transition-[width] duration-500 ease-out"
+                                style={{ width: `${percentage === 100 ? 99 : percentage}%` }}
+                            />
+                        </div>
+
+                        <span className="text-xs font-bold tabular-nums text-[#c4aaff]">
+                            {percentage===100 ? "99%" : `${percentage}%`}
                         </span>
                     </div>
 
-                    <div className="relative px-4 pb-4 pt-3">
-                        <div className="flex items-center justify-between gap-2">
-                            <div>
-                                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#fff3c7]/40">
-                                    Tempo até a próxima meta
-                                </p>
+                    <div className="mt-4 flex items-center justify-between gap-2 border-t border-[#fff3c7]/[0.08] pt-3">
+                        <p className="text-[10px] text-[#fff3c7]/40">
+                            Tempo até a nossa meta
+                        </p>
 
-                                <div className="mt-1.5 flex items-baseline gap-1.5">
-                                    <span className="text-4xl font-black leading-none tracking-tight tabular-nums">
-                                        {countdown.days}
-                                    </span>
-
-                                    <span className="text-xs font-bold text-[#fff3c7]/55">
-                                        dias
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-1.5">
-                                {[
-                                    { value: countdown.hours, label: "h" },
-                                    { value: countdown.minutes, label: "m" },
-                                    { value: countdown.seconds, label: "s" },
-                                ].map((unit) => (
-                                    <div
-                                        key={unit.label}
-                                        className="flex min-w-[38px] flex-col items-center rounded-xl border border-[#fff3c7]/10 bg-[#0b0b2b]/60 px-2 py-2"
-                                    >
-                                        <span className="font-mono text-sm font-black tabular-nums">
-                                            {String(unit.value).padStart(2, "0")}
-                                        </span>
-
-                                        <span className="mt-0.5 text-[8px] font-black uppercase text-[#a875ff]">
-                                            {unit.label}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="my-4 h-px bg-[#fff3c7]/10" />
-
-                        <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2">
-                                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#a875ff]/10 text-[#c4aaff]">
-                                    <CalendarDays size={15} />
-                                </span>
-
-                                <div>
-                                    <p className="text-[8px] font-black uppercase tracking-[0.18em] text-[#fff3c7]/40">
-                                        Data de chegada
-                                    </p>
-
-                                    <p className="mt-0.5 text-sm font-black tracking-wide">
-                                        {formatDate(milestone.nextDate)}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="text-right">
-                                <p className="text-[8px] font-black uppercase tracking-[0.18em] text-[#fff3c7]/35">
-                                    Jornada atual
-                                </p>
-
-                                <p className="mt-1 text-sm font-black text-[#c4aaff]">
-                                    {percentage}%
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-                            <div
-                                className="h-full rounded-full bg-gradient-to-r from-[#8064ff] to-[#c4aaff] transition-[width] duration-500 ease-out"
-                                style={{ width: `${percentage}%` }}
-                            />
+                        <div className="flex shrink-0 items-center gap-1.5 font-mono text-xs font-bold tabular-nums text-[#fff3c7]/70">
+                            {countdown.days > 0 && `${String(countdown.days).padStart(2, "0")}d `}
+                            {countdown.days > 0 && <span className="text-[#fff3c7]/20">:</span>}
+                            {countdown.hours > 0 && `${String(countdown.hours).padStart(2, "0")}h `}
+                            {countdown.hours > 0 && <span className="text-[#fff3c7]/20">:</span>}
+                            {countdown.minutes > 0 && `${String(countdown.minutes).padStart(2, "0")}m `}
+                            {countdown.minutes > 0 && <span className="text-[#fff3c7]/20">:</span>}
+                            <span>
+                                {String(countdown.seconds).padStart(2, "0")}s
+                            </span>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* ROTA DOS MARCOS */}
+                <div className="flex flex-1" />
+
+                {/* Rota do avião */}
                 <motion.div
                     initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: reduceMotion ? 0 : 0.35, duration: 0.4 }}
-                    className="mt-5 flex min-h-0 flex-1 flex-col"
+                    transition={{
+                        delay: reduceMotion ? 0 : 0.3,
+                        duration: 0.4,
+                    }}
+                    className="mt-6 flex min-h-[165px] shrink-0 flex-col"
                 >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#c4aaff]">
-                                Nossa rota
-                            </p>
 
-                            <h2 className="mt-1 text-base font-black">
-                                Um destino de cada vez
-                            </h2>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 text-[9px] font-bold text-[#fff3c7]/40">
-                            <Clock3 size={12} className="text-[#a875ff]" />
-                            <span>Em andamento</span>
-                        </div>
-                    </div>
-
-                    <div className="relative min-h-[118px] flex-1">
+                    <div className="relative min-h-[125px] flex-1">
                         <svg
                             viewBox="0 0 320 100"
                             preserveAspectRatio="none"
@@ -544,15 +478,15 @@ export function NextChapterStory({
                                 d={ROUTE_PATH}
                                 fill="none"
                                 stroke="#a875ff"
-                                strokeWidth="5"
+                                strokeWidth="4"
                                 strokeLinecap="round"
-                                opacity="0.1"
+                                opacity="0.09"
                             />
 
                             <path
                                 d={ROUTE_PATH}
                                 fill="none"
-                                stroke="rgba(255,243,199,0.17)"
+                                stroke="rgba(255,243,199,0.18)"
                                 strokeWidth="1.8"
                                 strokeDasharray="3 5"
                                 strokeLinecap="round"
@@ -565,7 +499,9 @@ export function NextChapterStory({
                                 strokeWidth="2.5"
                                 strokeLinecap="round"
                                 pathLength={1}
-                                initial={reduceMotion ? false : { pathLength: 0 }}
+                                initial={
+                                    reduceMotion ? false : { pathLength: 0 }
+                                }
                                 animate={{ pathLength: routeProgress }}
                                 transition={{
                                     duration: reduceMotion ? 0 : 0.4,
@@ -574,15 +510,18 @@ export function NextChapterStory({
                             />
                         </svg>
 
-                        {/* PARTIDA */}
+                        {/* Ponto de partida */}
                         <div
                             className="absolute z-10 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#fff3c7]/20 bg-[#242044]"
                             style={{ left: "5.625%", top: "67%" }}
                         >
-                            <Check size={12} className="text-[#fff3c7]/70" />
+                            <Check
+                                size={12}
+                                className="text-[#fff3c7]/70"
+                            />
                         </div>
 
-                        {/* AVIÃO */}
+                        {/* Avião */}
                         <motion.div
                             className="absolute z-30 -translate-x-1/2 -translate-y-1/2"
                             animate={{
@@ -594,7 +533,7 @@ export function NextChapterStory({
                                 ease: "linear",
                             }}
                         >
-                            <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[#d9ccff]/40 bg-[#a875ff] text-[#0b0b2b] shadow-[0_0_14px_rgba(168,117,255,0.25)]">
+                            <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[#d9ccff]/40 bg-[#a875ff] text-[#0b0b2b]">
                                 <span className="absolute inset-[-4px] rounded-full border border-[#a875ff]/25" />
 
                                 <Plane
@@ -605,21 +544,21 @@ export function NextChapterStory({
                             </div>
                         </motion.div>
 
-                        {/* DESTINO */}
+                        {/* Destino */}
                         <div
                             className="absolute z-10 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#a875ff]/40 bg-[#a875ff]/15 text-[#cbb8ff]"
                             style={{ left: "94.375%", top: "67%" }}
                         >
-                            <Star size={13} fill="currentColor" />
+                            <Sparkles size={13} />
                         </div>
 
-                        {/* ETIQUETAS */}
-                        <div className="absolute bottom-0 left-0 flex max-w-[42%] items-center gap-2">
+                        {/* Legendas da rota */}
+                        <div className="absolute bottom-0 left-0 flex max-w-[45%] items-center gap-2">
                             <div className="h-7 w-0.5 rounded-full bg-[#fff3c7]/25" />
 
                             <div>
-                                <p className="text-[9px] font-black uppercase text-[#fff3c7]/70">
-                                    Onde começou
+                                <p className="text-[9px] font-bold uppercase text-[#fff3c7]/70">
+                                    {milestone.previous.label}
                                 </p>
 
                                 <p className="mt-0.5 text-[8px] text-[#fff3c7]/35">
@@ -628,119 +567,106 @@ export function NextChapterStory({
                             </div>
                         </div>
 
-                        <div className="absolute bottom-0 right-0 flex max-w-[42%] items-center gap-2">
+                        <div className="absolute bottom-0 right-0 flex max-w-[45%] items-center gap-2">
                             <div>
-                                <p className="text-[9px] font-black uppercase text-[#fff3c7]/70">
-                                    Próxima parada
+                                <p className="text-right text-[9px] font-bold uppercase text-[#fff3c7]/70">
+                                    {milestone.next.label}
                                 </p>
 
-                                <p className="mt-0.5 text-end text-[8px] text-[#fff3c7]/35">
+                                <p className="mt-0.5 text-right text-[8px] text-[#fff3c7]/35">
                                     {formatDate(milestone.nextDate)}
                                 </p>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* MARCOS COMO DESTINOS */}
-                    <div className="mt-2">
-                        <div className="mb-2 flex items-center justify-between">
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#fff3c7]/40">
-                                Destinos no nosso mapa
-                            </p>
-
-                            <p className="text-[9px] font-bold text-[#a875ff]">
-                                {MILESTONES.length} marcos
-                            </p>
-                        </div>
-
-                        <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                            {MILESTONES.map((item, index) => {
-                                const date = addMonths(START_DATE, item.months);
-                                const completed = date <= now;
-                                const next =
-                                    item.months === milestone.next.months;
-
-                                return (
-                                    <div
-                                        key={item.months}
-                                        className={`
-                                            relative min-w-[82px] flex-1
-                                            overflow-hidden rounded-xl border
-                                            px-2 py-2.5
-                                            ${
-                                                next
-                                                    ? "border-[#a875ff]/50 bg-[#a875ff]/10"
-                                                    : completed
-                                                      ? "border-[#fff3c7]/10 bg-[#fff3c7]/[0.035]"
-                                                      : "border-[#fff3c7]/[0.07] bg-[#15153d]/45"
-                                            }
-                                        `}
-                                    >
-                                        {next && (
-                                            <div className="absolute inset-x-0 top-0 h-0.5 bg-[#a875ff]" />
-                                        )}
-
-                                        <div className="flex items-center justify-between gap-1">
-                                            <span
-                                                className={`
-                                                    text-[8px] font-black uppercase tracking-wider
-                                                    ${
-                                                        next
-                                                            ? "text-[#cbb8ff]"
-                                                            : completed
-                                                              ? "text-[#fff3c7]/55"
-                                                              : "text-[#fff3c7]/30"
-                                                    }
-                                                `}
-                                            >
-                                                {String(index + 1).padStart(2, "0")}
-                                            </span>
-
-                                            {completed ? (
-                                                <Check
-                                                    size={11}
-                                                    className="text-[#cbb8ff]"
-                                                />
-                                            ) : next ? (
-                                                <Plane
-                                                    size={11}
-                                                    className="text-[#cbb8ff]"
-                                                />
-                                            ) : (
-                                                <Star
-                                                    size={10}
-                                                    className="text-[#fff3c7]/25"
-                                                />
-                                            )}
-                                        </div>
-
-                                        <p
-                                            className={`
-                                                mt-2 text-[10px] font-black leading-tight
-                                                ${
-                                                    next
-                                                        ? "text-[#fff3c7]"
-                                                        : completed
-                                                          ? "text-[#fff3c7]/65"
-                                                          : "text-[#fff3c7]/40"
-                                                }
-                                            `}
-                                        >
-                                            {item.label}
-                                        </p>
-
-                                        <p className="mt-1 text-[8px] font-medium text-[#fff3c7]/30">
-                                            {formatDate(date)}
-                                        </p>
-                                    </div>
-                                );
-                            })}
+                            <div className="h-7 w-0.5 rounded-full bg-[#a875ff]/50" />
                         </div>
                     </div>
                 </motion.div>
 
-                {/* RODAPÉ */}
-                <div className="mt-1 flex items-center justify-center gap-2 pt-1">
+                {/* Linha do tempo */}
+                <motion.div
+                    initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        delay: reduceMotion ? 0 : 0.4,
+                        duration: 0.35,
+                    }}
+                    className="mt-5 shrink-0"
+                >
+                    <div className="mb-4 flex items-center justify-between gap-2">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#fff3c7]/45">
+                            Nossas metas
+                        </p>
+                    </div>
+
+                    <div className="overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        <div className="relative min-w-max px-1">
+                            {/* Linha conectando todos os círculos */}
+                            <div
+                                aria-hidden="true"
+                                className="absolute left-[34px] right-[34px] top-[36px] h-px bg-[#fff3c7]/15"
+                            />
+
+                            <div className="relative flex items-start">
+                                {MILESTONES.map((item) => {
+                                    const date = addMonths(
+                                        START_DATE,
+                                        item.months,
+                                    );
+
+                                    const completed = date <= now;
+                                    const next =
+                                        item.months === milestone.next.months;
+
+                                    return (
+                                        <div
+                                            key={item.months}
+                                            className="flex w-[68px] shrink-0 flex-col items-center"
+                                        >
+                                            {/* Meta acima do círculo */}
+                                            <span
+                                                className={`mb-3 h-4 whitespace-nowrap text-center text-[10px] font-bold ${
+                                                    next
+                                                        ? "text-[#c4aaff]"
+                                                        : completed
+                                                          ? "text-[#fff3c7]/55"
+                                                          : "text-[#fff3c7]/35"
+                                                }`}
+                                            >
+                                                {item.label}
+                                            </span>
+
+                                            {/* Círculo da meta */}
+                                            <div
+                                                className={`relative z-10 flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
+                                                    next
+                                                        ? "border-[#cbb8ff] bg-[#a875ff] ring-4 ring-[#a875ff]/15"
+                                                        : completed
+                                                          ? "border-[#c4aaff]/60 bg-[#a875ff]/60"
+                                                          : "border-[#fff3c7]/25 bg-[#0b0b2b]"
+                                                }`}
+                                                aria-label={`${item.label}${
+                                                    next
+                                                        ? ", próxima meta"
+                                                        : completed
+                                                          ? ", concluída"
+                                                          : ", futura"
+                                                }`}
+                                            >
+                                                {completed && !next && (
+                                                    <Check size={10} />
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Rodapé */}
+                <div className="mt-3 flex shrink-0 items-center justify-center gap-2 pb-1 pt-2">
                     <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#a875ff]/20" />
 
                     <Heart
@@ -749,15 +675,11 @@ export function NextChapterStory({
                         className="text-[#a875ff]/70"
                     />
 
-                    <p className="whitespace-nowrap text-[8px] font-black uppercase tracking-[0.2em] text-[#fff3c7]/30">
-                        Nosso melhor destino é juntos
-                    </p>
-
                     <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#a875ff]/20" />
                 </div>
             </div>
 
-            {/* CELEBRAÇÃO DE UMA META */}
+            {/* Celebração de uma meta */}
             <AnimatePresence>
                 {isCelebrating && celebrationData && (
                     <motion.div
@@ -766,7 +688,6 @@ export function NextChapterStory({
                         exit={{ opacity: 0 }}
                         className="absolute inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#0b0b2b]/[0.97] px-7"
                     >
-                        {/* Sem blur grande nem partículas excessivas */}
                         {!reduceMotion &&
                             [...Array(8)].map((_, index) => {
                                 const angle = (index / 8) * Math.PI * 2;
@@ -814,7 +735,7 @@ export function NextChapterStory({
                                 <Heart size={34} fill="currentColor" />
                             </div>
 
-                            <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#c4aaff]">
+                            <p className="text-[9px] font-bold uppercase tracking-[0.35em] text-[#c4aaff]">
                                 Novo destino alcançado
                             </p>
 
@@ -823,14 +744,15 @@ export function NextChapterStory({
                             </h2>
 
                             <p className="mt-4 text-sm leading-relaxed text-[#fff3c7]/55">
-                                Mais uma lembrança para guardar e mais um capítulo da nossa história.
+                                Mais uma lembrança para guardar e mais um
+                                capítulo da nossa história.
                             </p>
 
                             <div className="mt-7 w-full rounded-2xl border border-[#a875ff]/25 bg-[#171536] p-4">
                                 <div className="flex items-center justify-center gap-2 text-[#c4aaff]">
                                     <Plane size={15} />
 
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">
+                                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">
                                         Próxima parada
                                     </span>
                                 </div>
