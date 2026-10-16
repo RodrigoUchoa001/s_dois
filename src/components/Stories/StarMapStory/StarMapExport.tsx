@@ -126,7 +126,34 @@ function buildPosterSvg({
 }) {
     const width = 700;
     const height = (width * size.height) / size.width;
-    const verticalOffset = Math.max(0, (height - 875) / 2);
+
+    // Margem externa e borda decorativa.
+    const borderInset = 24;
+    const contentWidth = width - borderInset * 2;
+
+    // Área central do pôster.
+    const mapSize = 390;
+    const mapScale = mapSize / MAP_SIZE;
+    const mapX = (width - mapSize) / 2;
+
+    // O layout usa coordenadas relativas para acomodar os formatos.
+    const titleY = 100;
+    const titleLineY = 126;
+    const mapY = 155;
+
+    const infoCardWidth = 270;
+    const infoCardHeight = 100;
+    const infoGap = 14;
+    const infoTotalWidth = infoCardWidth * 2 + infoGap;
+    const infoStartX = (width - infoTotalWidth) / 2;
+
+    const infoY = mapY + mapSize + 34;
+    const footerY = height - 68;
+
+    const formattedDate = escapeXml(formatPosterDate(date));
+    const formattedTime = escapeXml(formatPosterTime(date));
+    const safeLocationName = escapeXml(location.name);
+    const safeCoordinates = escapeXml(location.coordinates);
 
     const stars = VISIBLE_STARS.map((star) => {
         const position = projectStar(
@@ -199,9 +226,6 @@ function buildPosterSvg({
 
               if (!position) return "";
 
-              const labelX = position.x + (star.labelDx ?? 5);
-              const labelY = position.y + (star.labelDy ?? -5);
-
               return `
                   <g>
                       <circle
@@ -211,8 +235,8 @@ function buildPosterSvg({
                           fill="#FFE5A3"
                       />
                       <text
-                          x="${labelX}"
-                          y="${labelY}"
+                          x="${position.x + (star.labelDx ?? 5)}"
+                          y="${position.y + (star.labelDy ?? -5)}"
                           font-family="Arial, sans-serif"
                           font-size="7"
                           font-weight="600"
@@ -227,11 +251,6 @@ function buildPosterSvg({
           }).join("")
         : "";
 
-    const safeLocationName = escapeXml(location.name);
-    const safeCoordinates = escapeXml(location.coordinates);
-    const formattedDate = escapeXml(formatPosterDate(date));
-    const formattedTime = escapeXml(formatPosterTime(date));
-
     return `<?xml version="1.0" encoding="UTF-8"?>
 <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -245,168 +264,333 @@ function buildPosterSvg({
             <stop offset="52%" stop-color="#151832"/>
             <stop offset="100%" stop-color="#0B1026"/>
         </radialGradient>
+
         <linearGradient id="title-gradient" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#C0A5FF"/>
+            <stop offset="0%" stop-color="#8064FF"/>
             <stop offset="100%" stop-color="#E1A6D5"/>
         </linearGradient>
+
+        <clipPath id="map-clip">
+            <circle
+                cx="${CENTER}"
+                cy="${CENTER}"
+                r="${RADIUS}"
+            />
+        </clipPath>
     </defs>
 
-    <rect width="${width}" height="${height}" fill="#0B0B2B"/>
+    <!-- Fundo do pôster -->
+    <rect
+        width="${width}"
+        height="${height}"
+        fill="#0B0B2B"
+    />
 
-    <g transform="translate(0 ${verticalOffset})">
-        <text
-            x="350" y="74"
-            text-anchor="middle"
-            font-family="Arial, sans-serif"
-            font-size="15"
-            font-weight="700"
-            letter-spacing="5"
-            fill="${COLORS.purple}"
-        >NOSSO CÉU</text>
+    <!-- Borda quadrada com margem interna -->
+    <rect
+        x="${borderInset}"
+        y="${borderInset}"
+        width="${contentWidth}"
+        height="${height - borderInset * 2}"
+        rx="0"
+        fill="none"
+        stroke="#C0A5FF"
+        stroke-width="1.2"
+        stroke-opacity="0.65"
+    />
 
-        <text
-            x="350" y="119"
-            text-anchor="middle"
-            font-family="Arial, sans-serif"
-            font-size="25"
-            font-weight="800"
-            fill="${COLORS.ink}"
-        >O céu quando tudo começou</text>
+    <!-- Pequenos detalhes decorativos nos cantos -->
+    <g
+        fill="none"
+        stroke="#D0B5FF"
+        stroke-width="2"
+        stroke-linecap="round"
+        opacity="0.85"
+    >
+        <path d="M ${borderInset + 16} ${borderInset + 32} V ${borderInset + 16} H ${borderInset + 32}"/>
+        <path d="M ${width - borderInset - 32} ${borderInset + 16} H ${width - borderInset - 16} V ${borderInset + 32}"/>
+        <path d="M ${borderInset + 16} ${height - borderInset - 32} V ${height - borderInset - 16} H ${borderInset + 32}"/>
+        <path d="M ${width - borderInset - 32} ${height - borderInset - 16} H ${width - borderInset - 16} V ${height - borderInset - 32}"/>
+    </g>
 
-        <rect
-            x="325" y="140"
-            width="50" height="3"
-            rx="1.5"
-            fill="url(#title-gradient)"
+    <!-- Título -->
+    <text
+        x="${width / 2}"
+        y="${titleY}"
+        text-anchor="middle"
+        font-family="Arial, sans-serif"
+        font-size="27"
+        font-weight="800"
+        fill="${COLORS.ink}"
+    >O céu quando tudo começou</text>
+
+    <rect
+        x="${width / 2 - 28}"
+        y="${titleLineY}"
+        width="56"
+        height="3"
+        rx="1.5"
+        fill="url(#title-gradient)"
+    />
+
+    <!-- Mapa estelar ampliado -->
+    <g transform="translate(${mapX} ${mapY}) scale(${mapScale})">
+        <circle
+            cx="${CENTER}"
+            cy="${CENTER}"
+            r="${RADIUS}"
+            fill="url(#sky-gradient)"
+            stroke="#FFFFFF"
+            stroke-opacity="0.3"
+            stroke-width="0.8"
         />
 
-        <g transform="translate(150 185) scale(1.25)">
+        <g clip-path="url(#map-clip)">
             <circle
-                cx="${CENTER}" cy="${CENTER}" r="${RADIUS}"
-                fill="url(#sky-gradient)"
-                stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="0.8"
+                cx="${CENTER}"
+                cy="${CENTER}"
+                r="${RADIUS * 0.66}"
+                fill="none"
+                stroke="${COLORS.warmWhite}"
+                stroke-width="0.5"
+                opacity="0.13"
             />
 
             <circle
-                cx="${CENTER}" cy="${CENTER}" r="${RADIUS}"
-                fill="none" stroke="${COLORS.warmWhite}"
-                stroke-width="0.6" opacity="0.22"
-            />
-
-            <circle
-                cx="${CENTER}" cy="${CENTER}" r="${RADIUS * 0.66}"
-                fill="none" stroke="${COLORS.warmWhite}"
-                stroke-width="0.5" opacity="0.11"
-            />
-
-            <circle
-                cx="${CENTER}" cy="${CENTER}" r="${RADIUS * 0.33}"
-                fill="none" stroke="${COLORS.warmWhite}"
-                stroke-width="0.5" opacity="0.09"
+                cx="${CENTER}"
+                cy="${CENTER}"
+                r="${RADIUS * 0.33}"
+                fill="none"
+                stroke="${COLORS.warmWhite}"
+                stroke-width="0.5"
+                opacity="0.1"
             />
 
             <line
-                x1="${CENTER}" y1="${CENTER - RADIUS}"
-                x2="${CENTER}" y2="${CENTER + RADIUS}"
+                x1="${CENTER}"
+                y1="${CENTER - RADIUS}"
+                x2="${CENTER}"
+                y2="${CENTER + RADIUS}"
                 stroke="${COLORS.warmWhite}"
-                stroke-width="0.4" opacity="0.12"
+                stroke-width="0.4"
+                opacity="0.15"
             />
 
             <line
-                x1="${CENTER - RADIUS}" y1="${CENTER}"
-                x2="${CENTER + RADIUS}" y2="${CENTER}"
+                x1="${CENTER - RADIUS}"
+                y1="${CENTER}"
+                x2="${CENTER + RADIUS}"
+                y2="${CENTER}"
                 stroke="${COLORS.warmWhite}"
-                stroke-width="0.4" opacity="0.12"
+                stroke-width="0.4"
+                opacity="0.15"
             />
-
-            <g
-                font-family="Arial, sans-serif"
-                font-size="10"
-                font-weight="800"
-                fill="${COLORS.ink}"
-                opacity="0.75"
-                text-anchor="middle"
-            >
-                <text x="${CENTER}" y="14">N</text>
-                <text x="${CENTER}" y="${MAP_SIZE - 5}">S</text>
-                <text x="12" y="${CENTER + 3}">L</text>
-                <text x="${MAP_SIZE - 12}" y="${CENTER + 3}">O</text>
-            </g>
 
             ${stars}
             ${constellationLines}
             ${namedStars}
+        </g>
 
-            <circle
-                cx="${CENTER}" cy="${CENTER}" r="2"
-                fill="${COLORS.warmWhite}" opacity="0.8"
-            />
+        <!-- Pontos cardeais -->
+        <g
+            font-family="Arial, sans-serif"
+            font-size="10"
+            font-weight="800"
+            fill="${COLORS.ink}"
+            opacity="0.8"
+            text-anchor="middle"
+        >
+            <text x="${CENTER}" y="14">N</text>
+            <text x="${CENTER}" y="${MAP_SIZE - 5}">S</text>
+            <text x="12" y="${CENTER + 3}">L</text>
+            <text x="${MAP_SIZE - 12}" y="${CENTER + 3}">O</text>
+        </g>
 
-            <circle
-                cx="${CENTER}" cy="${CENTER}" r="6"
-                fill="none" stroke="${COLORS.lilac}"
-                stroke-width="0.8" opacity="0.7"
-            />
+        <circle
+            cx="${CENTER}"
+            cy="${CENTER}"
+            r="2"
+            fill="${COLORS.warmWhite}"
+            opacity="0.85"
+        />
+
+        <circle
+            cx="${CENTER}"
+            cy="${CENTER}"
+            r="6"
+            fill="none"
+            stroke="${COLORS.lilac}"
+            stroke-width="0.8"
+            opacity="0.7"
+        />
+    </g>
+
+    <!-- Cartões de data e horário, e de localização -->
+    <g>
+        <!-- Cartão de data e hora -->
+        <rect
+            x="${infoStartX}"
+            y="${infoY}"
+            width="${infoCardWidth}"
+            height="${infoCardHeight}"
+            rx="16"
+            fill="#FFF3D8"
+            fill-opacity="0.045"
+            stroke="${COLORS.purple}"
+            stroke-opacity="0.35"
+            stroke-width="1"
+        />
+
+        <circle
+            cx="${infoStartX + 24}"
+            cy="${infoY + 27}"
+            r="11"
+            fill="${COLORS.purple}"
+            fill-opacity="0.13"
+        />
+
+        <g
+            transform="translate(${infoStartX + 18} ${infoY + 21})"
+            fill="none"
+            stroke="${COLORS.purple}"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <rect x="0" y="2" width="12" height="11" rx="2"/>
+            <path d="M 3 0 V 4 M 9 0 V 4 M 0 6 H 12"/>
         </g>
 
         <text
-            x="350" y="645"
-            text-anchor="middle"
+            x="${infoStartX + 44}"
+            y="${infoY + 31}"
             font-family="Arial, sans-serif"
-            font-size="12"
-            font-weight="700"
-            letter-spacing="2"
-            fill="${COLORS.purple}"
-        >A NOITE EM QUE TUDO COMEÇOU</text>
+            font-size="10"
+            font-weight="800"
+            letter-spacing="1.2"
+            fill="${COLORS.muted}"
+        >DATA E HORA</text>
 
         <text
-            x="350" y="681"
-            text-anchor="middle"
+            x="${infoStartX + 18}"
+            y="${infoY + 60}"
             font-family="Arial, sans-serif"
-            font-size="23"
+            font-size="17"
             font-weight="800"
             fill="${COLORS.ink}"
         >${formattedDate}</text>
 
         <text
-            x="350" y="709"
-            text-anchor="middle"
+            x="${infoStartX + 18}"
+            y="${infoY + 82}"
             font-family="Arial, sans-serif"
-            font-size="16"
+            font-size="13"
             fill="${COLORS.muted}"
         >${formattedTime}</text>
 
-        <text
-            x="350" y="755"
-            text-anchor="middle"
-            font-family="Arial, sans-serif"
-            font-size="20"
-            font-weight="700"
-            fill="${COLORS.ink}"
-        >${safeLocationName}, Piauí, Brasil</text>
+        <!-- Cartão de localização -->
+        <rect
+            x="${infoStartX + infoCardWidth + infoGap}"
+            y="${infoY}"
+            width="${infoCardWidth}"
+            height="${infoCardHeight}"
+            rx="16"
+            fill="#FFF3D8"
+            fill-opacity="0.045"
+            stroke="${COLORS.purple}"
+            stroke-opacity="0.35"
+            stroke-width="1"
+        />
+
+        <circle
+            cx="${infoStartX + infoCardWidth + infoGap + 24}"
+            cy="${infoY + 27}"
+            r="11"
+            fill="${COLORS.purple}"
+            fill-opacity="0.13"
+        />
+
+        <g
+            transform="translate(${infoStartX + infoCardWidth + infoGap + 18} ${infoY + 20})"
+            fill="none"
+            stroke="${COLORS.purple}"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path d="M 6 14 S 0 8 0 5 A 6 6 0 0 1 12 5 C 12 8 6 14 6 14 Z"/>
+            <circle cx="6" cy="5" r="2"/>
+        </g>
 
         <text
-            x="350" y="782"
+            x="${infoStartX + infoCardWidth + infoGap + 44}"
+            y="${infoY + 31}"
+            font-family="Arial, sans-serif"
+            font-size="10"
+            font-weight="800"
+            letter-spacing="1.2"
+            fill="${COLORS.muted}"
+        >LOCAL</text>
+
+        <text
+            x="${infoStartX + infoCardWidth + infoGap + 18}"
+            y="${infoY + 60}"
+            font-family="Arial, sans-serif"
+            font-size="17"
+            font-weight="800"
+            fill="${COLORS.ink}"
+        >${safeLocationName}</text>
+
+        <text
+            x="${infoStartX + infoCardWidth + infoGap + 18}"
+            y="${infoY + 82}"
+            font-family="Arial, sans-serif"
+            font-size="13"
+            fill="${COLORS.muted}"
+        >Piauí, Brasil</text>
+    </g>
+
+    <!-- Coordenadas -->
+    <g>
+        <rect
+            x="${width / 2 - 155}"
+            y="${infoY + infoCardHeight + 16}"
+            width="310"
+            height="38"
+            rx="12"
+            fill="#FFFFFF"
+            fill-opacity="0.035"
+            stroke="${COLORS.purple}"
+            stroke-opacity="0.3"
+            stroke-width="1"
+        />
+
+        <text
+            x="${width / 2}"
+            y="${infoY + infoCardHeight + 40}"
             text-anchor="middle"
             font-family="Arial, sans-serif"
             font-size="12"
+            font-weight="700"
             letter-spacing="1"
             fill="${COLORS.muted}"
         >${safeCoordinates}</text>
-
-        <text
-            x="350" y="825"
-            text-anchor="middle"
-            font-family="Arial, sans-serif"
-            font-size="13"
-            font-weight="700"
-            letter-spacing="2"
-            fill="${COLORS.ink}"
-        >
-            <tspan x="350" dy="0">O CÉU QUANDO NOSSOS</tspan>
-            <tspan x="350" dy="22">MUNDOS SE COLIDIRAM.</tspan>
-        </text>
     </g>
+
+    <!-- Rodapé com espaçamento generoso -->
+    <text
+        x="${width / 2}"
+        y="${footerY}"
+        text-anchor="middle"
+        font-family="Arial, sans-serif"
+        font-size="14"
+        font-weight="800"
+        letter-spacing="2"
+        fill="${COLORS.ink}"
+    >
+        <tspan x="${width / 2}" dy="0">O CÉU QUANDO NOSSOS</tspan>
+        <tspan x="${width / 2}" dy="23">MUNDOS SE COLIDIRAM</tspan>
+    </text>
 </svg>`;
 }
 

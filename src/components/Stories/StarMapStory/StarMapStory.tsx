@@ -851,7 +851,7 @@ export function StarMapStory() {
                                         "
                                         style={{ color: COLORS.muted }}
                                     >
-                                        Onde
+                                        Local
                                     </p>
 
                                     <p
