@@ -366,94 +366,47 @@ export function StoriesScreen({
                     </div>
 
                     {/* Navegação lateral */}
-                    {currentStory !== 6 && (
-                        <>
-                            <button
-                                type="button"
-                                onPointerDown={
-                                    handleStoryPress
-                                }
-                                onPointerUp={
-                                    handleStoryRelease
-                                }
-                                onPointerCancel={
-                                    handleStoryRelease
-                                }
-                                onClick={() =>
-                                    handleStoryClick(
-                                        previousStory
-                                    )
-                                }
-                                className="absolute left-0 top-0 z-10 h-full w-1/4"
-                                aria-label="Story anterior"
-                            />
+                    <>
+                        <button
+                            type="button"
+                            onPointerDown={
+                                handleStoryPress
+                            }
+                            onPointerUp={
+                                handleStoryRelease
+                            }
+                            onPointerCancel={
+                                handleStoryRelease
+                            }
+                            onClick={() =>
+                                handleStoryClick(
+                                    previousStory
+                                )
+                            }
+                            className="absolute left-0 top-0 z-10 h-full w-1/4"
+                            aria-label="Story anterior"
+                        />
 
-                            <button
-                                type="button"
-                                onPointerDown={
-                                    handleStoryPress
-                                }
-                                onPointerUp={
-                                    handleStoryRelease
-                                }
-                                onPointerCancel={
-                                    handleStoryRelease
-                                }
-                                onClick={() =>
-                                    handleStoryClick(
-                                        nextStory
-                                    )
-                                }
-                                className="absolute right-0 top-0 z-10 h-full w-1/4"
-                                aria-label="Próxima story"
-                            />
-                        </>
-                    )}
-
-                    {/* Navegação da Gallery */}
-                    {currentStory === 6 && (
-                        <>
-                            <button
-                                type="button"
-                                onPointerDown={
-                                    handleStoryPress
-                                }
-                                onPointerUp={
-                                    handleStoryRelease
-                                }
-                                onPointerCancel={
-                                    handleStoryRelease
-                                }
-                                onClick={() =>
-                                    handleStoryClick(
-                                        previousStory
-                                    )
-                                }
-                                className="absolute left-0 top-0 z-10 h-[90%] w-1/4"
-                                aria-label="Story anterior"
-                            />
-
-                            <button
-                                type="button"
-                                onPointerDown={
-                                    handleStoryPress
-                                }
-                                onPointerUp={
-                                    handleStoryRelease
-                                }
-                                onPointerCancel={
-                                    handleStoryRelease
-                                }
-                                onClick={() =>
-                                    handleStoryClick(
-                                        nextStory
-                                    )
-                                }
-                                className="absolute right-0 top-0 z-10 h-[90%] w-1/4"
-                                aria-label="Próxima story"
-                            />
-                        </>
-                    )}
+                        <button
+                            type="button"
+                            onPointerDown={
+                                handleStoryPress
+                            }
+                            onPointerUp={
+                                handleStoryRelease
+                            }
+                            onPointerCancel={
+                                handleStoryRelease
+                            }
+                            onClick={() =>
+                                handleStoryClick(
+                                    nextStory
+                                )
+                            }
+                            className="absolute right-0 top-0 z-10 h-full w-1/4"
+                            aria-label="Próxima story"
+                        />
+                    </>
                 </motion.div>
             </motion.div>
         </AnimatePresence>,
