@@ -540,7 +540,7 @@ export function StarMapExport({ date, location }: StarMapExportProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="mt-7 inline-flex items-center justify-center gap-2 rounded-full border border-[#C0A5FF]/40 bg-[#C0A5FF]/10 px-6 py-3 text-sm font-bold text-[#FFF3D8] transition-colors hover:bg-[#C0A5FF]/20"
+        className="mt-2 inline-flex items-center justify-center gap-2 rounded-full border border-[#C0A5FF]/40 bg-[#C0A5FF]/10 px-6 py-3 text-sm font-bold text-[#FFF3D8] transition-colors hover:bg-[#C0A5FF]/20"
       >
         <Download size={17} />
         Exportar para quadro
