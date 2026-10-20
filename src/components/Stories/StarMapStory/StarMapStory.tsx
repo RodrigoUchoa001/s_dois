@@ -35,16 +35,6 @@ const MAP_SIZE = 320;
 const CENTER = MAP_SIZE / 2;
 const RADIUS = 142;
 
-/*
- * Pedro II - PI
- */
-const LOCATION = {
-    name: "Pedro II",
-    coordinates: "4°25′29″ S · 41°27′31″ W",
-    latitude: -4.339358618669948,
-    longitude: -41.454690364510796,
-};
-
 // -4.339358618669948, -41.454690364510796
 
 /* =========================================================
@@ -112,6 +102,8 @@ function StarMap({
 }) {
     const arrival = phase === "arrival";
     const traveling = phase === "traveling";
+
+    const location = couple.location;
 
     // Mantém as estrelas e seus nomes sincronizados.
     const skyDate = traveling ? getToday() : date;
@@ -248,8 +240,8 @@ function StarMap({
                             const position = projectStar(
                                 star,
                                 skyDate,
-                                LOCATION.latitude,
-                                LOCATION.longitude,
+                                location.latitude,
+                                location.longitude,
                                 MAP_SIZE,
                                 RADIUS,
                             );
@@ -384,11 +376,13 @@ function StarPoint({
     star: RealStar;
     date: Date;
 }) {
+    const location = couple.location;
+
     const position = projectStar(
         star,
         date,
-        LOCATION.latitude,
-        LOCATION.longitude,
+        location.latitude,
+        location.longitude,
         MAP_SIZE,
         RADIUS,
     );
@@ -479,6 +473,8 @@ function getVisibleLineSegments(
     const segments: string[] = [];
     let currentSegment: string[] = [];
 
+    const location = couple.location;
+
     for (const [ra, dec] of line) {
         const position = projectStar(
             {
@@ -488,8 +484,8 @@ function getVisibleLineSegments(
                 magnitude: 0,
             },
             date,
-            LOCATION.latitude,
-            LOCATION.longitude,
+            location.latitude,
+            location.longitude,
             MAP_SIZE,
             RADIUS,
         );
@@ -544,6 +540,8 @@ function InfoCard({
 ========================================================= */
 
 export function StarMapStory() {
+    const location = couple.location;
+
     const [phase, setPhase] = useState<Phase>("today");
 
     const [displayDate, setDisplayDate] = useState<Date>(
@@ -860,7 +858,7 @@ export function StarMapStory() {
                                         className="mt-1 text-lg font-black"
                                         style={{ color: COLORS.ink }}
                                     >
-                                        {LOCATION.name}
+                                        {location.name}
                                     </p>
 
                                     <p
@@ -895,7 +893,7 @@ export function StarMapStory() {
                                     "
                                     style={{ color: COLORS.muted }}
                                 >
-                                    {LOCATION.coordinates}
+                                    {location.coordinates}
                                 </span>
                             </div>
                         </motion.div>
@@ -929,7 +927,7 @@ export function StarMapStory() {
                 {phase === "arrival" && (
                     <StarMapExport
                         date={startDate}
-                        location={LOCATION}
+                        location={location}
                     />
                 )}
             </div>

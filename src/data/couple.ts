@@ -11,6 +11,13 @@ export const couple = {
     startMinute: 0,
     startSecond: 0,
 
+    location: {
+        name: "Pedro II",
+    coordinates: "4°25′29″ S · 41°27′31″ W",
+        latitude: -4.339358618669948,
+        longitude: -41.454690364510796,
+    },
+
     song: {
         title: "Always",
         artist: "Bon Jovi",
