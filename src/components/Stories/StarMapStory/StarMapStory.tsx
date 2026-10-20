@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 
 import { AnimatePresence, motion } from "motion/react";
 
 import {
-    Clock3, 
+    Clock3,
     MapPin,
     Navigation,
 } from "lucide-react";
@@ -16,7 +17,6 @@ import {
     VISIBLE_STARS,
     getVisibleConstellations,
     projectStar,
-    type RealStar,
 } from "./astronomy";
 
 import { StarMapExport } from "./StarMapExport";
@@ -27,6 +27,35 @@ import { StarMapExport } from "./StarMapExport";
 
 type Phase = "today" | "traveling" | "arrival";
 
+type ProjectedStar = {
+    id: number | string;
+    x: number;
+    y: number;
+    radius: number;
+    opacity: number;
+};
+
+type ProjectedNamedStar = {
+    id: number | string;
+    name: string;
+    x: number;
+    y: number;
+    labelDx?: number;
+    labelDy?: number;
+};
+
+type GridLine = {
+    id: string;
+    points: string;
+    major: boolean;
+};
+
+type ProjectedConstellationSegment = {
+    key: string;
+    points: string;
+    delay: number;
+};
+
 /* =========================================================
    CONFIGURAÇÕES
 ========================================================= */
@@ -34,8 +63,6 @@ type Phase = "today" | "traveling" | "arrival";
 const MAP_SIZE = 320;
 const CENTER = MAP_SIZE / 2;
 const RADIUS = 142;
-
-// -4.339358618669948, -41.454690364510796
 
 /* =========================================================
    PALETA VISUAL
@@ -87,88 +114,92 @@ function formatTime(date: Date) {
 
 /* =========================================================
    GRADE ASTRONÔMICA — MERIDIANOS E PARALELOS
-   RA e DEC em graus, conforme astronomy.ts
+
+   As linhas são calculadas apenas quando a data ou a
+   localização mudam, não a cada renderização do componente.
 ========================================================= */
 
 function MeridianLines({ date }: { date: Date }) {
     const { latitude, longitude } = couple.location;
 
-    const GRID_COLOR = "#D0B5FF";
+    const timestamp = date.getTime();
 
-    type GridLine = {
-        id: string;
-        points: string;
-        major: boolean;
-    };
+    const gridLines = useMemo(() => {
+        function buildLine(
+            id: string,
+            coordinates: { ra: number; dec: number }[],
+            major: boolean,
+        ): GridLine[] {
+            const segments: GridLine[] = [];
 
-    function buildLine(
-        id: string,
-        coordinates: { ra: number; dec: number }[],
-        major: boolean,
-    ): GridLine[] {
-        const segments: GridLine[] = [];
-        let currentPoints: string[] = [];
-        let segmentIndex = 0;
+            let currentPoints: string[] = [];
+            let segmentIndex = 0;
 
-        const finishSegment = () => {
-            if (currentPoints.length >= 2) {
-                segments.push({
-                    id: `${id}-${segmentIndex++}`,
-                    points: currentPoints.join(" "),
-                    major,
-                });
+            const finishSegment = () => {
+                if (currentPoints.length >= 2) {
+                    segments.push({
+                        id: `${id}-${segmentIndex++}`,
+                        points: currentPoints.join(" "),
+                        major,
+                    });
+                }
+
+                currentPoints = [];
+            };
+
+            for (const { ra, dec } of coordinates) {
+                const position = projectStar(
+                    {
+                        id: `grid-${ra}-${dec}`,
+                        ra,
+                        dec,
+                        magnitude: 0,
+                    },
+                    date,
+                    latitude,
+                    longitude,
+                    MAP_SIZE,
+                    RADIUS,
+                );
+
+                if (!position) {
+                    finishSegment();
+                    continue;
+                }
+
+                currentPoints.push(
+                    `${position.x},${position.y}`,
+                );
             }
 
-            currentPoints = [];
-        };
+            finishSegment();
 
-        for (const { ra, dec } of coordinates) {
-            const position = projectStar(
-                {
-                    id: `grid-${ra}-${dec}`,
-                    ra,
-                    dec,
-                    magnitude: 0,
-                },
-                date,
-                latitude,
-                longitude,
-                MAP_SIZE,
-                RADIUS,
-            );
-
-            if (!position) {
-                finishSegment();
-                continue;
-            }
-
-            currentPoints.push(`${position.x},${position.y}`);
+            return segments;
         }
 
-        finishSegment();
+        // Meridianos: ascensão reta constante.
+        const meridians = Array.from(
+            { length: 12 },
+            (_, index) => {
+                const ra = index * 30;
 
-        return segments;
-    }
+                return buildLine(
+                    `ra-${ra}`,
+                    Array.from({ length: 91 }, (_, i) => ({
+                        ra,
+                        dec: -90 + i * 2,
+                    })),
+                    ra % 60 === 0,
+                );
+            },
+        ).flat();
 
-    // Meridianos: ascensão reta constante, de 30° em 30°.
-    // DEC percorre o céu inteiro em passos de 2°.
-    const meridians = Array.from({ length: 12 }, (_, index) => {
-        const ra = index * 30;
-
-        return buildLine(
-            `ra-${ra}`,
-            Array.from({ length: 91 }, (_, i) => ({
-                ra,
-                dec: -90 + i * 2,
-            })),
-            ra % 60 === 0,
-        );
-    }).flat();
-
-    // Paralelos: declinação constante, de 15° em 15°.
-    // RA percorre os 360° em passos de 2°.
-    const parallels = [-75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75]
-        .flatMap((dec) =>
+        // Paralelos: declinação constante.
+        const parallels = [
+            -75, -60, -45, -30, -15,
+            0,
+            15, 30, 45, 60, 75,
+        ].flatMap((dec) =>
             buildLine(
                 `dec-${dec}`,
                 Array.from({ length: 181 }, (_, i) => ({
@@ -179,6 +210,11 @@ function MeridianLines({ date }: { date: Date }) {
             ),
         );
 
+        return [...meridians, ...parallels];
+    }, [timestamp, latitude, longitude]);
+
+    const GRID_COLOR = "#D0B5FF";
+
     return (
         <g
             fill="none"
@@ -187,7 +223,7 @@ function MeridianLines({ date }: { date: Date }) {
             strokeLinejoin="round"
             pointerEvents="none"
         >
-            {[...meridians, ...parallels].map((line) => (
+            {gridLines.map((line) => (
                 <polyline
                     key={line.id}
                     points={line.points}
@@ -201,6 +237,10 @@ function MeridianLines({ date }: { date: Date }) {
 
 /* =========================================================
    STAR MAP
+
+   As posições das estrelas são pré-calculadas com useMemo.
+   Durante a viagem no tempo, a data do céu atual fica
+   estável, evitando milhares de cálculos por atualização.
 ========================================================= */
 
 function StarMap({
@@ -217,10 +257,87 @@ function StarMap({
     const arrival = phase === "arrival";
     const traveling = phase === "traveling";
 
-    const location = couple.location;
+    const { latitude, longitude } = couple.location;
 
-    // Mantém as estrelas e seus nomes sincronizados.
-    const skyDate = traveling ? getToday() : date;
+    // Guarda uma referência estável ao céu atual.
+    // Não cria uma nova data em cada renderização.
+    const [currentSkyDate] = useState<Date>(
+        () => getToday(),
+    );
+
+    // Durante a viagem, o céu atual permanece estável.
+    // Na chegada, o mapa usa a data histórica.
+    const skyDate = traveling ? currentSkyDate : date;
+    const skyTimestamp = skyDate.getTime();
+
+    /* =====================================================
+       POSIÇÕES DAS ESTRELAS COMUNS
+    ===================================================== */
+
+    const projectedStars = useMemo<ProjectedStar[]>(() => {
+        return VISIBLE_STARS.flatMap((star) => {
+            const position = projectStar(
+                star,
+                skyDate,
+                latitude,
+                longitude,
+                MAP_SIZE,
+                RADIUS,
+            );
+
+            // Ignora estrelas abaixo do horizonte.
+            if (!position) return [];
+
+            const radius = Math.max(
+                0.45,
+                Math.min(2.4, 2.8 - star.magnitude * 0.35),
+            );
+
+            const opacity = Math.max(
+                0.25,
+                Math.min(1, 1.15 - star.magnitude * 0.12),
+            );
+
+            return [{
+                id: star.id,
+                x: position.x,
+                y: position.y,
+                radius,
+                opacity,
+            }];
+        });
+    }, [skyTimestamp, latitude, longitude]);
+
+    /* =====================================================
+       POSIÇÕES DAS ESTRELAS NOMEADAS
+    ===================================================== */
+
+    const projectedNamedStars = useMemo<ProjectedNamedStar[]>(
+        () => {
+            return NAMED_STARS.flatMap((star) => {
+                const position = projectStar(
+                    star,
+                    skyDate,
+                    latitude,
+                    longitude,
+                    MAP_SIZE,
+                    RADIUS,
+                );
+
+                if (!position) return [];
+
+                return [{
+                    id: star.id,
+                    name: star.name,
+                    x: position.x,
+                    y: position.y,
+                    labelDx: star.labelDx,
+                    labelDy: star.labelDy,
+                }];
+            });
+        },
+        [skyTimestamp, latitude, longitude],
+    );
 
     return (
         <motion.div
@@ -274,7 +391,7 @@ function StarMap({
                 viewBox={`0 0 ${MAP_SIZE} ${MAP_SIZE}`}
                 className="absolute inset-0 h-full w-full"
             >
-                {/* CÍRCULOS DE ALTITUDE */}
+                {/* CÍRCULO DE ALTITUDE */}
 
                 <circle
                     cx={CENTER}
@@ -286,65 +403,34 @@ function StarMap({
                     opacity="0.22"
                 />
 
-                {/* <circle
-                    cx={CENTER}
-                    cy={CENTER}
-                    r={RADIUS * 0.66}
-                    fill="none"
-                    stroke={COLORS.warmWhite}
-                    strokeWidth="0.5"
-                    opacity="0.11"
-                />
+                {/* MERIDIANOS E PARALELOS */}
 
-                <circle
-                    cx={CENTER}
-                    cy={CENTER}
-                    r={RADIUS * 0.33}
-                    fill="none"
-                    stroke={COLORS.warmWhite}
-                    strokeWidth="0.5"
-                    opacity="0.09"
-                /> */}
-
-                {/* LINHAS CARDINAIS */}
-
-                {/* <line
-                    x1={CENTER}
-                    y1={CENTER - RADIUS}
-                    x2={CENTER}
-                    y2={CENTER + RADIUS}
-                    stroke={COLORS.warmWhite}
-                    strokeWidth="0.4"
-                    opacity="0.12"
-                />
-
-                <line
-                    x1={CENTER - RADIUS}
-                    y1={CENTER}
-                    x2={CENTER + RADIUS}
-                    y2={CENTER}
-                    stroke={COLORS.warmWhite}
-                    strokeWidth="0.4"
-                    opacity="0.12"
-                /> */}
-
-                {/* MERIDIANOS E PARALELOS ASTRONÔMICOS */}
                 {showStarNames && (
                     <MeridianLines date={skyDate} />
                 )}
 
-
-                {/* ESTRELAS */}
+                {/* ESTRELAS COMUNS
+                    Não cria mais um componente React por estrela. */}
 
                 <g>
-                    {VISIBLE_STARS.map((star) => (
-                        <StarPoint
+                    {projectedStars.map((star) => (
+                        <circle
                             key={star.id}
-                            star={star}
-                            date={skyDate}
+                            cx={star.x}
+                            cy={star.y}
+                            r={star.radius}
+                            fill={COLORS.warmWhite}
+                            opacity={star.opacity}
                         />
                     ))}
                 </g>
+
+                {/* CONSTELAÇÕES */}
+
+                <ConstellationLines
+                    date={skyDate}
+                    arrival={arrival}
+                />
 
                 {/* NOMES DAS ESTRELAS CONHECIDAS */}
 
@@ -356,56 +442,35 @@ function StarMap({
                         fill={COLORS.ink}
                         textAnchor="start"
                     >
-                        {NAMED_STARS.map((star) => {
-                            const position = projectStar(
-                                star,
-                                skyDate,
-                                location.latitude,
-                                location.longitude,
-                                MAP_SIZE,
-                                RADIUS,
-                            );
+                        {projectedNamedStars.map((star) => (
+                            <g key={star.id}>
+                                <circle
+                                    cx={star.x}
+                                    cy={star.y}
+                                    r={1.5}
+                                    fill="#FFE5A3"
+                                />
 
-                            // Ignora estrelas abaixo do horizonte.
-                            if (!position) return null;
-
-                            return (
-                                <g key={star.id}>
-                                    <circle
-                                        cx={position.x}
-                                        cy={position.y}
-                                        r={1.5}
-                                        fill="#FFE5A3"
-                                    />
-
-                                    <text
-                                        x={
-                                            position.x +
-                                            (star.labelDx ?? 5)
-                                        }
-                                        y={
-                                            position.y +
-                                            (star.labelDy ?? -5)
-                                        }
-                                        stroke="#10152F"
-                                        strokeWidth={2.5}
-                                        strokeLinejoin="round"
-                                        paintOrder="stroke"
-                                    >
-                                        {star.name}
-                                    </text>
-                                </g>
-                            );
-                        })}
+                                <text
+                                    x={
+                                        star.x +
+                                        (star.labelDx ?? 5) -2
+                                    }
+                                    y={
+                                        star.y +
+                                        (star.labelDy ?? -5) +2
+                                    }
+                                    stroke="#10152F"
+                                    strokeWidth={2.5}
+                                    strokeLinejoin="round"
+                                    paintOrder="stroke"
+                                >
+                                    {star.name}
+                                </text>
+                            </g>
+                        ))}
                     </g>
                 )}
-
-                {/* CONSTELAÇÕES */}
-
-                <ConstellationLines
-                    date={skyDate}
-                    arrival={arrival}
-                />
 
                 {/* CENTRO / ZÊNITE */}
 
@@ -415,8 +480,12 @@ function StarMap({
                     r={2}
                     fill={COLORS.warmWhite}
                     animate={{
-                        opacity: arrival ? [0.4, 1, 0.4] : 0.5,
-                        scale: arrival ? [1, 1.6, 1] : 1,
+                        opacity: arrival
+                            ? [0.4, 1, 0.4]
+                            : 0.5,
+                        scale: arrival
+                            ? [1, 1.6, 1]
+                            : 1,
                     }}
                     transition={{
                         duration: 2,
@@ -486,53 +555,10 @@ function StarMap({
 }
 
 /* =========================================================
-   ESTRELA
-========================================================= */
-
-function StarPoint({
-    star,
-    date,
-}: {
-    star: RealStar;
-    date: Date;
-}) {
-    const location = couple.location;
-
-    const position = projectStar(
-        star,
-        date,
-        location.latitude,
-        location.longitude,
-        MAP_SIZE,
-        RADIUS,
-    );
-
-    // Estrelas abaixo do horizonte não são exibidas.
-    if (!position) return null;
-
-    const radius = Math.max(
-        0.45,
-        Math.min(2.4, 2.8 - star.magnitude * 0.35),
-    );
-
-    const opacity = Math.max(
-        0.25,
-        Math.min(1, 1.15 - star.magnitude * 0.12),
-    );
-
-    return (
-        <circle
-            cx={position.x}
-            cy={position.y}
-            r={radius}
-            fill={COLORS.warmWhite}
-            opacity={opacity}
-        />
-    );
-}
-
-/* =========================================================
    CONSTELAÇÕES
+
+   Calcula os segmentos visíveis uma vez por data/local.
+   A animação continua sendo feita pelo Motion.
 ========================================================= */
 
 function ConstellationLines({
@@ -542,58 +568,101 @@ function ConstellationLines({
     date: Date;
     arrival: boolean;
 }) {
-    return (
-        <>
-            {getVisibleConstellations().map(
-                (constellation, constellationIndex) =>
-                    constellation.lines.map((line, lineIndex) => {
-                        const segments = getVisibleLineSegments(
-                            line,
-                            date,
-                        );
+    const { latitude, longitude } = couple.location;
 
-                        return segments.map(
-                            (points, segmentIndex) => (
-                                <motion.polyline
-                                    key={`${constellation.id}-${lineIndex}-${segmentIndex}`}
-                                    points={points}
-                                    fill="none"
-                                    stroke={COLORS.lilac}
-                                    strokeWidth="0.8"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    initial={{
-                                        pathLength: 0,
-                                        opacity: 0,
-                                    }}
-                                    animate={{
-                                        pathLength: arrival ? 1 : 0,
-                                        opacity: arrival ? 0.8 : 0,
-                                    }}
-                                    transition={{
+    const timestamp = date.getTime();
+
+    const segments = useMemo<ProjectedConstellationSegment[]>(
+        () => {
+            const result: ProjectedConstellationSegment[] = [];
+
+            getVisibleConstellations().forEach(
+                (constellation, constellationIndex) => {
+                    constellation.lines.forEach(
+                        (line, lineIndex) => {
+                            const visibleSegments =
+                                getVisibleLineSegments(
+                                    line,
+                                    date,
+                                    latitude,
+                                    longitude,
+                                );
+
+                            visibleSegments.forEach(
+                                (points, segmentIndex) => {
+                                    result.push({
+                                        key:
+                                            `${constellation.id}-` +
+                                            `${lineIndex}-` +
+                                            `${segmentIndex}`,
+                                        points,
                                         delay:
                                             constellationIndex * 0.015 +
                                             lineIndex * 0.08,
-                                        duration: 0.9,
-                                        ease: "easeInOut",
-                                    }}
-                                />
-                            ),
-                        );
-                    }),
-            )}
+                                    });
+                                },
+                            );
+                        },
+                    );
+                },
+            );
+
+            return result;
+        },
+        [timestamp, latitude, longitude],
+    );
+
+    return (
+        <>
+            {segments.map((segment) => (
+                <motion.polyline
+                    key={segment.key}
+                    points={segment.points}
+                    fill="none"
+                    stroke={COLORS.lilac}
+                    strokeWidth="0.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={{
+                        pathLength: 0,
+                        opacity: 0,
+                    }}
+                    animate={{
+                        pathLength: arrival ? 1 : 0,
+                        opacity: arrival ? 0.8 : 0,
+                    }}
+                    transition={{
+                        delay: segment.delay,
+                        duration: 0.9,
+                        ease: "easeInOut",
+                    }}
+                />
+            ))}
         </>
     );
 }
 
+/* =========================================================
+   PROJEÇÃO DOS SEGMENTOS DAS CONSTELAÇÕES
+========================================================= */
+
 function getVisibleLineSegments(
     line: [number, number][],
     date: Date,
+    latitude: number,
+    longitude: number,
 ): string[] {
     const segments: string[] = [];
+
     let currentSegment: string[] = [];
 
-    const location = couple.location;
+    const finishSegment = () => {
+        if (currentSegment.length >= 2) {
+            segments.push(currentSegment.join(" "));
+        }
+
+        currentSegment = [];
+    };
 
     for (const [ra, dec] of line) {
         const position = projectStar(
@@ -604,27 +673,23 @@ function getVisibleLineSegments(
                 magnitude: 0,
             },
             date,
-            location.latitude,
-            location.longitude,
+            latitude,
+            longitude,
             MAP_SIZE,
             RADIUS,
         );
 
         if (!position) {
-            if (currentSegment.length >= 2) {
-                segments.push(currentSegment.join(" "));
-            }
-
-            currentSegment = [];
+            finishSegment();
             continue;
         }
 
-        currentSegment.push(`${position.x},${position.y}`);
+        currentSegment.push(
+            `${position.x},${position.y}`,
+        );
     }
 
-    if (currentSegment.length >= 2) {
-        segments.push(currentSegment.join(" "));
-    }
+    finishSegment();
 
     return segments;
 }
@@ -703,6 +768,8 @@ export function StarMapStory() {
         const startTimestamp = today.getTime();
         const targetTimestamp = startDate.getTime();
 
+        let arrivalTimeout: number | undefined;
+
         const interval = window.setInterval(() => {
             currentStep++;
 
@@ -714,7 +781,8 @@ export function StarMapStory() {
             const eased =
                 progress < 0.5
                     ? 2 * progress * progress
-                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                    : 1 -
+                      Math.pow(-2 * progress + 2, 2) / 2;
 
             const timestamp =
                 startTimestamp +
@@ -727,7 +795,7 @@ export function StarMapStory() {
 
                 setDisplayDate(new Date(targetTimestamp));
 
-                window.setTimeout(() => {
+                arrivalTimeout = window.setTimeout(() => {
                     setPhase("arrival");
                 }, 500);
             }
@@ -735,6 +803,10 @@ export function StarMapStory() {
 
         return () => {
             window.clearInterval(interval);
+
+            if (arrivalTimeout !== undefined) {
+                window.clearTimeout(arrivalTimeout);
+            }
         };
     }, [phase, startDate, today]);
 
@@ -860,7 +932,9 @@ export function StarMapStory() {
                     phase={phase}
                     rotation={mapRotation}
                     date={displayDate}
-                    showStarNames={phase === "arrival" && showStarNames}
+                    showStarNames={
+                        phase === "arrival" && showStarNames
+                    }
                 />
 
                 {/* INFORMAÇÕES */}
@@ -999,7 +1073,9 @@ export function StarMapStory() {
                                     bg-white/40 px-4 py-3
                                     backdrop-blur-xl
                                 "
-                                style={{ borderColor: COLORS.border }}
+                                style={{
+                                    borderColor: COLORS.border,
+                                }}
                             >
                                 <Navigation
                                     size={14}
@@ -1044,6 +1120,7 @@ export function StarMapStory() {
                         </motion.p>
                     )}
                 </AnimatePresence>
+
                 {phase === "arrival" && (
                     <StarMapExport
                         date={startDate}

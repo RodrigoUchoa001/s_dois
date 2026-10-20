@@ -241,11 +241,18 @@ export const NAMED_STARS: NamedStar[] = [
     },
 ];
 
-export const VISIBLE_STARS: RealStar[] =
-    REAL_STARS
-        .filter((star) => star.magnitude <= 3.8)
-        .sort((a, b) => a.magnitude - b.magnitude)
-        .slice(0, 1000);
+
+export const VISIBLE_STARS: RealStar[] = REAL_STARS
+  .filter(
+    (star) =>
+      Number.isFinite(star.ra) &&
+      Number.isFinite(star.dec) &&
+      Number.isFinite(star.magnitude) &&
+      star.magnitude <= 4.7,
+  )
+  .sort((a, b) => a.magnitude - b.magnitude)
+  .slice(0, 1800);
+
 
 export const REAL_CONSTELLATIONS: ConstellationLine[] =
     constellations.features.map((feature) => ({
