@@ -593,6 +593,7 @@ function ConstellationLines({
                                     result.push({
                                         key:
                                             `${constellation.id}-` +
+                                            `${constellationIndex}-` +
                                             `${lineIndex}-` +
                                             `${segmentIndex}`,
                                         points,
