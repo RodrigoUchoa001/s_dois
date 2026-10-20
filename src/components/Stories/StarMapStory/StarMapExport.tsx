@@ -698,7 +698,7 @@ export function StarMapExport({ date, location }: StarMapExportProps) {
                         {selectedSize.label}
                     </span>
                     </div>
-                    <div className="max-h-[72vh] overflow-auto rounded-2xl border border-white/10 bg-[#080A19] p-3 sm:p-4">
+                    <div className="overflow-auto rounded-2xl border border-white/10 bg-[#080A19] p-3 sm:p-4">
                     <div
                         className="mx-auto w-full max-w-[440px] overflow-hidden shadow-2xl [&_svg]:block [&_svg]:h-full [&_svg]:w-full"
                         style={{ aspectRatio: `${selectedSize.width} / ${selectedSize.height}` }}
