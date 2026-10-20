@@ -9,6 +9,8 @@ import {
   projectStar,
 } from "./astronomy";
 
+import { couple } from "../../../data/couple";
+
 type PosterSize = "21x30" | "30x40" | "40x50" | "50x70";
 type BackgroundTheme = "original" | "white" | "black" | "forest";
 
@@ -372,8 +374,7 @@ function buildPosterSvg({
 
   <text x="${width / 2}" y="${footerY}" text-anchor="middle" font-family="Arial, sans-serif"
     font-size="14" font-weight="800" letter-spacing="2" fill="${theme.ink}">
-    <tspan x="${width / 2}" dy="0">O CÉU QUANDO NOSSOS</tspan>
-    <tspan x="${width / 2}" dy="23">MUNDOS SE COLIDIRAM</tspan>
+    <tspan x="${width / 2}" dy="0">${couple.names.man} e ${couple.names.woman}</tspan>
   </text>
 </svg>`;
 }
