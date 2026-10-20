@@ -175,7 +175,7 @@ export function StoriesScreen({
             if (progress >= 1) {
                 // Stories 6 (Gallery) e 8 (Timeline):
                 // não avançam automaticamente.
-                if (currentStory !== 7 && currentStory !== 8 && currentStory !== 9) {
+                if (currentStory !== 5 && currentStory !== 7 && currentStory !== 8 && currentStory !== 9) {
                     nextStory();
                 }
 
