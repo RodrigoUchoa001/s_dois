@@ -86,6 +86,120 @@ function formatTime(date: Date) {
 }
 
 /* =========================================================
+   GRADE ASTRONÔMICA — MERIDIANOS E PARALELOS
+   RA e DEC em graus, conforme astronomy.ts
+========================================================= */
+
+function MeridianLines({ date }: { date: Date }) {
+    const { latitude, longitude } = couple.location;
+
+    const GRID_COLOR = "#D0B5FF";
+
+    type GridLine = {
+        id: string;
+        points: string;
+        major: boolean;
+    };
+
+    function buildLine(
+        id: string,
+        coordinates: { ra: number; dec: number }[],
+        major: boolean,
+    ): GridLine[] {
+        const segments: GridLine[] = [];
+        let currentPoints: string[] = [];
+        let segmentIndex = 0;
+
+        const finishSegment = () => {
+            if (currentPoints.length >= 2) {
+                segments.push({
+                    id: `${id}-${segmentIndex++}`,
+                    points: currentPoints.join(" "),
+                    major,
+                });
+            }
+
+            currentPoints = [];
+        };
+
+        for (const { ra, dec } of coordinates) {
+            const position = projectStar(
+                {
+                    id: `grid-${ra}-${dec}`,
+                    ra,
+                    dec,
+                    magnitude: 0,
+                },
+                date,
+                latitude,
+                longitude,
+                MAP_SIZE,
+                RADIUS,
+            );
+
+            if (!position) {
+                finishSegment();
+                continue;
+            }
+
+            currentPoints.push(`${position.x},${position.y}`);
+        }
+
+        finishSegment();
+
+        return segments;
+    }
+
+    // Meridianos: ascensão reta constante, de 30° em 30°.
+    // DEC percorre o céu inteiro em passos de 2°.
+    const meridians = Array.from({ length: 12 }, (_, index) => {
+        const ra = index * 30;
+
+        return buildLine(
+            `ra-${ra}`,
+            Array.from({ length: 91 }, (_, i) => ({
+                ra,
+                dec: -90 + i * 2,
+            })),
+            ra % 60 === 0,
+        );
+    }).flat();
+
+    // Paralelos: declinação constante, de 15° em 15°.
+    // RA percorre os 360° em passos de 2°.
+    const parallels = [-75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75]
+        .flatMap((dec) =>
+            buildLine(
+                `dec-${dec}`,
+                Array.from({ length: 181 }, (_, i) => ({
+                    ra: i * 2,
+                    dec,
+                })),
+                dec % 30 === 0,
+            ),
+        );
+
+    return (
+        <g
+            fill="none"
+            stroke={GRID_COLOR}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            pointerEvents="none"
+        >
+            {[...meridians, ...parallels].map((line) => (
+                <polyline
+                    key={line.id}
+                    points={line.points}
+                    strokeWidth={line.major ? 0.65 : 0.4}
+                    strokeOpacity={line.major ? 0.32 : 0.19}
+                />
+            ))}
+        </g>
+    );
+}
+
+/* =========================================================
    STAR MAP
 ========================================================= */
 
@@ -168,11 +282,11 @@ function StarMap({
                     r={RADIUS}
                     fill="none"
                     stroke={COLORS.warmWhite}
-                    strokeWidth="0.6"
+                    strokeWidth="1.2"
                     opacity="0.22"
                 />
 
-                <circle
+                {/* <circle
                     cx={CENTER}
                     cy={CENTER}
                     r={RADIUS * 0.66}
@@ -190,11 +304,11 @@ function StarMap({
                     stroke={COLORS.warmWhite}
                     strokeWidth="0.5"
                     opacity="0.09"
-                />
+                /> */}
 
                 {/* LINHAS CARDINAIS */}
 
-                <line
+                {/* <line
                     x1={CENTER}
                     y1={CENTER - RADIUS}
                     x2={CENTER}
@@ -212,7 +326,13 @@ function StarMap({
                     stroke={COLORS.warmWhite}
                     strokeWidth="0.4"
                     opacity="0.12"
-                />
+                /> */}
+
+                {/* MERIDIANOS E PARALELOS ASTRONÔMICOS */}
+                {showStarNames && (
+                    <MeridianLines date={skyDate} />
+                )}
+
 
                 {/* ESTRELAS */}
 

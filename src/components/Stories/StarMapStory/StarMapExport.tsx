@@ -186,6 +186,112 @@ function getVisibleLineSegments(
   return segments;
 }
 
+type GridLine = {
+  id: string;
+  points: string;
+  major: boolean;
+};
+
+function buildMeridianLines(
+  date: Date,
+  location: StarMapExportProps["location"],
+  theme: Theme,
+): string {
+  function buildLine(
+    id: string,
+    coordinates: { ra: number; dec: number }[],
+    major: boolean,
+  ): string[] {
+    const segments: GridLine[] = [];
+    let currentPoints: string[] = [];
+    let segmentIndex = 0;
+
+    const finishSegment = () => {
+      if (currentPoints.length >= 2) {
+        segments.push({
+          id: `${id}-${segmentIndex++}`,
+          points: currentPoints.join(" "),
+          major,
+        });
+      }
+
+      currentPoints = [];
+    };
+
+    for (const { ra, dec } of coordinates) {
+      const position = projectStar(
+        {
+          id: `grid-${id}-${ra}-${dec}`,
+          ra,
+          dec,
+          magnitude: 0,
+        },
+        date,
+        location.latitude,
+        location.longitude,
+        MAP_SIZE,
+        RADIUS,
+      );
+
+      if (!position) {
+        finishSegment();
+        continue;
+      }
+
+      currentPoints.push(`${position.x},${position.y}`);
+    }
+
+    finishSegment();
+
+    return segments.map(
+      (line) => `
+        <polyline
+          points="${line.points}"
+          fill="none"
+          stroke="${theme.grid}"
+          stroke-width="${line.major ? 0.65 : 0.4}"
+          stroke-opacity="${line.major ? 0.32 : 0.19}"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      `,
+    );
+  }
+
+  // Meridianos: ascensão reta a cada 30°.
+  const meridians = Array.from({ length: 12 }, (_, index) => {
+    const ra = index * 30;
+
+    return buildLine(
+      `ra-${ra}`,
+      Array.from({ length: 91 }, (_, i) => ({
+        ra,
+        dec: -90 + i * 2,
+      })),
+      ra % 60 === 0,
+    );
+  }).flat();
+
+  // Paralelos: declinação a cada 15°.
+  const parallels = [
+    -75, -60, -45, -30, -15,
+    0,
+    15, 30, 45, 60, 75,
+  ].flatMap((dec) =>
+    buildLine(
+      `dec-${dec}`,
+      Array.from({ length: 181 }, (_, i) => ({
+        ra: i * 2,
+        dec,
+      })),
+      dec % 30 === 0,
+    ),
+  );
+
+  return [...meridians, ...parallels].join("");
+}
+
+
 function buildPosterSvg({
   date,
   location,
@@ -246,6 +352,14 @@ function buildPosterSvg({
 
     return `<circle cx="${position.x}" cy="${position.y}" r="${radius}" fill="${theme.ink}" opacity="${opacity}"/>`;
   }).join("");
+
+  
+  const meridianLines = buildMeridianLines(
+    date,
+    location,
+    theme,
+  );
+
 
   const constellationLines = showConstellationLines
     ? getVisibleConstellations()
@@ -342,12 +456,9 @@ function buildPosterSvg({
   <rect x="${width / 2 - 28}" y="${titleLineY}" width="56" height="3" rx="1.5" fill="url(#title-gradient)"/>
 
   <g transform="translate(${mapX} ${mapY}) scale(${mapScale})">
-    <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS}" fill="url(#sky-gradient)" stroke="${theme.ink}" stroke-opacity="0.35" stroke-width="0.8"/>
+    <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS}" fill="url(#sky-gradient)" stroke="${theme.ink}" stroke-opacity="0.35" stroke-width="1.2"/>
     <g clip-path="url(#map-clip)">
-      <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS * 0.66}" fill="none" stroke="${theme.grid}" stroke-width="0.5" opacity="0.13"/>
-      <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS * 0.33}" fill="none" stroke="${theme.grid}" stroke-width="0.5" opacity="0.1"/>
-      <line x1="${CENTER}" y1="${CENTER - RADIUS}" x2="${CENTER}" y2="${CENTER + RADIUS}" stroke="${theme.grid}" stroke-width="0.4" opacity="0.15"/>
-      <line x1="${CENTER - RADIUS}" y1="${CENTER}" x2="${CENTER + RADIUS}" y2="${CENTER}" stroke="${theme.grid}" stroke-width="0.4" opacity="0.15"/>
+      ${meridianLines}
       ${stars}
       ${constellationLines}
       ${namedStars}
