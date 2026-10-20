@@ -297,6 +297,7 @@ function buildPosterSvg({
   location,
   size,
   showConstellationLines,
+  showMeridianLines,
   showStarNames,
   backgroundTheme,
 }: {
@@ -304,6 +305,7 @@ function buildPosterSvg({
   location: StarMapExportProps["location"];
   size: PosterSizeOption;
   showConstellationLines: boolean;
+  showMeridianLines: boolean;
   showStarNames: boolean;
   backgroundTheme: BackgroundTheme;
 }) {
@@ -354,11 +356,9 @@ function buildPosterSvg({
   }).join("");
 
   
-  const meridianLines = buildMeridianLines(
-    date,
-    location,
-    theme,
-  );
+  const meridianLines = showMeridianLines
+    ? buildMeridianLines(date, location, theme)
+    : "";
 
 
   const constellationLines = showConstellationLines
@@ -501,6 +501,7 @@ export function StarMapExport({ date, location }: StarMapExportProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [sizeValue, setSizeValue] = useState<PosterSize>("30x40");
   const [showConstellationLines, setShowConstellationLines] = useState(true);
+  const [showMeridianLines, setShowMeridianLines] = useState(true);
   const [showStarNames, setShowStarNames] = useState(true);
   const [backgroundTheme, setBackgroundTheme] = useState<BackgroundTheme>("original");
 
@@ -513,10 +514,11 @@ export function StarMapExport({ date, location }: StarMapExportProps) {
         location,
         size: selectedSize,
         showConstellationLines,
+        showMeridianLines,
         showStarNames,
         backgroundTheme,
       }),
-    [date, location, selectedSize, showConstellationLines, showStarNames, backgroundTheme],
+    [date, location, selectedSize, showConstellationLines, showMeridianLines, showStarNames, backgroundTheme],
   );
   const previewSvg = posterSvg.replace(/^<\?xml[^>]*\?>\s*/, "");
 
@@ -641,6 +643,21 @@ export function StarMapExport({ date, location }: StarMapExportProps) {
                         type="checkbox"
                         checked={showConstellationLines}
                         onChange={(event) => setShowConstellationLines(event.target.checked)}
+                        className="h-5 w-5 shrink-0 accent-[#C0A5FF]"
+                        />
+                    </label>
+
+                    <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-white/10 p-3.5">
+                        <span>
+                        <span className="block text-sm font-semibold">Linhas dos meridianos</span>
+                        <span className="mt-1 block text-xs text-[#C5BEDD]">
+                            Mostra as linhas dos meridianos.
+                        </span>
+                        </span>
+                        <input
+                        type="checkbox"
+                        checked={showMeridianLines}
+                        onChange={(event) => setShowMeridianLines(event.target.checked)}
                         className="h-5 w-5 shrink-0 accent-[#C0A5FF]"
                         />
                     </label>
