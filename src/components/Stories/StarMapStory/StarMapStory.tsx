@@ -41,9 +41,11 @@ const RADIUS = 142;
 const LOCATION = {
     name: "Pedro II",
     coordinates: "4°25′29″ S · 41°27′31″ W",
-    latitude: -4.4247,
-    longitude: -41.4586,
+    latitude: -4.339358618669948,
+    longitude: -41.454690364510796,
 };
+
+// -4.339358618669948, -41.454690364510796
 
 /* =========================================================
    PALETA VISUAL
