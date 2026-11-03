@@ -122,9 +122,9 @@ export function PlacesMap({
             ]}
             zoom={16}
             zoomControl={false}
-            scrollWheelZoom={false}
+            scrollWheelZoom={true}
             dragging={true}
-            doubleClickZoom={false}
+            doubleClickZoom={true}
             touchZoom={true}
             keyboard={false}
             className="h-full w-full bg-[#080B24]"
