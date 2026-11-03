@@ -287,11 +287,6 @@ export function PlacesMapStory() {
                                 "
                             >
                                 <div className="flex items-center gap-2">
-                                    <Heart
-                                        size={13}
-                                        className="text-[#C2B5FF]"
-                                    />
-
                                     <span
                                         className="
                                             text-[10px]
@@ -373,10 +368,10 @@ export function PlacesMapStory() {
 
                                 <p
                                     className="
-                                        mt-3
                                         text-[11px]
                                         leading-relaxed
                                         text-[#F4F0FF]/60
+                                        whitespace-pre-line break-words
                                     "
                                 >
                                     {currentVisit.description}
@@ -437,7 +432,7 @@ export function PlacesMapStory() {
                                         "
                                     >
                                         <Sparkles size={12} />
-                                        Nossa história
+                                        <div />
                                     </div>
                                 )}
 
