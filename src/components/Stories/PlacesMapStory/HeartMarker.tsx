@@ -55,7 +55,7 @@ export function HeartMarker({
 
         iconSize: [36, 36],
 
-        iconAnchor: [18, 28],
+        iconAnchor: [18, 18],
     });
 
     return (
