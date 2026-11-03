@@ -577,34 +577,34 @@ export const couple = {
         visits: [
             {
                 id: "first-visit",
-                title: "Nosso primeiro passeio",
-                location: "Praça da cidade, Pedro II - PI",
+                title: "Nosso lugar",
+                location: "Mirante da Arara, Pedro II - PI",
                 description:
-                    "Um lugar especial onde compartilhamos um dos nossos primeiros momentos juntos.",
+                    "Uma das muitas vezes que fomos fazer picnic nosso lugar na serra. Vamos lá sempre que pudermos.",
                 coordinates: {
-                    latitude: -4.4247,
-                    longitude: -41.4586,
+                    latitude: -4.33872040554039,
+                    longitude: -41.45369637951749,
                 },
                 photo: {
-                    src: "images/places/first-visit.jpg",
-                    title: "A primeira de muitas",
-                    alt: "Foto do nosso primeiro passeio",
+                    src: "images/places/place1.jpeg",
+                    title: "No nosso lugar",
+                    alt: "No nosso lugar, fazendo picnic",
                 },
             },
             {
-                id: "second-visit",
-                title: "Uma tarde inesquecível",
-                location: "Nome do local, cidade - PI",
+                id: "third-visit",
+                title: "Primeira ida a Praia juntos",
+                location: "Praia do Arrombado, Luís Correia - PI",
                 description:
-                    "Uma tarde que ficou guardada com muito carinho na nossa memória.",
+                    "Nossa primeira vez na praia, um momento inesquecível.",
                 coordinates: {
-                    latitude: -4.4300,
-                    longitude: -41.4600,
+                    latitude: -2.910927,
+                    longitude: -41.532751,
                 },
                 photo: {
-                    src: "images/places/second-visit.jpg",
-                    title: "Um momento só nosso",
-                    alt: "Foto da nossa segunda visita",
+                    src: "images/places/place2.jpeg",
+                    title: "A primeira vez na praia",
+                    alt: "Foto da nossa terceira visita",
                 },
             },
         ],
