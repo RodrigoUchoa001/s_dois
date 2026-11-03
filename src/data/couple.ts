@@ -577,10 +577,13 @@ export const couple = {
         visits: [
             {
                 id: "first-visit",
-                title: "Nosso lugar",
+                title: "Nosso lugar ❤️",
                 location: "Mirante da Arara, Pedro II - PI",
-                description:
-                    "Uma das muitas vezes que fomos fazer picnic nosso lugar na serra. Vamos lá sempre que pudermos.",
+                description:`
+                    O nosso lugar na serra preferido. Onde muitas vezes fizemos picnic, vimos o por do sol, e tivemos o nosso primeiro beijo. 
+                    
+                    E claro, onde eu pedi você em namoro ❤️
+                `,
                 coordinates: {
                     latitude: -4.33872040554039,
                     longitude: -41.45369637951749,
@@ -593,10 +596,11 @@ export const couple = {
             },
             {
                 id: "third-visit",
-                title: "Primeira ida a Praia juntos",
+                title: "Primeira vez na Praia juntos 🏖️",
                 location: "Praia do Arrombado, Luís Correia - PI",
-                description:
-                    "Nossa primeira vez na praia, um momento inesquecível.",
+                description:`
+                    Nossa primeira vez na praia. A primeira de nossas muitas viagens juntos.
+                `,
                 coordinates: {
                     latitude: -2.910927,
                     longitude: -41.532751,
