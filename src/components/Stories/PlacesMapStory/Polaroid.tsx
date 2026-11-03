@@ -40,6 +40,7 @@ export function Polaroid({ visit }: PolaroidProps) {
                 border-[#A99AFF]/20
                 bg-[#151633]
                 p-[7px]
+                ml-4
                 pb-3
                 shadow-[0_8px_24px_rgba(0,0,0,0.35)]
                 pointer-events-none
