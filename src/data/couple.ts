@@ -599,7 +599,7 @@ export const couple = {
                 title: "Primeira vez na Praia juntos 🏖️",
                 location: "Praia do Arrombado, Luís Correia - PI",
                 description:`
-                    Nossa primeira vez na praia. A primeira de nossas muitas viagens juntos.
+                    Nossa primeira vez na praia. A primeira de nossas muitas viagens juntos, amor 😘.
                 `,
                 coordinates: {
                     latitude: -2.910927,
