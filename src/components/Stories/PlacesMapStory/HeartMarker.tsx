@@ -1,5 +1,4 @@
 import { Marker } from "react-leaflet";
-
 import { divIcon } from "leaflet";
 
 import type { PlaceVisit } from "../../../data/couple";
@@ -7,11 +6,13 @@ import type { PlaceVisit } from "../../../data/couple";
 interface HeartMarkerProps {
     visit: PlaceVisit;
     selected: boolean;
+    onSelect: (visitId: string) => void;
 }
 
 export function HeartMarker({
     visit,
     selected,
+    onSelect,
 }: HeartMarkerProps) {
     const icon = divIcon({
         className: "!border-0 !bg-transparent",
@@ -54,7 +55,6 @@ export function HeartMarker({
         `,
 
         iconSize: [36, 36],
-
         iconAnchor: [18, 18],
     });
 
@@ -65,6 +65,9 @@ export function HeartMarker({
                 visit.coordinates.longitude,
             ]}
             icon={icon}
+            eventHandlers={{
+                click: () => onSelect(visit.id),
+            }}
         />
     );
 }

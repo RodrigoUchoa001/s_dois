@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -23,14 +22,25 @@ export function PlacesMapStory() {
 
     function nextVisit() {
         setCurrentIndex((current) =>
-            Math.min(current + 1, totalVisits - 1),
+            Math.min(current + 1, totalVisits - 1)
         );
     }
 
     function previousVisit() {
         setCurrentIndex((current) =>
-            Math.max(current - 1, 0),
+            Math.max(current - 1, 0)
         );
+    }
+
+    // Seleciona uma visita ao clicar no coração do mapa.
+    function selectVisit(visitId: string) {
+        const index = visits.findIndex(
+            (visit) => visit.id === visitId
+        );
+
+        if (index !== -1) {
+            setCurrentIndex(index);
+        }
     }
 
     if (totalVisits === 0) {
@@ -92,6 +102,7 @@ export function PlacesMapStory() {
                 <PlacesMap
                     visits={visits}
                     selectedVisit={currentVisit}
+                    onSelectVisit={selectVisit}
                 />
             </div>
 
@@ -371,7 +382,8 @@ export function PlacesMapStory() {
                                         text-[11px]
                                         leading-relaxed
                                         text-[#F4F0FF]/60
-                                        whitespace-pre-line break-words
+                                        whitespace-pre-line
+                                        break-words
                                     "
                                 >
                                     {currentVisit.description}

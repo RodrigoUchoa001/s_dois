@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { divIcon } from "leaflet";
@@ -19,23 +18,35 @@ import { Polaroid } from "./Polaroid";
 interface PlacesMapProps {
     visits: PlaceVisit[];
     selectedVisit: PlaceVisit;
+    onSelectVisit: (visitId: string) => void;
 }
 
 function MapCamera({ visit }: { visit: PlaceVisit }) {
     const map = useMap();
 
     useEffect(() => {
-        const target = map.latLngToContainerPoint([
+        const targetZoom = Math.max(map.getZoom(), 17);
+
+        const position: [number, number] = [
             visit.coordinates.latitude,
             visit.coordinates.longitude,
-        ]);
+        ];
 
-        // Desloca o centro visual para deixar o marcador mais acima.
-        const offset = target.subtract([0, -100]);
+        // Projeta as coordenadas já no zoom de destino.
+        const markerPoint = map.project(position, targetZoom);
 
-        const adjustedCenter = map.containerPointToLatLng(offset);
+        // Desloca o centro 100px para baixo,
+        // deixando o coração 100px acima do centro visual.
+        const adjustedCenterPoint = markerPoint.add([0, 100]);
 
-        map.flyTo(adjustedCenter, 16, {
+        const adjustedCenter = map.unproject(
+            adjustedCenterPoint,
+            targetZoom
+        );
+
+        map.stop();
+
+        map.flyTo(adjustedCenter, targetZoom, {
             duration: 1.2,
         });
     }, [
@@ -69,8 +80,6 @@ function PolaroidMapMarker({
                 html: element,
                 className: "polaroid-map-icon",
                 iconSize: [128, 160],
-
-                // Posiciona a polaroid ao lado do marcador.
                 iconAnchor: [-16, 65],
             }),
         [element]
@@ -100,6 +109,7 @@ function PolaroidMapMarker({
 export function PlacesMap({
     visits,
     selectedVisit,
+    onSelectVisit,
 }: PlacesMapProps) {
     // Coordenadas dos locais na ordem cadastrada.
     const routePositions = useMemo(
@@ -129,19 +139,15 @@ export function PlacesMap({
             keyboard={false}
             className="h-full w-full bg-[#080B24]"
         >
-            {/* MAPA CLARO — OPENSTREETMAP */}
-
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
             {/* CÂMERA */}
-
             <MapCamera visit={selectedVisit} />
 
             {/* LINHA PONTILHADA ENTRE OS LOCAIS */}
-
             {routePositions.length >= 2 && (
                 <Polyline
                     positions={routePositions}
@@ -157,18 +163,17 @@ export function PlacesMap({
                 />
             )}
 
-            {/* MARCADORES */}
-
+            {/* MARCADORES CLICÁVEIS */}
             {visits.map((visit) => (
                 <HeartMarker
                     key={visit.id}
                     visit={visit}
                     selected={visit.id === selectedVisit.id}
+                    onSelect={onSelectVisit}
                 />
             ))}
 
             {/* POLAROID DA VISITA SELECIONADA */}
-
             <PolaroidMapMarker
                 key={`polaroid-${selectedVisit.id}`}
                 visit={selectedVisit}
