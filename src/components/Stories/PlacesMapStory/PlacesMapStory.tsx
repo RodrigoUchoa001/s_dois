@@ -1,7 +1,6 @@
+
 import { useState } from "react";
-
 import { motion, AnimatePresence } from "motion/react";
-
 import {
     Heart,
     MapPin,
@@ -10,13 +9,9 @@ import {
     Sparkles,
 } from "lucide-react";
 
-
-
 import { PlacesMap } from "./PlacesMap";
-
 import { couple } from "../../../data/couple";
 import { StoryHeader } from "../StoryHeader";
-import { SideRibbon } from "../../SideRibbon/SideRibbon";
 
 export function PlacesMapStory() {
     const visits = couple.placesMap.visits;
@@ -24,7 +19,6 @@ export function PlacesMapStory() {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const totalVisits = visits.length;
-
     const currentVisit = visits[currentIndex];
 
     function nextVisit() {
@@ -55,13 +49,7 @@ export function PlacesMapStory() {
                     text-[#F4F0FF]
                 "
             >
-                <div
-                    className="
-                        relative z-10
-                        px-8
-                        text-center
-                    "
-                >
+                <div className="relative z-10 px-8 text-center">
                     <Heart
                         size={28}
                         className="mx-auto mb-4 text-[#C2B5FF]"
@@ -69,13 +57,7 @@ export function PlacesMapStory() {
 
                     <StoryHeader text="Nossa jornada" />
 
-                    <p
-                        className="
-                            mt-4
-                            text-sm
-                            text-[#F4F0FF]/60
-                        "
-                    >
+                    <p className="mt-4 text-sm text-[#F4F0FF]/60">
                         Nossas lembranças aparecerão aqui.
                     </p>
                 </div>
@@ -98,7 +80,6 @@ export function PlacesMapStory() {
                 pr-3
             "
         >
-
             {/* MAPA */}
 
             <div
@@ -158,17 +139,12 @@ export function PlacesMapStory() {
                 }}
             />
 
-            <SideRibbon
-                text="NOSSA JORNADA"
-                bg_color="bg-[#7864FF]/15"
-            />
-
             {/* CONTEÚDO */}
 
             <div
                 className="
                     pointer-events-none
-                    relative z-10
+                    relative z-20
                     flex h-full w-full
                     flex-col
                     px-7
@@ -230,20 +206,20 @@ export function PlacesMapStory() {
                     </p>
                 </motion.div>
 
-                {/* ÁREA CENTRAL */}
+                {/* ÁREA INFERIOR — CARTÃO DE EMBARQUE */}
 
                 <div
                     className="
-                        pointer-events-none
+                        mt-auto
                         flex min-h-0
+                        w-full
                         flex-1
                         flex-col
-                        justify-center
-                        py-5
+                        justify-end
+                        pb-2
+                        pt-6
                     "
                 >
-                    {/* CARTÃO DE EMBARQUE */}
-
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentVisit.id}
@@ -264,11 +240,8 @@ export function PlacesMapStory() {
                             }}
                             className="
                                 pointer-events-auto
-                                absolute
-                                bottom-0
-                                left-0
-                                right-0
-                                z-[20]
+                                relative z-30
+                                w-full
                                 overflow-hidden
                                 rounded-[24px]
                                 border
@@ -276,7 +249,7 @@ export function PlacesMapStory() {
                                 bg-[#151633]/95
                                 px-5
                                 py-5
-                                shadow-[0_8px_24px_rgba(0,0,0,0.35)]
+                                shadow-[0_8px_24px_rgba(0,0,0,0.18)]
                             "
                         >
                             {/* REFLEXO */}
@@ -464,7 +437,6 @@ export function PlacesMapStory() {
                                         "
                                     >
                                         <Sparkles size={12} />
-
                                         Nossa história
                                     </div>
                                 )}
@@ -511,7 +483,6 @@ export function PlacesMapStory() {
                                         "
                                     >
                                         Próxima
-
                                         <ChevronRight size={14} />
                                     </button>
                                 ) : (
@@ -528,7 +499,6 @@ export function PlacesMapStory() {
                                         "
                                     >
                                         <Heart size={12} />
-
                                         Final
                                     </div>
                                 )}
