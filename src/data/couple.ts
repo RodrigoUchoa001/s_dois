@@ -1,3 +1,32 @@
+export interface PlaceVisit {
+    id: string;
+
+    title: string;
+
+    location: string;
+
+    description: string;
+
+    coordinates: {
+        latitude: number;
+        longitude: number;
+    };
+
+    photo: {
+        src: string;
+        title: string;
+        alt: string;
+    };
+}
+
+export interface PlacesMapData {
+    title: string;
+
+    subtitle: string;
+
+    visits: PlaceVisit[];
+}
+
 export const couple = {
     names: {
         man: 'Rodrigo',
@@ -541,5 +570,43 @@ export const couple = {
             // "Aqui em casa 🤤",
             "Atta"
         ]
-    }
+    },
+    placesMap: {
+        title: "Nossa jornada no mapa",
+        subtitle: "Lugares que marcaram a nossa história",
+        visits: [
+            {
+                id: "first-visit",
+                title: "Nosso primeiro passeio",
+                location: "Praça da cidade, Pedro II - PI",
+                description:
+                    "Um lugar especial onde compartilhamos um dos nossos primeiros momentos juntos.",
+                coordinates: {
+                    latitude: -4.4247,
+                    longitude: -41.4586,
+                },
+                photo: {
+                    src: "images/places/first-visit.jpg",
+                    title: "A primeira de muitas",
+                    alt: "Foto do nosso primeiro passeio",
+                },
+            },
+            {
+                id: "second-visit",
+                title: "Uma tarde inesquecível",
+                location: "Nome do local, cidade - PI",
+                description:
+                    "Uma tarde que ficou guardada com muito carinho na nossa memória.",
+                coordinates: {
+                    latitude: -4.4300,
+                    longitude: -41.4600,
+                },
+                photo: {
+                    src: "images/places/second-visit.jpg",
+                    title: "Um momento só nosso",
+                    alt: "Foto da nossa segunda visita",
+                },
+            },
+        ],
+    } satisfies PlacesMapData,
 };
