@@ -603,7 +603,7 @@ export const couple = {
                 },
                 photo: {
                     src: "images/places/place2.jpeg",
-                    title: "A primeira vez na praia",
+                    title: "Na praia",
                     alt: "Foto da nossa terceira visita",
                 },
             },
