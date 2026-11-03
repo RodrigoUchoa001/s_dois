@@ -6,6 +6,7 @@ import { divIcon } from "leaflet";
 import {
     MapContainer,
     Marker,
+    Polyline,
     TileLayer,
     useMap,
 } from "react-leaflet";
@@ -24,16 +25,19 @@ function MapCamera({ visit }: { visit: PlaceVisit }) {
     const map = useMap();
 
     useEffect(() => {
-        map.flyTo(
-            [
-                visit.coordinates.latitude,
-                visit.coordinates.longitude,
-            ],
-            16,
-            {
-                duration: 1.2,
-            }
-        );
+        const target = map.latLngToContainerPoint([
+            visit.coordinates.latitude,
+            visit.coordinates.longitude,
+        ]);
+
+        // Desloca o centro visual para deixar o marcador mais acima.
+        const offset = target.subtract([0, -100]);
+
+        const adjustedCenter = map.containerPointToLatLng(offset);
+
+        map.flyTo(adjustedCenter, 16, {
+            duration: 1.2,
+        });
     }, [
         map,
         visit.id,
@@ -97,6 +101,19 @@ export function PlacesMap({
     visits,
     selectedVisit,
 }: PlacesMapProps) {
+    // Coordenadas dos locais na ordem cadastrada.
+    const routePositions = useMemo(
+        () =>
+            visits.map(
+                (visit) =>
+                    [
+                        visit.coordinates.latitude,
+                        visit.coordinates.longitude,
+                    ] as [number, number]
+            ),
+        [visits]
+    );
+
     return (
         <MapContainer
             center={[
@@ -122,6 +139,23 @@ export function PlacesMap({
             {/* CÂMERA */}
 
             <MapCamera visit={selectedVisit} />
+
+            {/* LINHA PONTILHADA ENTRE OS LOCAIS */}
+
+            {routePositions.length >= 2 && (
+                <Polyline
+                    positions={routePositions}
+                    pathOptions={{
+                        color: "#A99AFF",
+                        weight: 3,
+                        opacity: 0.9,
+                        dashArray: "8 10",
+                        lineCap: "round",
+                        lineJoin: "round",
+                    }}
+                    interactive={false}
+                />
+            )}
 
             {/* MARCADORES */}
 
