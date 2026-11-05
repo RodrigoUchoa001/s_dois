@@ -148,7 +148,7 @@ export function MinutesTogetherStory({
 
                     <p className="mt-2 text-sm font-medium tracking-wide text-[#F4F0FF]/75">
                         {couple.startDay} de{" "}
-                        {getMonthName(couple.startMonth)} de{" "}
+                        {getMonthName(couple.startMonth+1)} de{" "}
                         {couple.startYear}
                     </p>
 
@@ -167,7 +167,7 @@ export function MinutesTogetherStory({
 
                             <p className="mt-2 text-sm font-medium tracking-wide text-[#F4F0FF]/75">
                                 {endDate.endDay} de{" "}
-                                {getMonthName(endDate.endMonth)} de{" "}
+                                {getMonthName(endDate.endMonth+1)} de{" "}
                                 {endDate.endYear}
                             </p>
                         </div>
