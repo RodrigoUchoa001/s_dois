@@ -64,9 +64,20 @@ function getElapsedTime() {
         couple.startSecond ?? 0,
     );
 
-    const now = new Date();
+    const referenceDate =
+        couple.hasItEnded && couple.endDate
+            ? new Date(
+                  couple.endDate.endYear,
+                  couple.endDate.endMonth - 1,
+                  couple.endDate.endDay,
+                  couple.endDate.endHour ?? 0,
+                  couple.endDate.endMinute ?? 0,
+                  couple.endDate.endSecond ?? 0,
+              )
+            : new Date();
 
-    let years = now.getFullYear() - start.getFullYear();
+    let years =
+        referenceDate.getFullYear() - start.getFullYear();
 
     const anniversary = new Date(
         start.getFullYear() + years,
@@ -74,7 +85,7 @@ function getElapsedTime() {
         start.getDate(),
     );
 
-    if (anniversary > now) {
+    if (anniversary > referenceDate) {
         years--;
     }
 
@@ -88,7 +99,7 @@ function getElapsedTime() {
     );
 
     const remainingDays = Math.floor(
-        (now.getTime() - afterYears.getTime()) /
+        (referenceDate.getTime() - afterYears.getTime()) /
             (1000 * 60 * 60 * 24),
     );
 
@@ -99,6 +110,8 @@ function getElapsedTime() {
 }
 
 export function BeginningStory() {
+    const isEnded = couple.hasItEnded;
+
     const month = couple.startMonth - 1;
     const year = couple.startYear;
     const day = couple.startDay;
@@ -110,6 +123,19 @@ export function BeginningStory() {
         "pt-BR",
         { weekday: "long" },
     );
+
+    const elapsedText = [
+        elapsed.years > 0
+            ? `${elapsed.years} ${
+                  elapsed.years === 1 ? "ano" : "anos"
+              }`
+            : null,
+        `${elapsed.days} ${
+            elapsed.days === 1 ? "dia" : "dias"
+        }`,
+    ]
+        .filter(Boolean)
+        .join(" e ");
 
     return (
         <motion.div
@@ -330,14 +356,8 @@ export function BeginningStory() {
                     </h2>
 
                     <p className="mt-4 text-base font-bold text-[#C3C8EA]/55">
-                        Há{" "}
-                        {elapsed.years > 0 &&
-                            `${elapsed.years} ${
-                                elapsed.years === 1 ? "ano" : "anos"
-                            } `}
-                        {elapsed.years > 0 && "e "}
-                        {elapsed.days}{" "}
-                        {elapsed.days === 1 ? "dia" : "dias"}.
+                        {isEnded ? "Foram " : "Há "}
+                        {elapsedText}.
                     </p>
                 </motion.div>
 
@@ -356,7 +376,9 @@ export function BeginningStory() {
                     </div>
 
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#C3C8EA]/45">
-                        e esse foi só o começo
+                        {isEnded
+                            ? "uma lembrança do que vivemos"
+                            : "e esse foi só o começo"}
                     </p>
                 </motion.div>
             </div>

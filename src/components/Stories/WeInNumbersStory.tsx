@@ -1,13 +1,15 @@
 
 import { motion } from "motion/react";
+
 import {
-    Heart,
     Sparkles,
     CalendarDays,
     Moon,
     Sun,
     Activity,
 } from "lucide-react";
+
+import { couple } from "../../data/couple";
 
 import {
     getDaysTogether,
@@ -84,44 +86,19 @@ function NumberItem({
             className="relative"
         >
             <div className="flex items-center gap-3 py-3">
+
                 {/* ÍCONE */}
 
-                <div
-                    className="
-                        relative flex h-10 w-10 shrink-0
-                        items-center justify-center rounded-full
-                        border border-[#9DABFF]/30
-                        bg-[#8B9DFF]/10 text-[#B9C7FF]
-                    "
-                >
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#9DABFF]/30 bg-[#8B9DFF]/10 text-[#B9C7FF]">
                     {icon}
-
-                    <span
-                        className="
-                            absolute -right-0.5 -top-0.5
-                            h-2 w-2 rounded-full
-                            border border-[#111632] bg-[#79F0E2]
-                        "
-                    />
                 </div>
 
                 {/* NÚMERO */}
 
-                <div
-                    className="
-                        relative flex min-w-[104px] shrink-0
-                        items-center justify-center overflow-hidden
-                        rounded-xl border border-[#9DABFF]/25
-                        bg-[#20294D] px-3 py-2.5
-                    "
-                >
+                <div className="relative flex min-w-[104px] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#9DABFF]/25 bg-[#20294D] px-3 py-2.5">
                     <div
                         aria-hidden="true"
-                        className="
-                            pointer-events-none absolute inset-0
-                            bg-gradient-to-br
-                            from-white/[0.05] to-transparent
-                        "
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent"
                     />
 
                     <motion.span
@@ -131,11 +108,7 @@ function NumberItem({
                             delay: 0.3 + index * 0.09,
                             duration: 0.3,
                         }}
-                        className="
-                            relative block whitespace-nowrap
-                            text-xl font-black leading-none
-                            tracking-tight text-[#F1F4FF]
-                        "
+                        className="relative block whitespace-nowrap text-xl font-black leading-none tracking-tight text-[#F1F4FF]"
                         style={{
                             fontVariantNumeric: "tabular-nums",
                         }}
@@ -143,12 +116,7 @@ function NumberItem({
                         {formatQuantity(quantity)}
                     </motion.span>
 
-                    <span
-                        className="
-                            absolute bottom-0 left-3 right-3
-                            h-px bg-[#79F0E2]/40
-                        "
-                    />
+                    <span className="absolute bottom-0 left-3 right-3 h-px bg-[#79F0E2]/40" />
                 </div>
 
                 {/* DESCRIÇÃO */}
@@ -160,10 +128,7 @@ function NumberItem({
                         delay: 0.35 + index * 0.09,
                         duration: 0.3,
                     }}
-                    className="
-                        min-w-0 flex-1 text-xs font-medium
-                        leading-snug text-[#D5DCFF]/75 sm:text-sm
-                    "
+                    className="min-w-0 flex-1 text-xs font-medium leading-snug text-[#D5DCFF]/80 sm:text-sm"
                 >
                     {description}
                 </motion.p>
@@ -172,49 +137,57 @@ function NumberItem({
             {/* SEPARADOR */}
 
             <div
-                className="
-                    h-px origin-left
-                    bg-gradient-to-r
-                    from-[#8B9DFF]/30 via-[#8B9DFF]/10 to-transparent
-                "
+                className="h-px origin-left"
+                style={{
+                    backgroundImage:
+                        "linear-gradient(to right, rgba(139,157,255,0.20), transparent)",
+                }}
             />
         </motion.div>
     );
 }
 
 export function WeInNumbersStory() {
+    const isEnded = couple.hasItEnded;
+
     const animatedDays = useAnimatedNumber(getDaysTogether());
     const animatedWeekends = useAnimatedNumber(getWeekendsTogether());
+
     const animatedFullMoonDays = useAnimatedNumber(
-        getFullMoonDaysTogether(),
+        getFullMoonDaysTogether()
     );
+
     const animatedSeasons = useAnimatedNumber(getSeasonsTogether());
     const animatedHeartbeats = useAnimatedNumber(getHeartbeatsTogether());
 
     const numbers = [
         {
             quantity: animatedDays,
-            description: "dias juntos",
+            description: isEnded ? "dias compartilhados" : "dias juntos",
             icon: <CalendarDays size={17} strokeWidth={2.2} />,
         },
         {
             quantity: animatedWeekends,
-            description: "fins de semana juntos",
-            icon: <Heart size={17} fill="currentColor" />,
+            description: isEnded ? "semanas compartilhadas" : "semanas juntos",
+            icon: <CalendarDays size={17} strokeWidth={2.2} />,
         },
         {
             quantity: animatedFullMoonDays,
-            description: "luas cheias juntos",
-            icon: <Moon size={17} fill="currentColor" />,
+            description: isEnded
+                ? "luas cheias nesse período"
+                : "luas cheias juntos",
+            icon: <Moon size={17} />,
         },
         {
             quantity: animatedSeasons,
-            description: "estações juntos",
-            icon: <Sun size={17} fill="currentColor" />,
+            description: isEnded ? "estações vividas" : "estações juntos",
+            icon: <Sun size={17} />,
         },
         {
             quantity: animatedHeartbeats,
-            description: "batidas do coração enquanto isso",
+            description: isEnded
+                ? "batimentos cardíacos estimados"
+                : "batidas do coração enquanto isso",
             icon: <Activity size={17} strokeWidth={2.2} />,
         },
     ];
@@ -226,12 +199,9 @@ export function WeInNumbersStory() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
-            className="
-                relative h-full w-full overflow-hidden
-                bg-[#080D24] text-[#F1F4FF]
-            "
+            className="relative h-full w-full overflow-hidden bg-[#080D24] text-[#F1F4FF]"
         >
-            {/* FUNDO CÓSMICO ESTÁTICO */}
+            {/* FUNDO */}
 
             <div
                 aria-hidden="true"
@@ -240,12 +210,12 @@ export function WeInNumbersStory() {
                     background: `
                         radial-gradient(
                             ellipse at 15% 12%,
-                            rgba(93, 91, 190, 0.22),
+                            rgba(93,91,190,0.22),
                             transparent 45%
                         ),
                         radial-gradient(
                             ellipse at 90% 65%,
-                            rgba(43, 133, 164, 0.13),
+                            rgba(43,133,164,0.13),
                             transparent 40%
                         ),
                         linear-gradient(
@@ -258,7 +228,7 @@ export function WeInNumbersStory() {
                 }}
             />
 
-            {/* ESTRELAS ESTÁTICAS */}
+            {/* ESTRELAS */}
 
             <div
                 aria-hidden="true"
@@ -267,12 +237,13 @@ export function WeInNumbersStory() {
                 {stars.map((star, index) => (
                     <span
                         key={index}
-                        className="absolute rounded-full bg-[#E4EAFF]"
+                        className="absolute rounded-full"
                         style={{
                             left: star.x,
                             top: star.y,
                             width: star.size,
                             height: star.size,
+                            backgroundColor: "#E4EAFF",
                             opacity: index % 3 === 0 ? 0.85 : 0.55,
                             boxShadow:
                                 star.size === 3
@@ -283,48 +254,35 @@ export function WeInNumbersStory() {
                 ))}
             </div>
 
-            {/* BRILHO CENTRAL ESTÁTICO */}
+            {/* BRILHO CENTRAL */}
 
             <div
                 aria-hidden="true"
-                className="
-                    pointer-events-none absolute
-                    left-[48%] top-[37%]
-                    h-56 w-56 -translate-x-1/2 -translate-y-1/2
-                    rounded-full
-                "
+                className="pointer-events-none absolute left-[48%] top-[37%] h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full"
                 style={{
                     background:
                         "radial-gradient(circle, rgba(103,104,216,0.08) 0%, rgba(103,104,216,0.025) 45%, transparent 72%)",
                 }}
             />
 
-            {/* ÓRBITAS EXISTENTES */}
+            {/* ÓRBITAS */}
 
             <div className="pointer-events-none absolute right-0 top-[10%]">
                 <Orbits />
             </div>
 
-            {/* BRILHO SUPERIOR */}
+            {/* DETALHES DECORATIVOS */}
 
             <div
                 aria-hidden="true"
-                className="
-                    pointer-events-none absolute
-                    right-20 top-14 text-[#79F0E2]/70
-                "
+                className="pointer-events-none absolute right-20 top-14 text-[#79F0E2]/70"
             >
                 <Sparkles size={19} />
             </div>
 
-            {/* BRILHO INFERIOR ESTÁTICO */}
-
             <div
                 aria-hidden="true"
-                className="
-                    pointer-events-none absolute
-                    bottom-28 left-5 text-[#9DABFF]/55
-                "
+                className="pointer-events-none absolute bottom-28 left-5 text-[#9DABFF]/55"
             >
                 <Sparkles size={17} />
             </div>
@@ -332,41 +290,40 @@ export function WeInNumbersStory() {
             {/* FAIXA LATERAL */}
 
             <SideRibbon
-                text="Nós em números"
+                text={isEnded ? "REGISTRO EM NÚMEROS" : "NÓS EM NÚMEROS"}
                 bg_color="bg-[#8B9DFF]/15"
             />
 
             {/* CONTEÚDO PRINCIPAL */}
 
-            <div
-                className="
-                    relative z-10 flex h-full flex-col
-                    px-7 pb-7 pr-14 pt-8
-                "
-            >
+            <div className="relative z-10 flex h-full flex-col px-7 pb-7 pr-14 pt-8">
+
                 {/* CABEÇALHO */}
 
-                <StoryHeader text="Nossa história" />
+                <StoryHeader
+                    text={isEnded ? "Uma história" : "Nossa história"}
+                />
 
-                <h1
-                    className="
-                        max-w-xs text-4xl font-black
-                        uppercase leading-[0.9] tracking-tight
-                    "
-                >
-                    O nosso amor,
-                    <br />
-                    em números.
+                <h1 className="max-w-xs text-4xl font-black uppercase leading-[0.9] tracking-tight text-[#F1F4FF]">
+                    {isEnded ? (
+                        <>
+                            Uma história,
+                            <br />
+                            em números.
+                        </>
+                    ) : (
+                        <>
+                            O nosso amor,
+                            <br />
+                            em números.
+                        </>
+                    )}
                 </h1>
 
-                <p
-                    className="
-                        mt-4 max-w-xs text-sm font-medium
-                        leading-relaxed text-[#D5DCFF]/60
-                    "
-                >
-                    Porque algumas histórias também podem ser
-                    contadas através de números.
+                <p className="mt-4 max-w-xs text-sm font-medium leading-relaxed text-[#D5DCFF]/65">
+                    {isEnded
+                        ? "Alguns momentos também podem ser lembrados através dos números."
+                        : "Porque algumas histórias também podem ser contadas através de números."}
                 </p>
 
                 {/* PAINEL DE ESTATÍSTICAS */}
@@ -375,52 +332,24 @@ export function WeInNumbersStory() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.45 }}
-                    className="
-                        relative mt-auto overflow-hidden
-                        rounded-[26px] border border-[#9DABFF]/20
-                        bg-[#111A39] px-4 py-2
-                        shadow-[0_10px_30px_rgba(0,0,0,0.16)]
-                    "
+                    className="relative mt-auto overflow-hidden rounded-[26px] border border-[#9DABFF]/20 bg-[#111A39] px-4 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
                 >
-                    {/* REFLEXO ESTÁTICO */}
+                    {/* REFLEXO */}
 
                     <div
                         aria-hidden="true"
-                        className="
-                            pointer-events-none absolute inset-0
-                            bg-gradient-to-br
-                            from-[#9DABFF]/[0.06]
-                            via-transparent
-                            to-[#79F0E2]/[0.025]
-                        "
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#9DABFF]/[0.06] to-transparent"
                     />
 
                     {/* CABEÇALHO DO PAINEL */}
 
-                    <div
-                        className="
-                            relative mb-1 flex items-center
-                            justify-between border-b
-                            border-[#9DABFF]/15 pb-3 pt-2
-                        "
-                    >
+                    <div className="relative mb-1 flex items-center justify-between border-b border-[#9DABFF]/20 pb-3 pt-2">
                         <div>
-                            <p
-                                className="
-                                    text-[9px] font-black uppercase
-                                    tracking-[0.23em] text-[#79F0E2]/80
-                                "
-                            >
-                                Nossa história
-                            </p>
 
-                            <p
-                                className="
-                                    mt-1 font-serif text-lg italic
-                                    text-[#F1F4FF]
-                                "
-                            >
-                                Cada momento conta.
+                            <p className="mt-1 font-serif text-lg italic text-[#F1F4FF]">
+                                {isEnded
+                                    ? "Cada número, uma lembrança."
+                                    : "Cada momento conta."}
                             </p>
                         </div>
                     </div>
@@ -442,28 +371,17 @@ export function WeInNumbersStory() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.9, duration: 0.4 }}
-                    className="
-                        flex items-center justify-center gap-2 pt-4
-                    "
+                    className="flex items-center justify-center gap-2 pt-4"
                 >
-                    <span className="h-px w-5 bg-[#9DABFF]/30" />
+                    <span className="h-px w-5 bg-[#D5DCFF]/30" />
 
-                    <Heart
-                        size={10}
-                        fill="currentColor"
-                        className="text-[#79F0E2]"
-                    />
-
-                    <p
-                        className="
-                            text-[9px] font-bold uppercase
-                            tracking-[0.2em] text-[#D5DCFF]/45
-                        "
-                    >
-                        E contando...
+                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#D5DCFF]/45">
+                        {isEnded
+                            ? "Números de uma história vivida"
+                            : "E contando..."}
                     </p>
 
-                    <span className="h-px w-5 bg-[#9DABFF]/30" />
+                    <span className="h-px w-5 bg-[#D5DCFF]/30" />
                 </motion.div>
             </div>
         </motion.div>

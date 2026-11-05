@@ -50,7 +50,7 @@ export function MoonStory() {
 
             {/* Faixa lateral */}
             <SideRibbon
-                text="Nossa lua"
+                text="Aquela noite"
                 bg_color="bg-[#8B9DFF]/15"
             />
 
@@ -141,7 +141,7 @@ export function MoonStory() {
                         <div className="flex items-end justify-between gap-3">
                             <div className="min-w-0">
                                 <p className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#A99EFF]">
-                                    Fase da lua
+                                    Fase da lua naquela data
                                 </p>
 
                                 <h2 className="text-2xl font-black uppercase leading-none tracking-tight text-[#F1F2FF]">

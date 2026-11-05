@@ -65,7 +65,7 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
 
                 <div className="absolute left-1/2 top-1/2 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#a875ff]/10 sm:h-[460px] sm:w-[460px]" />
 
-                {/* Estrelas estáticas: sem animações infinitas */}
+                {/* Estrelas estáticas */}
                 {STAR_POSITIONS.map(([left, top], index) => (
                     <span
                         key={index}
@@ -90,7 +90,7 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
                 />
 
                 <p className="text-[10px] font-medium uppercase tracking-[0.42em] text-[#e8c98b]/80 sm:text-xs">
-                    E a história continua
+                    O fim de um capítulo
                 </p>
 
                 <div className="h-px w-12 bg-gradient-to-r from-transparent via-[#e8c98b]/70 to-transparent" />
@@ -102,9 +102,9 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
                     {...enter(0.25)}
                     className="max-w-[310px] text-[clamp(1.55rem,6.7vw,2.5rem)] font-black uppercase leading-[1.08] tracking-[-0.045em] text-[#fff4d6] sm:text-4xl"
                 >
-                    Que venham os
+                    Foram muitos
                     <br />
-                    próximos
+                    momentos
                 </motion.p>
 
                 {/* Número em destaque */}
@@ -112,7 +112,7 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
                     {...enter(0.45)}
                     className="relative my-1 flex flex-col items-center"
                 >
-                    {/* Brilho feito com gradiente, sem blur animado */}
+                    {/* Brilho estático */}
                     <div
                         aria-hidden="true"
                         className="pointer-events-none absolute inset-0 scale-125 rounded-full"
@@ -123,7 +123,7 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
                     />
 
                     <span
-                        className="relative font-serif text-[clamp(4.5rem,19vw,6rem)] font-medium leading-[1.12] tracking-[-0.08em] text-transparent px-1"
+                        className="relative px-1 font-serif text-[clamp(4.5rem,19vw,6rem)] font-medium leading-[1.12] tracking-[-0.08em] text-transparent"
                         style={{
                             backgroundImage:
                                 "linear-gradient(135deg, #fff2c9 5%, #e8c98b 42%, #a875ff 100%)",
@@ -169,10 +169,10 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
 
                 <motion.p
                     {...enter(0.85)}
-                    className="mt-5 max-w-[260px] text-sm leading-relaxed text-[#fff4d6]/55"
+                    className="mt-5 max-w-[280px] text-sm leading-relaxed text-[#fff4d6]/55"
                 >
-                    E que cada um deles traga uma nova lembrança
-                    para guardar.
+                    Cada um deles fez parte de uma história que existiu,
+                    com momentos que agora permanecem na memória.
                 </motion.p>
             </div>
 
@@ -182,7 +182,7 @@ export function FinalStory({ animatedMinutes }: FinalStoryProps) {
                 className="relative z-10 flex flex-col items-center gap-1.5 text-center"
             >
                 <span className="text-[10px] uppercase tracking-[0.3em] text-[#fff4d6]/45">
-                    com amor,
+                    com carinho,
                 </span>
 
                 <p className="font-['Dancing_Script',cursive] text-4xl text-[#e8c98b] sm:text-5xl">

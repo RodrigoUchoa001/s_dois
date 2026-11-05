@@ -40,6 +40,17 @@ export const couple = {
     startMinute: 0,
     startSecond: 0,
 
+    hasItEnded: true,
+    endDate: {
+        endDay: 4,
+        endMonth: 11,
+        endYear: 2026,
+
+        endHour: 21,
+        endMinute: 8,
+        endSecond: 0,
+    },
+
     location: {
         name: "Pedro II",
     coordinates: "4°25′29″ S · 41°27′31″ W",
@@ -60,17 +71,17 @@ export const couple = {
     endImage1: `${import.meta.env.BASE_URL}images/end1.jpeg`,
 
     message: `
-        Tudo bem com você? Espero que sim bb
+        Tudo bem com você? Espero que sim.
 
-        Espero que tenha gostado da homenagem que fiz pra gente kkkkkk foi meio complicadinho, mas me diverti muito fazendo isso.
+        Antes, eu havia dito que passei por muitas emoções ao montar esse site. Agora, ao editar ele, parando os contadores, mudando os textos que davam a entender que iríamos continuar, não foi diferente.
 
-        Devo dizer que passei por várias emoções enquanto montava esse site. É muito interessante ver essas métricazinhas, os dias, os momentos, as lembranças, os dias bons e ruins que aumentam a cada dia que passa entre a gente.
-
-        A timeline foi a mais parte mais emotiva pra mim. Sim, só se passaram 3 meses kkkkkkkk Só que, mesmo assim, ver as lembranças que criamos nesse pouco espaço de tempo, ainda é suficiente pra me fazer chorar.
+        A timeline continua sendo a parte mais emotiva pra mim. Sim, só se passaram 3 meses e poucos dias kkkkkkkk Só que, mesmo assim, ver as lembranças que criamos nesse pouco espaço de tempo, é mais que suficiente pra me fazer chorar.
         
-        Eu amo tanto você. Sei que vacilo de vez em quando, que te magoo, que te deixo triste, decepcionada ou estressada. Peço, sinceramente, desculpas por todo mal que já fiz a você. Estou tentanto melhorar, por mim, e principalmente por você, e por nós. É tão difícil deixar antigos padrões pra trás. Mas uma certeza eu tenho: quero estar sempre melhorando, por nós.
+        Eu amei muito você. Mas cometi muitos erros, te magoei muito. Peço, novamente, desculpas por todo mal que fiz a você. Vou continuar tentando me tornar uma pessoa melhor.
 
-        Espero, sinceramente, que possamos sempre nos entender, nos perdoar, e enfim, seguir em frente, juntos.
+        Espero que, ao revisitar essas lembranças, você consiga enxergar o carinho que existiu em cada uma delas. Apesar de tudo, sou grato pelos momentos que compartilhamos, pelas experiências que vivemos e por tudo o que essa história significou.
+
+        Seja muito feliz, viu?
      `,
     wrapped: {
         // etapas: minutos juntos, galeria de imagens, mapa estelar do inicio do namoro
@@ -555,6 +566,19 @@ export const couple = {
                     Sempre um prazer visitar você amor ❤️
                     `,
                 },
+                {
+                    date: {
+                        day: 4,
+                        month: 11,
+                        year: 2026,
+                    },
+                    image: `${import.meta.env.BASE_URL}images/tl26.jpeg`,
+                    imageAspect: "4/3",
+                    imageDescription: "Fim",
+                    eventDescription: `
+                    Infelizmente, aqui o nosso relacionamento chegou ao fim. Mas não posso deixar de agradecer por todos os momentos que passamos juntos, pelas lembranças que criamos e pelo amor que compartilhamos. Você sempre terá um lugar especial no meu coração.
+                    `,
+                },
             ],
         }
     },
@@ -595,11 +619,11 @@ export const couple = {
                 },
             },
             {
-                id: "third-visit",
+                id: "second-visit",
                 title: "Primeira vez na Praia juntos 🏖️",
                 location: "Praia do Arrombado, Luís Correia - PI",
                 description:`
-                    Nossa primeira vez na praia. A primeira de nossas muitas viagens juntos, amor 😘.
+                    Nossa primeira vez na praia. 
                 `,
                 coordinates: {
                     latitude: -2.910927,

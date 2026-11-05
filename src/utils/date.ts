@@ -1,7 +1,16 @@
-import { differenceInDays, differenceInMinutes, differenceInSeconds } from "date-fns";
+
+import {
+    differenceInDays,
+    differenceInMinutes,
+    differenceInSeconds,
+} from "date-fns";
+
 import { couple } from "../data/couple";
 import { useEffect, useState } from "react";
 
+/**
+ * Retorna a data de início do relacionamento.
+ */
 export function getCoupleStartDate() {
     return new Date(
         couple.startYear,
@@ -10,86 +19,144 @@ export function getCoupleStartDate() {
     );
 }
 
-export function getSecondsTogether() {
-    const startDate = getCoupleStartDate();
-    const now = new Date();
+/**
+ * Retorna a data de referência para todos os cálculos.
+ *
+ * Se o relacionamento terminou, utiliza a data de encerramento.
+ * Caso contrário, utiliza a data atual.
+ */
+export function getCoupleReferenceDate() {
+    if (couple.hasItEnded && couple.endDate) {
+        return new Date(
+            couple.endDate.endYear,
+            couple.endDate.endMonth - 1,
+            couple.endDate.endDay,
+            couple.endDate.endHour ?? 0,
+            couple.endDate.endMinute ?? 0,
+            couple.endDate.endSecond ?? 0
+        );
+    }
 
-    return differenceInSeconds(now, startDate);
+    return new Date();
 }
 
+/**
+ * Segundos compartilhados.
+ */
+export function getSecondsTogether() {
+    const startDate = getCoupleStartDate();
+    const referenceDate = getCoupleReferenceDate();
+
+    return differenceInSeconds(referenceDate, startDate);
+}
+
+/**
+ * Minutos compartilhados.
+ */
 export function getMinutesTogether() {
     const startDate = getCoupleStartDate();
-    const now = new Date();
+    const referenceDate = getCoupleReferenceDate();
 
-    return differenceInMinutes(now, startDate);
+    return differenceInMinutes(referenceDate, startDate);
 }
 
 // PARA WE IN NUMBERS STORY
+
+/**
+ * Dias compartilhados.
+ */
 export function getDaysTogether() {
     const startDate = getCoupleStartDate();
-    const now = new Date();
+    const referenceDate = getCoupleReferenceDate();
 
-    return differenceInDays(now, startDate);
+    return differenceInDays(referenceDate, startDate);
 }
 
+/**
+ * Estimativa de semanas compartilhadas.
+ */
 export function getWeekendsTogether() {
     const startDate = getCoupleStartDate();
-    const now = new Date();
+    const referenceDate = getCoupleReferenceDate();
 
-    return differenceInDays(now, startDate) / 7;
+    return differenceInDays(referenceDate, startDate) / 7;
 }
 
-// próxima primeira lua cheia depois do início do namoro: 29 de julho de 2026
-// então, calcula quantas luas cheias se passaram desde então, considerando que cada ciclo lunar dura aproximadamente 29,53 dias.
+/**
+ * Quantidade estimada de luas cheias desde a referência inicial.
+ *
+ * Considera um ciclo lunar médio de aproximadamente 29,53 dias.
+ */
 export function getFullMoonDaysTogether() {
-    const now = new Date();
+    const referenceDate = getCoupleReferenceDate();
 
     let fullMoonDays = 1;
-    const fullMoonDay = new Date(2026, 7, 29); // 29 de julho de 2026
-    
-    while (fullMoonDay <= now) {
+
+    // 29 de julho de 2026
+    const firstFullMoon = new Date(2026, 6, 29);
+
+    const lunarCycleInMilliseconds =
+        29.530588853 * 24 * 60 * 60 * 1000;
+
+    let nextFullMoon = firstFullMoon.getTime();
+
+    while (nextFullMoon <= referenceDate.getTime()) {
         fullMoonDays++;
-        fullMoonDay.setDate(fullMoonDay.getDate() + 29.53);
+        nextFullMoon += lunarCycleInMilliseconds;
     }
 
     return fullMoonDays;
 }
 
-// próxima primeira mudança de estação depois do início do namoro: 21 de junho de 2026
+/**
+ * Quantidade de mudanças de estação desde a referência inicial.
+ */
 export function getSeasonsTogether() {
-    const now = new Date();
+    const referenceDate = getCoupleReferenceDate();
 
     let seasonsPassed = 1;
-    const startDate = new Date(2026, 6, 21); // 21 de junho de 2026
 
-    while (startDate <= now) {
+    // 21 de junho de 2026
+    const nextSeason = new Date(2026, 5, 21);
+
+    while (nextSeason <= referenceDate) {
         seasonsPassed++;
-        startDate.setMonth(startDate.getMonth() + 3);
+        nextSeason.setMonth(nextSeason.getMonth() + 3);
     }
-    
+
     return seasonsPassed;
 }
 
+/**
+ * Estimativa de batimentos cardíacos compartilhados.
+ *
+ * Considera uma média de 70 batimentos por minuto.
+ */
 export function getHeartbeatsTogether() {
-    const startDate = getCoupleStartDate();
-    const now = new Date();
+    const minutes = getMinutesTogether();
 
-
-    return Math.floor(differenceInMinutes(now, startDate) * 70); // 70 batimentos por minuto
+    return Math.floor(minutes * 70);
 }
 
-export function useAnimatedNumber(target: number, duration = 1500) {
+/**
+ * Anima a transição de um número até seu valor final.
+ */
+export function useAnimatedNumber(
+    target: number,
+    duration = 1500
+) {
     const [value, setValue] = useState(0);
 
     useEffect(() => {
         let animationFrame: number;
+
         const startTime = performance.now();
 
         function animate(currentTime: number) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
 
-            // Ease out: começa rápido e desacelera no final
+            // Ease out: começa rápido e desacelera no final.
             const easedProgress = 1 - Math.pow(1 - progress, 3);
 
             setValue(Math.floor(target * easedProgress));
@@ -109,17 +176,33 @@ export function useAnimatedNumber(target: number, duration = 1500) {
     return value;
 }
 
+/**
+ * Retorna o nome de um mês.
+ */
 export function getMonthName(monthNumber: number): string {
     const date = new Date(0);
+
     date.setUTCMonth(monthNumber - 1);
-    return date.toLocaleString("pt-BR", { month: "long" });
+
+    return date.toLocaleString("pt-BR", {
+        month: "long",
+    });
 }
 
+/**
+ * Quantidade estimada de vezes que a música foi reproduzida.
+ */
 export function getMusicPlayedTimes() {
-    const musicTimeInSeconds = 5 * 60 + 53; // 5 minutos e 53 segundos
-    return Math.floor(getSecondsTogether() / musicTimeInSeconds);
+    const musicTimeInSeconds = 5 * 60 + 53;
+
+    return Math.floor(
+        getSecondsTogether() / musicTimeInSeconds
+    );
 }
 
+/**
+ * Calcula a fase e a iluminação da lua em uma data específica.
+ */
 export function getMoonPhase(
     day: number,
     month: number,
@@ -158,11 +241,10 @@ export function getMoonPhase(
     }
 
     const illumination =
-        (1 -
-            Math.cos(
-                phase * Math.PI * 2
-            )) /
-        2;
+        (
+            1 -
+            Math.cos(phase * Math.PI * 2)
+        ) / 2;
 
     return {
         phase,
@@ -170,19 +252,12 @@ export function getMoonPhase(
     };
 }
 
-export function getMoonPhaseName(
-    phase: number
-) {
+/**
+ * Retorna o nome aproximado da fase lunar.
+ */
+export function getMoonPhaseName(phase: number) {
     if (phase < 0.0625) {
         return "NOVA";
-    }
-
-    if (phase < 0.1875) {
-        return "CRESCENTE";
-    }
-
-    if (phase < 0.3125) {
-        return "CRESCENTE";
     }
 
     if (phase < 0.4375) {
@@ -191,14 +266,6 @@ export function getMoonPhaseName(
 
     if (phase < 0.5625) {
         return "CHEIA";
-    }
-
-    if (phase < 0.6875) {
-        return "MINGUANTE";
-    }
-
-    if (phase < 0.8125) {
-        return "MINGUANTE";
     }
 
     if (phase < 0.9375) {

@@ -1,7 +1,10 @@
+
 import { AnimatePresence, motion } from "motion/react";
 import { Pause, Play, X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
+
+import { couple } from "../../data/couple";
 
 import {
     getMinutesTogether,
@@ -32,6 +35,8 @@ export function StoriesScreen({
     isOpen,
     closeWrapped,
 }: StoriesScreenProps) {
+    const isEnded = couple.hasItEnded;
+
     const [currentStory, setCurrentStory] = useState(0);
     const [isStoryPaused, setIsStoryPaused] = useState(false);
     const [storyProgress, setStoryProgress] = useState(0);
@@ -39,12 +44,56 @@ export function StoriesScreen({
     const storyStartTime = useRef<number | null>(null);
     const pausedElapsed = useRef(0);
 
-    // Controle do toque rápido x pressionamento longo
     const pressTimer = useRef<number | null>(null);
     const isLongPress = useRef(false);
 
-    const totalStories = 14;
+    /*
+     * Quando a história terminou, removemos as telas
+     * que pressupõem novos encontros ou uma próxima etapa juntos.
+     */
+    const storyOrder = isEnded
+        ? [
+              "minutes",
+              "numbers",
+              "beginning",
+              "moon",
+              "season",
+              "starMap",
+              "music",
+              "timeline",
+              "placesMap",
+              "loveLetter",
+              "final",
+              "finalShare",
+          ]
+        : [
+              "minutes",
+              "numbers",
+              "beginning",
+              "moon",
+              "season",
+              "starMap",
+              "music",
+              "timeline",
+              "placesMap",
+              "dateNight",
+              "loveLetter",
+              "nextChapter",
+              "final",
+              "finalShare",
+          ];
+
+    const totalStories = storyOrder.length;
     const storyDuration = 8000;
+
+    const currentStoryName = storyOrder[currentStory];
+
+    const manualStories = [
+        "starMap",
+        "timeline",
+        "placesMap",
+        "loveLetter",
+    ];
 
     const minutesTogether = getMinutesTogether();
 
@@ -52,6 +101,16 @@ export function StoriesScreen({
         minutesTogether,
         1800
     );
+
+    // Paleta original preservada em todos os estados.
+    const colors = {
+        background: "#05051b",
+        storyBackground: "#0b0b2b",
+        text: "#fff3c7",
+        accent: "#a875ff",
+        muted: "rgba(255, 243, 199, 0.15)",
+        buttonBackground: "rgba(11, 11, 43, 0.7)",
+    };
 
     function nextStory() {
         if (currentStory < totalStories - 1) {
@@ -69,10 +128,6 @@ export function StoriesScreen({
         }
     }
 
-    /*
-     * Começa a detectar se o usuário está segurando
-     * o botão lateral.
-     */
     function handleStoryPress() {
         isLongPress.current = false;
 
@@ -88,10 +143,6 @@ export function StoriesScreen({
         }, 200);
     }
 
-    /*
-     * Usuário soltou o botão.
-     * Se era um long press, apenas continua o story.
-     */
     function handleStoryRelease() {
         if (pressTimer.current !== null) {
             clearTimeout(pressTimer.current);
@@ -101,10 +152,6 @@ export function StoriesScreen({
         setIsStoryPaused(false);
     }
 
-    /*
-     * Só executa a navegação se NÃO tiver sido
-     * um pressionamento longo.
-     */
     function handleStoryClick(action: () => void) {
         if (isLongPress.current) {
             isLongPress.current = false;
@@ -137,6 +184,16 @@ export function StoriesScreen({
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [isOpen, currentStory]);
+
+    /*
+     * Evita que o índice atual fique fora da sequência
+     * caso a quantidade de stories seja alterada.
+     */
+    useEffect(() => {
+        if (currentStory >= totalStories) {
+            setCurrentStory(totalStories - 1);
+        }
+    }, [currentStory, totalStories]);
 
     /*
      * Reinicia o progresso quando muda de story.
@@ -172,11 +229,9 @@ export function StoriesScreen({
 
             setStoryProgress(progress);
 
-            // Só avança quando o tempo terminar.
+            // Stories interativos não avançam automaticamente.
             if (progress >= 1) {
-                // Stories 6 (Gallery) e 8 (Timeline):
-                // não avançam automaticamente.
-                if (currentStory !== 5 && currentStory !== 7 && currentStory !== 8 && currentStory !== 9 && currentStory !== 10) {
+                if (!manualStories.includes(currentStoryName)) {
                     nextStory();
                 }
 
@@ -185,8 +240,7 @@ export function StoriesScreen({
 
             animationFrame =
                 requestAnimationFrame(updateProgress);
-
-            }
+        }
 
         animationFrame =
             requestAnimationFrame(updateProgress);
@@ -196,9 +250,6 @@ export function StoriesScreen({
         };
     }, [isOpen, currentStory, isStoryPaused]);
 
-    /*
-     * Botão manual de pausa.
-     */
     function toggleStoryPause() {
         if (
             !isStoryPaused &&
@@ -221,10 +272,19 @@ export function StoriesScreen({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[9998] flex h-[100dvh] w-[100vw] items-center justify-center overflow-hidden bg-[#05051b]"
+                className="fixed inset-0 z-[9998] flex h-[100dvh] w-[100vw] items-center justify-center overflow-hidden"
+                style={{
+                    backgroundColor: colors.background,
+                }}
             >
-                {/* Glow ambiente */}
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(128,100,255,0.12),transparent_45%)]" />
+                {/* Fundo ambiente */}
+                <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                        background:
+                            "radial-gradient(circle at 50% 45%, rgba(128, 100, 255, 0.12), transparent 45%)",
+                    }}
+                />
 
                 {/* Fechar */}
                 <motion.button
@@ -232,8 +292,17 @@ export function StoriesScreen({
                     onClick={closeWrapped}
                     whileTap={{ scale: 0.9 }}
                     whileHover={{ scale: 1.08 }}
-                    className="absolute right-5 top-5 z-[100] flex h-11 w-11 items-center justify-center rounded-full border border-[#fff3c7]/10 bg-[#0b0b2b]/70 text-[#fff3c7]/70 backdrop-blur-md transition hover:text-[#fff3c7]"
-                    aria-label="Fechar Wrapped"
+                    className="absolute right-5 top-5 z-[100] flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-md transition"
+                    style={{
+                        borderColor: `${colors.text}1a`,
+                        backgroundColor: colors.buttonBackground,
+                        color: `${colors.text}b3`,
+                    }}
+                    aria-label={
+                        isEnded
+                            ? "Fechar retrospectiva"
+                            : "Fechar stories"
+                    }
                 >
                     <X size={23} />
                 </motion.button>
@@ -244,7 +313,12 @@ export function StoriesScreen({
                     onClick={toggleStoryPause}
                     whileTap={{ scale: 0.9 }}
                     whileHover={{ scale: 1.08 }}
-                    className="absolute right-[4.5rem] top-5 z-[100] flex h-11 w-11 items-center justify-center rounded-full border border-[#fff3c7]/10 bg-[#0b0b2b]/70 text-[#fff3c7]/70 backdrop-blur-md transition hover:text-[#fff3c7]"
+                    className="absolute right-[4.5rem] top-5 z-[100] flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-md transition"
+                    style={{
+                        borderColor: `${colors.text}1a`,
+                        backgroundColor: colors.buttonBackground,
+                        color: `${colors.text}b3`,
+                    }}
                     aria-label={
                         isStoryPaused
                             ? "Continuar story"
@@ -278,7 +352,12 @@ export function StoriesScreen({
                     transition={{
                         duration: 0.3,
                     }}
-                    className="relative h-[100dvh] w-full overflow-hidden bg-[#0b0b2b] text-[#fff3c7] shadow-2xl sm:h-[min(100dvh,860px)] sm:aspect-[9/16] sm:w-auto sm:max-w-[calc(100vw-48px)] sm:rounded-[32px] sm:border-2 sm:border-[#fff3c7]/10"
+                    className="relative h-[100dvh] w-full overflow-hidden shadow-2xl sm:h-[min(100dvh,860px)] sm:aspect-[9/16] sm:w-auto sm:max-w-[calc(100vw-48px)] sm:rounded-[32px] sm:border-2"
+                    style={{
+                        backgroundColor: colors.storyBackground,
+                        color: colors.text,
+                        borderColor: `${colors.text}1a`,
+                    }}
                 >
                     {/* Barras de progresso */}
                     <div className="absolute left-3 right-3 top-3 z-50 flex gap-1.5">
@@ -287,17 +366,26 @@ export function StoriesScreen({
                         }).map((_, index) => (
                             <div
                                 key={index}
-                                className="h-1 flex-1 overflow-hidden rounded-full bg-[#fff3c7]/15"
+                                className="h-1 flex-1 overflow-hidden rounded-full"
+                                style={{
+                                    backgroundColor: colors.muted,
+                                }}
                             >
                                 {index < currentStory && (
-                                    <div className="h-full w-full bg-[#fff3c7]" />
+                                    <div
+                                        className="h-full w-full"
+                                        style={{
+                                            backgroundColor: colors.text,
+                                        }}
+                                    />
                                 )}
 
                                 {index === currentStory && (
                                     <div
-                                        className="h-full bg-[#a875ff]"
+                                        className="h-full"
                                         style={{
                                             width: `${storyProgress * 100}%`,
+                                            backgroundColor: colors.accent,
                                         }}
                                     />
                                 )}
@@ -308,63 +396,63 @@ export function StoriesScreen({
                     {/* Conteúdo */}
                     <div className="absolute inset-0">
                         <AnimatePresence mode="wait">
-                            {currentStory === 0 && (
+                            {currentStoryName === "minutes" && (
                                 <MinutesTogetherStory
-                                    animatedMinutes={
-                                        animatedMinutes
-                                    }
+                                    animatedMinutes={animatedMinutes}
                                 />
                             )}
 
-                            {currentStory === 1 && (
+                            {currentStoryName === "numbers" && (
                                 <WeInNumbersStory />
                             )}
 
-                            {currentStory === 2 && (
+                            {currentStoryName === "beginning" && (
                                 <BeginningStory />
                             )}
 
-                            {currentStory === 3 && (
+                            {currentStoryName === "moon" && (
                                 <MoonStory />
                             )}
 
-                            {currentStory === 4 && (
+                            {currentStoryName === "season" && (
                                 <SeasonStory />
                             )}
 
-                            {currentStory === 5 && (
+                            {currentStoryName === "starMap" && (
                                 <StarMapStory />
                             )}
-                            
-                            {currentStory === 6 && (
+
+                            {currentStoryName === "music" && (
                                 <OurMusicStory />
                             )}
 
-                            {currentStory === 7 && (
+                            {currentStoryName === "timeline" && (
                                 <TimelineStory />
                             )}
 
-                            {currentStory === 8 && (
+                            {currentStoryName === "placesMap" && (
                                 <PlacesMapStory />
                             )}
 
-                            {currentStory === 9 && (
+                            {currentStoryName === "dateNight" && (
                                 <DateNightRouletteStory />
                             )}
 
-                            {currentStory === 10 && (
+                            {currentStoryName === "loveLetter" && (
                                 <LoveLetterStory />
                             )}
 
-                            {currentStory === 11 && (
+                            {currentStoryName === "nextChapter" && (
                                 <NextChapterStory />
                             )}
 
-                            {currentStory === 12 && (
-                                <FinalStory animatedMinutes={animatedMinutes}  />
+                            {currentStoryName === "final" && (
+                                <FinalStory
+                                    animatedMinutes={animatedMinutes}
+                                />
                             )}
 
-                            {currentStory === 13 && (
+                            {currentStoryName === "finalShare" && (
                                 <FinalShareStory />
                             )}
                         </AnimatePresence>
@@ -374,19 +462,11 @@ export function StoriesScreen({
                     <>
                         <button
                             type="button"
-                            onPointerDown={
-                                handleStoryPress
-                            }
-                            onPointerUp={
-                                handleStoryRelease
-                            }
-                            onPointerCancel={
-                                handleStoryRelease
-                            }
+                            onPointerDown={handleStoryPress}
+                            onPointerUp={handleStoryRelease}
+                            onPointerCancel={handleStoryRelease}
                             onClick={() =>
-                                handleStoryClick(
-                                    previousStory
-                                )
+                                handleStoryClick(previousStory)
                             }
                             className="absolute left-0 top-0 z-10 h-full w-1/4"
                             aria-label="Story anterior"
@@ -394,19 +474,11 @@ export function StoriesScreen({
 
                         <button
                             type="button"
-                            onPointerDown={
-                                handleStoryPress
-                            }
-                            onPointerUp={
-                                handleStoryRelease
-                            }
-                            onPointerCancel={
-                                handleStoryRelease
-                            }
+                            onPointerDown={handleStoryPress}
+                            onPointerUp={handleStoryRelease}
+                            onPointerCancel={handleStoryRelease}
                             onClick={() =>
-                                handleStoryClick(
-                                    nextStory
-                                )
+                                handleStoryClick(nextStory)
                             }
                             className="absolute right-0 top-0 z-10 h-full w-1/4"
                             aria-label="Próxima story"

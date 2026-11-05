@@ -154,7 +154,7 @@ export function OurMusicStory() {
                 aria-hidden="true"
             >
                 <div className="relative h-40 w-40 sm:h-48 sm:w-48">
-                    {/* HALO SOLAR SEM BLUR PESADO */}
+                    {/* HALO SOLAR */}
 
                     <div
                         className="
@@ -212,15 +212,11 @@ export function OurMusicStory() {
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                 >
-                    {/* MONTANHAS DISTANTES */}
-
                     <path
                         d="M0 145 L45 111 L78 137 L125 75 L164 124 L209 94 L258 139 L302 91 L346 130 L390 100 L390 360 L0 360 Z"
                         fill="#70364A"
                         opacity="0.48"
                     />
-
-                    {/* CAMADA INTERMEDIÁRIA */}
 
                     <path
                         d="M0 184 L43 154 L84 176 L137 126 L176 166 L222 141 L269 177 L321 133 L357 166 L390 146 L390 360 L0 360 Z"
@@ -228,14 +224,10 @@ export function OurMusicStory() {
                         opacity="0.85"
                     />
 
-                    {/* MONTANHA FRONTAL */}
-
                     <path
                         d="M0 220 L52 181 L101 213 L151 174 L201 218 L247 183 L300 215 L347 179 L390 202 L390 360 L0 360 Z"
                         fill="#351D36"
                     />
-
-                    {/* HORIZONTE ILUMINADO */}
 
                     <path
                         d="M0 218 Q90 200 195 216 T390 208"
@@ -244,15 +236,11 @@ export function OurMusicStory() {
                         strokeWidth="1.5"
                     />
 
-                    {/* PRIMEIRO PLANO */}
-
                     <path
                         d="M0 270 Q90 239 162 267 T300 258 T390 267 L390 360 L0 360 Z"
                         fill="#24182F"
                     />
                 </svg>
-
-                {/* NÉVOA QUENTE SUBSTITUÍDA POR GRADIENTE */}
 
                 <div
                     className="absolute inset-x-0 top-[12%] h-24"
@@ -262,15 +250,13 @@ export function OurMusicStory() {
                     }}
                 />
 
-                {/* ESCURECIMENTO PARA LEITURA */}
-
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#24182F]/10 to-[#17152F]/95" />
             </div>
 
             {/* FAIXA LATERAL */}
 
             <SideRibbon
-                text="NOSSA MÚSICA"
+                text="UMA MÚSICA MARCANTE"
                 bg_color="bg-[#FFCB91]/10"
             />
 
@@ -290,7 +276,7 @@ export function OurMusicStory() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <StoryHeader text="Uma música nossa" />
+                    <StoryHeader text="Uma música que ficou" />
                 </motion.div>
 
                 {/* TEXTO DA HISTÓRIA */}
@@ -306,11 +292,11 @@ export function OurMusicStory() {
                     </span>
 
                     <p className="text-[15px] font-medium leading-[1.8] text-[#FFF0D5]/85 sm:text-base">
-                        Entre o céu pintado pelo pôr do sol e o nosso{" "}
+                        Entre o céu pintado pelo pôr do sol e o{" "}
                         <span className="font-bold text-[#FFD99B]">
                             primeiro beijo
                         </span>
-                        , essa música encontrou seu lugar na nossa história.
+                        , essa música encontrou seu lugar na história que vivemos.
                     </p>
                 </motion.div>
 
@@ -339,8 +325,6 @@ export function OurMusicStory() {
                         }}
                         className="relative"
                     >
-                        {/* LUZ ATRÁS DA CAPA */}
-
                         <div
                             className="
                                 pointer-events-none absolute -inset-6
@@ -351,8 +335,6 @@ export function OurMusicStory() {
                                     "radial-gradient(circle, rgba(255,154,103,0.16), transparent 72%)",
                             }}
                         />
-
-                        {/* MOLDURA */}
 
                         <div
                             className="
@@ -371,8 +353,6 @@ export function OurMusicStory() {
                                     sm:h-40 sm:w-40
                                 "
                             />
-
-                            {/* SELO MUSICAL */}
 
                             <div className="absolute -bottom-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-[#542642] bg-[#FFAD70] shadow-md">
                                 <Music2
@@ -440,8 +420,6 @@ export function OurMusicStory() {
                             shadow-[0_10px_28px_rgba(10,8,25,0.18)]
                         "
                     >
-                        {/* REFLEXO ESTÁTICO */}
-
                         <div
                             className="pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full"
                             style={{
@@ -452,8 +430,6 @@ export function OurMusicStory() {
 
                         <div className="relative flex flex-col items-center gap-3">
                             <div className="flex items-center gap-3">
-                                {/* ÍCONE */}
-
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#FFD99B]/15 bg-[#FFAD70]/10">
                                     <Headphones
                                         size={18}
@@ -461,20 +437,16 @@ export function OurMusicStory() {
                                     />
                                 </div>
 
-                                {/* TEXTO */}
-
                                 <div className="min-w-0 flex-1">
                                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFE1B1]/60">
-                                        Se tocasse no repeat
+                                        Se tivesse tocado no repeat
                                     </p>
 
                                     <p className="mt-1 text-xs leading-relaxed text-[#FFF0D5]/75">
-                                        desde o primeiro dia, já teria tocado...
+                                        Desde o primeiro dia até o fim dessa história...
                                     </p>
                                 </div>
                             </div>
-
-                            {/* CONTADOR ANIMADO */}
 
                             <div className="flex shrink-0 items-baseline gap-1.5">
                                 <OdometerCounter value={playedTimes} />

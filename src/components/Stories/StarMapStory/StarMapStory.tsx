@@ -1,8 +1,6 @@
 
 import { useEffect, useMemo, useState } from "react";
-
 import { AnimatePresence, motion } from "motion/react";
-
 import {
     Clock3,
     MapPin,
@@ -65,7 +63,7 @@ const CENTER = MAP_SIZE / 2;
 const RADIUS = 142;
 
 /* =========================================================
-   PALETA VISUAL
+   PALETA VISUAL — ORIGINAL
 ========================================================= */
 
 const COLORS = {
@@ -114,14 +112,10 @@ function formatTime(date: Date) {
 
 /* =========================================================
    GRADE ASTRONÔMICA — MERIDIANOS E PARALELOS
-
-   As linhas são calculadas apenas quando a data ou a
-   localização mudam, não a cada renderização do componente.
 ========================================================= */
 
 function MeridianLines({ date }: { date: Date }) {
     const { latitude, longitude } = couple.location;
-
     const timestamp = date.getTime();
 
     const gridLines = useMemo(() => {
@@ -177,7 +171,6 @@ function MeridianLines({ date }: { date: Date }) {
             return segments;
         }
 
-        // Meridianos: ascensão reta constante.
         const meridians = Array.from(
             { length: 12 },
             (_, index) => {
@@ -194,7 +187,6 @@ function MeridianLines({ date }: { date: Date }) {
             },
         ).flat();
 
-        // Paralelos: declinação constante.
         const parallels = [
             -75, -60, -45, -30, -15,
             0,
@@ -237,10 +229,6 @@ function MeridianLines({ date }: { date: Date }) {
 
 /* =========================================================
    STAR MAP
-
-   As posições das estrelas são pré-calculadas com useMemo.
-   Durante a viagem no tempo, a data do céu atual fica
-   estável, evitando milhares de cálculos por atualização.
 ========================================================= */
 
 function StarMap({
@@ -259,20 +247,12 @@ function StarMap({
 
     const { latitude, longitude } = couple.location;
 
-    // Guarda uma referência estável ao céu atual.
-    // Não cria uma nova data em cada renderização.
     const [currentSkyDate] = useState<Date>(
         () => getToday(),
     );
 
-    // Durante a viagem, o céu atual permanece estável.
-    // Na chegada, o mapa usa a data histórica.
     const skyDate = traveling ? currentSkyDate : date;
     const skyTimestamp = skyDate.getTime();
-
-    /* =====================================================
-       POSIÇÕES DAS ESTRELAS COMUNS
-    ===================================================== */
 
     const projectedStars = useMemo<ProjectedStar[]>(() => {
         return VISIBLE_STARS.flatMap((star) => {
@@ -285,7 +265,6 @@ function StarMap({
                 RADIUS,
             );
 
-            // Ignora estrelas abaixo do horizonte.
             if (!position) return [];
 
             const radius = Math.max(
@@ -307,10 +286,6 @@ function StarMap({
             }];
         });
     }, [skyTimestamp, latitude, longitude]);
-
-    /* =====================================================
-       POSIÇÕES DAS ESTRELAS NOMEADAS
-    ===================================================== */
 
     const projectedNamedStars = useMemo<ProjectedNamedStar[]>(
         () => {
@@ -353,8 +328,6 @@ function StarMap({
                 ease: [0.22, 0.61, 0.36, 1],
             }}
         >
-            {/* GLOW EXTERNO */}
-
             <div
                 className="
                     absolute inset-0 rounded-full
@@ -371,8 +344,6 @@ function StarMap({
                 "
             />
 
-            {/* CÍRCULO DO MAPA */}
-
             <div
                 className="
                     absolute inset-0 rounded-full
@@ -385,14 +356,10 @@ function StarMap({
                 }}
             />
 
-            {/* SVG ASTRONÔMICO */}
-
             <svg
                 viewBox={`0 0 ${MAP_SIZE} ${MAP_SIZE}`}
                 className="absolute inset-0 h-full w-full"
             >
-                {/* CÍRCULO DE ALTITUDE */}
-
                 <circle
                     cx={CENTER}
                     cy={CENTER}
@@ -403,14 +370,9 @@ function StarMap({
                     opacity="0.22"
                 />
 
-                {/* MERIDIANOS E PARALELOS */}
-
                 {showStarNames && (
                     <MeridianLines date={skyDate} />
                 )}
-
-                {/* ESTRELAS COMUNS
-                    Não cria mais um componente React por estrela. */}
 
                 <g>
                     {projectedStars.map((star) => (
@@ -425,14 +387,10 @@ function StarMap({
                     ))}
                 </g>
 
-                {/* CONSTELAÇÕES */}
-
                 <ConstellationLines
                     date={skyDate}
                     arrival={arrival}
                 />
-
-                {/* NOMES DAS ESTRELAS CONHECIDAS */}
 
                 {showStarNames && (
                     <g
@@ -452,14 +410,8 @@ function StarMap({
                                 />
 
                                 <text
-                                    x={
-                                        star.x +
-                                        (star.labelDx ?? 5) -2
-                                    }
-                                    y={
-                                        star.y +
-                                        (star.labelDy ?? -5) +2
-                                    }
+                                    x={star.x + (star.labelDx ?? 5) - 2}
+                                    y={star.y + (star.labelDy ?? -5) + 2}
                                     stroke="#10152F"
                                     strokeWidth={2.5}
                                     strokeLinejoin="round"
@@ -471,8 +423,6 @@ function StarMap({
                         ))}
                     </g>
                 )}
-
-                {/* CENTRO / ZÊNITE */}
 
                 <motion.circle
                     cx={CENTER}
@@ -505,49 +455,39 @@ function StarMap({
                 />
             </svg>
 
-            {/* PONTOS CARDEAIS */}
-
-            <span
-                className="
-                    absolute left-1/2 top-3
-                    -translate-x-1/2
-                    text-[10px] font-black tracking-widest
-                    text-[#FFF3D8]/75
-                "
-            >
+            <span className="
+                absolute left-1/2 top-3
+                -translate-x-1/2
+                text-[10px] font-black tracking-widest
+                text-[#FFF3D8]/75
+            ">
                 N
             </span>
 
-            <span
-                className="
-                    absolute bottom-3 left-1/2
-                    -translate-x-1/2
-                    text-[10px] font-black tracking-widest
-                    text-[#FFF3D8]/75
-                "
-            >
+            <span className="
+                absolute bottom-3 left-1/2
+                -translate-x-1/2
+                text-[10px] font-black tracking-widest
+                text-[#FFF3D8]/75
+            ">
                 S
             </span>
 
-            <span
-                className="
-                    absolute left-3 top-1/2
-                    -translate-y-1/2
-                    text-[10px] font-black tracking-widest
-                    text-[#FFF3D8]/75
-                "
-            >
+            <span className="
+                absolute left-3 top-1/2
+                -translate-y-1/2
+                text-[10px] font-black tracking-widest
+                text-[#FFF3D8]/75
+            ">
                 L
             </span>
 
-            <span
-                className="
-                    absolute right-3 top-1/2
-                    -translate-y-1/2
-                    text-[10px] font-black tracking-widest
-                    text-[#FFF3D8]/75
-                "
-            >
+            <span className="
+                absolute right-3 top-1/2
+                -translate-y-1/2
+                text-[10px] font-black tracking-widest
+                text-[#FFF3D8]/75
+            ">
                 O
             </span>
         </motion.div>
@@ -556,9 +496,6 @@ function StarMap({
 
 /* =========================================================
    CONSTELAÇÕES
-
-   Calcula os segmentos visíveis uma vez por data/local.
-   A animação continua sendo feita pelo Motion.
 ========================================================= */
 
 function ConstellationLines({
@@ -569,7 +506,6 @@ function ConstellationLines({
     arrival: boolean;
 }) {
     const { latitude, longitude } = couple.location;
-
     const timestamp = date.getTime();
 
     const segments = useMemo<ProjectedConstellationSegment[]>(
@@ -654,7 +590,6 @@ function getVisibleLineSegments(
     longitude: number,
 ): string[] {
     const segments: string[] = [];
-
     let currentSegment: string[] = [];
 
     const finishSegment = () => {
@@ -740,7 +675,6 @@ export function StarMapStory() {
 
     const [startDate] = useState<Date>(() => getStartDate());
 
-    // Controla a exibição dos nomes das estrelas.
     const [showStarNames] = useState(true);
 
     /* =====================================================
@@ -811,10 +745,6 @@ export function StarMapStory() {
         };
     }, [phase, startDate, today]);
 
-    /* =====================================================
-       RENDER
-    ===================================================== */
-
     return (
         <div
             className="
@@ -865,14 +795,10 @@ export function StarMapStory() {
                 "
             />
 
-            {/* SIDE RIBBON */}
-
             <SideRibbon
                 text="NOSSO CÉU"
                 bg_color="bg-[#B7A0FF]/30"
             />
-
-            {/* CONTEÚDO */}
 
             <div
                 className="
@@ -912,7 +838,7 @@ export function StarMapStory() {
                     >
                         {phase === "arrival"
                             ? "O céu quando tudo começou"
-                            : "Nosso mapa estelar"}
+                            : "Uma viagem pelo céu"}
                     </h2>
 
                     <div
@@ -956,7 +882,7 @@ export function StarMapStory() {
                                 "
                                 style={{ color: COLORS.muted }}
                             >
-                                Preparando nossa
+                                Preparando uma
                                 <br />
                                 viagem pelo tempo...
                             </p>
@@ -977,7 +903,7 @@ export function StarMapStory() {
                                 "
                                 style={{ color: COLORS.purple }}
                             >
-                                Retornando para
+                                Voltando para
                             </p>
 
                             <p
@@ -997,8 +923,6 @@ export function StarMapStory() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.7 }}
                         >
-                            {/* DATA / HORA */}
-
                             <div className="mb-4 grid grid-cols-2 gap-3">
                                 <InfoCard>
                                     <Clock3
@@ -1065,8 +989,6 @@ export function StarMapStory() {
                                 </InfoCard>
                             </div>
 
-                            {/* COORDENADAS */}
-
                             <div
                                 className="
                                     flex items-center justify-center
@@ -1115,9 +1037,9 @@ export function StarMapStory() {
                                 duration: 0.7,
                             }}
                         >
-                            O céu quando nossos
+                            O céu daquela noite
                             <br />
-                            mundos se colidiram.
+                            em que nossas histórias se encontraram.
                         </motion.p>
                     )}
                 </AnimatePresence>

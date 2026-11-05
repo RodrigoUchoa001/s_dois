@@ -2,7 +2,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import { toBlob } from "html-to-image";
 import { Heart, LoaderCircle, Music2, Share2, Sparkles } from "lucide-react";
-
 import { couple } from "../../data/couple";
 import {
     getMinutesTogether,
@@ -24,19 +23,35 @@ export function FinalShareStory() {
         couple.startDay
     );
 
-    const formattedDate = startDate.toLocaleDateString(
-        "pt-BR",
-        {
+    const formattedDate = startDate
+        .toLocaleDateString("pt-BR", {
             day: "2-digit",
             month: "short",
             year: "numeric",
-        }
-    ).replace(".", "");
+        })
+        .replace(".", "");
+
+    const endDate = couple.endDate
+        ? new Date(
+            couple.endDate.endYear,
+            couple.endDate.endMonth - 1,
+            couple.endDate.endDay
+        )
+        : null;
+
+    const formattedEndDate = endDate
+        ? endDate
+            .toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            })
+            .replace(".", "")
+        : null;
 
     const coverImage = couple.song.cover;
-
     const couplePhoto = couple.endImage1;
-    
+
     const cardRef = useRef<HTMLDivElement>(null);
     const [isSharing, setIsSharing] = useState(false);
 
@@ -48,7 +63,6 @@ export function FinalShareStory() {
         setIsSharing(true);
 
         try {
-            // Garante que a imagem e as fontes estejam carregadas.
             await document.fonts.ready;
 
             const images = Array.from(card.querySelectorAll("img"));
@@ -68,7 +82,6 @@ export function FinalShareStory() {
                 })
             );
 
-            // Captura somente a caixa preta em alta resolução.
             const blob = await toBlob(card, {
                 pixelRatio: 2,
                 cacheBust: true,
@@ -85,21 +98,19 @@ export function FinalShareStory() {
                 { type: "image/png" }
             );
 
-            // Abre o menu nativo de compartilhamento, quando suportado.
             if (
                 navigator.share &&
                 navigator.canShare?.({ files: [file] })
             ) {
                 await navigator.share({
                     files: [file],
-                    title: "Nossa história",
+                    title: "Uma história vivida",
                     text: `${couple.names.man} ❤️ ${couple.names.woman}`,
                 });
 
                 return;
             }
 
-            // Alternativa: baixa o PNG para compartilhar manualmente.
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
 
@@ -109,7 +120,6 @@ export function FinalShareStory() {
 
             setTimeout(() => URL.revokeObjectURL(url), 1000);
         } catch (error) {
-            // Cancelar o menu de compartilhamento não é uma falha.
             if (
                 error instanceof DOMException &&
                 error.name === "AbortError"
@@ -187,10 +197,6 @@ export function FinalShareStory() {
 
                     {/* Nomes sobre a imagem */}
                     <div className="absolute bottom-5 left-5 right-5">
-                        <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.3em] text-white/70">
-                            Nossa história
-                        </p>
-
                         <h2 className="text-3xl font-black leading-none tracking-tight">
                             {couple.names.man}
                             <span className="mx-2 font-light text-[#e8c98b]">
@@ -206,9 +212,9 @@ export function FinalShareStory() {
                     {/* Frase */}
                     <div className="mb-5 flex items-center justify-between gap-3">
                         <p className="max-w-[230px] text-[10px] font-medium uppercase leading-relaxed tracking-[0.19em] text-white/55">
-                            Ainda é só o começo.
+                            Uma história feita de momentos.
                             <br />
-                            O melhor ainda está por vir.
+                            Lembranças que permanecem.
                         </p>
 
                         <motion.div
@@ -237,10 +243,10 @@ export function FinalShareStory() {
 
                     {/* Estatísticas */}
                     <div className="grid grid-cols-2 gap-3">
-                        {/* Minutos juntos */}
+                        {/* Minutos compartilhados */}
                         <div className="flex min-w-0 flex-col justify-between rounded-2xl border border-white/[0.07] bg-white/[0.035] p-3.5">
                             <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-white/45">
-                                Tempo juntos
+                                Tempo compartilhado
                             </span>
 
                             <div className="mt-3">
@@ -252,7 +258,7 @@ export function FinalShareStory() {
                                 </motion.p>
 
                                 <p className="mt-1.5 text-[10px] text-white/55">
-                                    minutos de nós
+                                    minutos vividos
                                 </p>
                             </div>
                         </div>
@@ -260,7 +266,7 @@ export function FinalShareStory() {
                         {/* Música */}
                         <div className="flex min-w-0 flex-col justify-between rounded-2xl border border-white/[0.07] bg-white/[0.035] p-3.5">
                             <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-white/45">
-                                Nossa música
+                                Música marcante
                             </span>
 
                             <div className="mt-3 flex items-center gap-2.5">
@@ -279,7 +285,7 @@ export function FinalShareStory() {
                                         {couple.song.artist}
                                     </p>
 
-                                    <div className="mt-2 flex items-end gap-[3px] min-h-[20px]">
+                                    <div className="mt-2 flex min-h-[20px] items-end gap-[3px]">
                                         {[9, 15, 6, 12, 17, 8, 13].map(
                                             (height, index) => (
                                                 <motion.span
@@ -303,9 +309,7 @@ export function FinalShareStory() {
                                                         ease: "easeInOut",
                                                         delay: index * 0.08,
                                                     }}
-                                                    style={{
-                                                        height,
-                                                    }}
+                                                    style={{ height }}
                                                 />
                                             )
                                         )}
@@ -324,17 +328,18 @@ export function FinalShareStory() {
                     <div className="mt-5 flex items-center justify-between border-t border-white/[0.08] pt-4">
                         <div>
                             <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-white/35">
-                                Desde
+                                Período
                             </p>
 
                             <p className="mt-1 text-xs font-medium text-white/75">
                                 {formattedDate}
+                                {formattedEndDate && ` — ${formattedEndDate}`}
                             </p>
                         </div>
 
                         <div className="text-right">
                             <p className="font-['Dancing_Script',cursive] text-xl text-[#e8c98b]">
-                                Feito com amor
+                                Uma lembrança
                             </p>
 
                             <p className="mt-0.5 text-[8px] uppercase tracking-[0.18em] text-white/30">
@@ -355,9 +360,10 @@ export function FinalShareStory() {
                 }}
                 className="absolute bottom-3 left-0 right-0 text-center text-[8px] uppercase tracking-[0.3em] text-white/25"
             >
-                Cada minuto faz parte da nossa história
+                Uma história que fez parte de nossas vidas
             </motion.p>
-            
+
+            {/* Compartilhamento */}
             <motion.button
                 type="button"
                 onClick={handleShare}
@@ -374,7 +380,7 @@ export function FinalShareStory() {
 
                 {isSharing
                     ? "Preparando imagem..."
-                    : "Compartilhar nossa história"}
+                    : "Compartilhar lembrança"}
             </motion.button>
         </section>
     );

@@ -24,8 +24,17 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
 
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-
     const [isIntroVisible, setIsIntroVisible] = useState(true);
+
+    const isEnded = couple.hasItEnded;
+
+    const colors = {
+        text: isEnded ? "#d0ced5" : "#fff3c7",
+        accent: isEnded ? "#88838f" : "#a875ff",
+        track: isEnded ? "rgba(208, 206, 213, 0.12)" : "rgba(255, 243, 199, 0.1)",
+        muted: isEnded ? "rgba(208, 206, 213, 0.4)" : "rgba(255, 243, 199, 0.35)",
+        button: isEnded ? "#777581" : "#a875ff",
+    };
 
     useEffect(() => {
         const audio = new Audio(couple.song.url);
@@ -113,7 +122,8 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
                 className="mt-7"
             >
                 <div
-                    className="group relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-[#fff3c7]/10"
+                    className="group relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full"
+                    style={{ backgroundColor: colors.track }}
                     onClick={handleProgressClick}
                     role="slider"
                     aria-label="Progresso da música"
@@ -122,22 +132,18 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
                     aria-valuenow={currentTime}
                 >
                     <div
-                        className="h-full rounded-full bg-[#a875ff] transition-[width] duration-100"
+                        className="h-full rounded-full transition-[width] duration-100"
                         style={{
                             width: `${progress}%`,
-                        }}
-                    />
-
-                    {/* brilho no progresso */}
-                    <div
-                        className="absolute inset-y-0 left-0 rounded-full bg-[#c7a5ff]/50 blur-sm"
-                        style={{
-                            width: `${progress}%`,
+                            backgroundColor: colors.accent,
                         }}
                     />
                 </div>
 
-                <div className="mt-2 flex justify-between font-mono text-[10px] font-bold tracking-wide text-[#fff3c7]/35">
+                <div
+                    className="mt-2 flex justify-between font-mono text-[10px] font-bold tracking-wide"
+                    style={{ color: colors.muted }}
+                >
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                 </div>
@@ -154,7 +160,8 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
                     type="button"
                     whileTap={{ scale: 0.9 }}
                     whileHover={{ scale: 1.08 }}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[#fff3c7]/45 transition hover:bg-[#fff3c7]/5 hover:text-[#fff3c7]"
+                    className="flex h-9 w-9 items-center justify-center rounded-full transition"
+                    style={{ color: colors.muted }}
                     aria-label="Embaralhar"
                 >
                     <Shuffle size={21} />
@@ -165,7 +172,8 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
                         type="button"
                         whileTap={{ scale: 0.9 }}
                         whileHover={{ scale: 1.08 }}
-                        className="text-[#fff3c7]/70 transition hover:text-[#fff3c7]"
+                        className="transition"
+                        style={{ color: colors.muted }}
                         aria-label="Música anterior"
                     >
                         <SkipBack size={28} fill="currentColor" />
@@ -176,30 +184,36 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
                         onClick={togglePlay}
                         whileTap={{ scale: 0.9 }}
                         whileHover={{ scale: 1.05 }}
-                        className="relative flex h-16 w-16 items-center justify-center rounded-full bg-[#a875ff] text-[#fff3c7] shadow-[0_8px_30px_rgba(168,117,255,0.35)]"
-                        aria-label={
-                            isPlaying ? "Pausar" : "Reproduzir"
-                        }
+                        className="relative flex h-16 w-16 items-center justify-center rounded-full text-[#d0ced5] transition-colors"
+                        style={{
+                            backgroundColor: colors.button,
+                            boxShadow: isEnded
+                                ? "0 8px 24px rgba(119, 117, 129, 0.15)"
+                                : "0 8px 30px rgba(168, 117, 255, 0.35)",
+                        }}
+                        aria-label={isPlaying ? "Pausar" : "Reproduzir"}
                     >
-                        <motion.div
-                            className="absolute inset-0 rounded-full border border-[#fff3c7]/20"
-                            animate={
-                                isPlaying
-                                    ? {
-                                          scale: [1, 1.12, 1],
-                                          opacity: [0.5, 0, 0.5],
-                                      }
-                                    : {
-                                          scale: 1,
-                                          opacity: 0,
-                                      }
-                            }
-                            transition={{
-                                duration: 2,
-                                repeat: isPlaying ? Infinity : 0,
-                                ease: "easeOut",
-                            }}
-                        />
+                        {!isEnded && (
+                            <motion.div
+                                className="absolute inset-0 rounded-full border border-[#fff3c7]/20"
+                                animate={
+                                    isPlaying
+                                        ? {
+                                              scale: [1, 1.12, 1],
+                                              opacity: [0.5, 0, 0.5],
+                                          }
+                                        : {
+                                              scale: 1,
+                                              opacity: 0,
+                                          }
+                                }
+                                transition={{
+                                    duration: 2,
+                                    repeat: isPlaying ? Infinity : 0,
+                                    ease: "easeOut",
+                                }}
+                            />
+                        )}
 
                         {isPlaying ? (
                             <Pause
@@ -219,7 +233,8 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
                         type="button"
                         whileTap={{ scale: 0.9 }}
                         whileHover={{ scale: 1.08 }}
-                        className="text-[#fff3c7]/70 transition hover:text-[#fff3c7]"
+                        className="transition"
+                        style={{ color: colors.muted }}
                         aria-label="Próxima música"
                     >
                         <SkipForward
@@ -233,7 +248,8 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
                     type="button"
                     whileTap={{ scale: 0.9 }}
                     whileHover={{ scale: 1.08 }}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[#fff3c7]/45 transition hover:bg-[#fff3c7]/5 hover:text-[#fff3c7]"
+                    className="flex h-9 w-9 items-center justify-center rounded-full transition"
+                    style={{ color: colors.muted }}
                     aria-label="Repetir"
                 >
                     <Repeat size={21} />
@@ -244,6 +260,7 @@ export function MusicPlayer({ isPlaying, setIsPlaying }: Props) {
             <AnimatePresence>
                 {isIntroVisible && (
                     <MusicIntro
+                        isEnded={isEnded}
                         onEnter={() => {
                             setIsIntroVisible(false);
                             togglePlay();
