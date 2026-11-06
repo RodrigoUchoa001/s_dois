@@ -40,7 +40,7 @@ export const couple = {
     startMinute: 0,
     startSecond: 0,
 
-    hasItEnded: true,
+    hasItEnded: false,
     endDate: {
         endDay: 4,
         endMonth: 11,
