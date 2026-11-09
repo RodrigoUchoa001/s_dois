@@ -8,9 +8,6 @@ import { StoryHeader } from "../StoryHeader";
 export function TimelineStory() {
     const timeline = couple.wrapped.timeline;
 
-    const regularEvents = timeline.events.slice(0, -1);
-    const lastEvent = timeline.events[timeline.events.length - 1];
-
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -18,7 +15,7 @@ export function TimelineStory() {
             exit={{ opacity: 0 }}
             className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-[#0b0b2b] px-6 pb-16 pt-8 text-[#fff3c7] scrollbar-none"
         >
-            {/* Iluminação estática */}
+            {/* Iluminação estática: evita blur animado e caro */}
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-32 -top-24 h-80 w-80 rounded-full"
@@ -37,7 +34,7 @@ export function TimelineStory() {
                 }}
             />
 
-            {/* Detalhes decorativos */}
+            {/* Detalhes decorativos estáticos */}
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute left-[12%] top-[12%]"
@@ -110,52 +107,33 @@ export function TimelineStory() {
                 </motion.div>
 
                 {/* Timeline */}
-                {timeline.events.length > 0 && (
-                    <div className="relative mt-14">
-                        {/* Eventos alternados */}
-                        {regularEvents.length > 0 && (
-                            <div className="relative">
-                                {/* Linha central */}
-                                <motion.div
-                                    initial={{ scaleY: 0 }}
-                                    animate={{ scaleY: 1 }}
-                                    transition={{
-                                        delay: 0.45,
-                                        duration: 0.9,
-                                        ease: "easeOut",
-                                    }}
-                                    style={{
-                                        transformOrigin: "top",
-                                        willChange: "transform",
-                                    }}
-                                    className="absolute bottom-0 left-1/2 top-0 z-0 w-[3px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#a875ff] via-[#a875ff]/50 to-[#a875ff]/10"
-                                />
+                <div className="relative mt-14">
+                    {/* Linha central */}
+                    <motion.div
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{
+                            delay: 0.45,
+                            duration: 0.9,
+                            ease: "easeOut",
+                        }}
+                        style={{
+                            transformOrigin: "top",
+                            willChange: "transform",
+                        }}
+                        className="absolute bottom-0 left-1/2 top-0 z-0 w-[3px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#a875ff] via-[#a875ff]/50 to-[#a875ff]/10"
+                    />
 
-                                <div className="relative flex flex-col gap-14">
-                                    {regularEvents.map((event, index) => (
-                                        <TimelineEvent
-                                            key={`${event.date.day}-${event.date.month}-${event.date.year}-${index}`}
-                                            event={event}
-                                            index={index}
-                                            isLast={false}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Último evento: encerramento da linha do tempo */}
-                        {lastEvent && (
-                            <div className={regularEvents.length > 0 ? "mt-14" : ""}>
-                                <TimelineEvent
-                                    event={lastEvent}
-                                    index={timeline.events.length - 1}
-                                    isLast={true}
-                                />
-                            </div>
-                        )}
+                    <div className="relative flex flex-col gap-14">
+                        {timeline.events.map((event, index) => (
+                            <TimelineEvent
+                                key={`${event.date.day}-${event.date.month}-${event.date.year}-${index}`}
+                                event={event}
+                                index={index}
+                            />
+                        ))}
                     </div>
-                )}
+                </div>
 
                 {/* Final */}
                 <motion.div
@@ -179,7 +157,7 @@ export function TimelineStory() {
                     />
 
                     <p className="max-w-xs text-sm font-medium leading-relaxed text-[#fff3c7]/50">
-                        E assim, essa história passou a fazer parte das nossas lembranças.
+                        E essa história ainda está só começando.
                     </p>
                 </motion.div>
             </div>

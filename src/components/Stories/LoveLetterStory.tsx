@@ -41,7 +41,6 @@ export function LoveLetterStory() {
                             "radial-gradient(circle, rgba(128,100,255,0.16), transparent 70%)",
                     }}
                 />
-
                 <div
                     className="absolute -right-24 bottom-[10%] h-72 w-72 rounded-full"
                     style={{
@@ -49,7 +48,6 @@ export function LoveLetterStory() {
                             "radial-gradient(circle, rgba(168,117,255,0.12), transparent 70%)",
                     }}
                 />
-
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,rgba(128,100,255,0.07),transparent_68%)]" />
 
                 {STARS.map((star, index) => (
@@ -66,10 +64,10 @@ export function LoveLetterStory() {
                 ))}
             </div>
 
-            {/* Área rolável */}
+            {/* Área rolável: a barra de progresso do StoriesScreen fica acima */}
             <div className="absolute inset-x-0 bottom-0 top-7 overflow-y-auto overscroll-contain scrollbar-none">
                 <div className="mx-auto flex min-h-full w-full max-w-lg flex-col items-center justify-center px-5 py-5 sm:px-8 sm:py-4">
-                    {/* Cabeçalho */}
+                    {/* Cabeçalho compacto */}
                     <motion.header
                         {...entrance(0.05)}
                         className="relative z-10 mb-4 flex w-full shrink-0 flex-col items-center text-center sm:mb-4"
@@ -83,7 +81,7 @@ export function LoveLetterStory() {
                         <h1 className="mt-2 text-[clamp(1.8rem,5.5vh,2.7rem)] font-black leading-none tracking-[-0.055em] text-[#fff3c7]">
                             Uma carta{" "}
                             <span className="font-serif font-medium italic text-[#e8c98b]">
-                                que ficou
+                                para você
                             </span>
                         </h1>
                     </motion.header>
@@ -122,18 +120,17 @@ export function LoveLetterStory() {
 
                                     <div>
                                         <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#a875ff]">
-                                            Uma lembrança especial
+                                            Uma mensagem especial
                                         </p>
-
                                         <p className="mt-0.5 text-xs text-[#fff3c7]/45">
-                                            Palavras que fizeram parte da nossa história
+                                            Escrita para você, com amor
                                         </p>
                                     </div>
                                 </div>
 
-                                {/* Saudação original */}
+                                {/* Saudação */}
                                 <p className="mb-3 font-serif text-lg italic text-[#e8c98b]">
-                                    Oi {couple.names.woman}! 
+                                    Oi amor! ❤️❤️❤️
                                 </p>
 
                                 {/* Mensagem original */}
@@ -144,22 +141,19 @@ export function LoveLetterStory() {
                                 {/* Separador */}
                                 <div className="my-4 flex items-center gap-3">
                                     <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#a875ff]/35" />
-
                                     <Heart
                                         size={12}
                                         fill="#a875ff"
                                         className="shrink-0 text-[#a875ff]"
                                     />
-
                                     <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#a875ff]/35" />
                                 </div>
 
                                 {/* Assinatura */}
                                 <div className="flex flex-col items-end">
                                     <span className="text-[9px] font-medium uppercase tracking-[0.25em] text-[#fff3c7]/40">
-                                        Com carinho,
+                                        Com todo meu amor,
                                     </span>
-
                                     <p className="mt-0.5 font-['Dancing_Script',cursive] text-3xl leading-tight text-[#e8c98b] sm:text-4xl">
                                         {couple.names.man}
                                     </p>

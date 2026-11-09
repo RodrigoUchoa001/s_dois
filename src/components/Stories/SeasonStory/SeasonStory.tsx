@@ -20,28 +20,28 @@ const seasons: Record<Season, SeasonData> = {
         name: "PRIMAVERA",
         shortName: "primavera",
         description:
-            "Foi na primavera que tudo começou. Depois dela, outras estações fizeram parte da nossa história.",
+            "Começamos na primavera e, desde então, já vimos muitas estações passarem juntos.",
         accent: "#B779C9",
     },
     summer: {
         name: "VERÃO",
         shortName: "verão",
         description:
-            "Foi no verão que tudo começou. Depois dele, outras estações fizeram parte da nossa história.",
+            "Começamos no verão e, desde então, já vimos muitas estações passarem juntos.",
         accent: "#D17A35",
     },
     autumn: {
         name: "OUTONO",
         shortName: "outono",
         description:
-            "Foi no outono que tudo começou. Depois dele, outras estações fizeram parte da nossa história.",
+            "Começamos no outono e, desde então, já vimos muitas estações passarem juntos.",
         accent: "#B9633F",
     },
     winter: {
         name: "INVERNO",
         shortName: "inverno",
         description:
-            "Foi no inverno que tudo começou. Depois dele, outras estações fizeram parte da nossa história. (Sim, por aqui não neva mesmo kkkkkkkkk)",
+            "Começamos no inverno e, desde então, já vimos muitas estações passarem juntos. (Sim, aqui não neva mesmo kkkkkkkkk)",
         accent: "#628BBE",
     },
 };
@@ -123,17 +123,14 @@ export function SeasonStory() {
                 <Sparkles size={13} />
             </div>
 
-            <SideRibbon
-                text={data.name}
-                bg_color="bg-[#628BBE]"
-            />
+            <SideRibbon text={data.name} bg_color={`bg-[#628BBE]`} />
 
             {/* =====================================================
                 CONTEÚDO
             ====================================================== */}
 
             <div className="relative z-10 flex h-full min-h-0 flex-col px-7 pb-7 pr-14 pt-8">
-                <StoryHeader text="Uma estação da nossa história" />
+                <StoryHeader text="A nossa estação" />
 
                 {/* Título e contador */}
                 <motion.div
@@ -143,7 +140,7 @@ export function SeasonStory() {
                     className="relative z-20 mt-7 shrink-0"
                 >
                     <p className="text-sm font-medium text-[#493650]/60">
-                        Tudo começou no
+                        E era
                     </p>
 
                     <motion.h1
@@ -176,8 +173,8 @@ export function SeasonStory() {
                         >
                             {seasonsTogether}{" "}
                             {seasonsTogether === 1
-                                ? "estação vivida"
-                                : "estações vividas"}
+                                ? "estação juntos"
+                                : "estações juntos"}
                         </p>
                     </motion.div>
                 </motion.div>
@@ -293,9 +290,6 @@ function getSeason(day: number, month: number): Season {
    CONTAGEM DE ESTAÇÕES
    A sequência no hemisfério sul é:
    verão → outono → inverno → primavera.
-
-   Quando a história terminou, utiliza a data de término
-   em vez da data atual.
 ================================================================ */
 
 function getSeasonsTogether(
@@ -303,23 +297,13 @@ function getSeasonsTogether(
     startMonth: number,
     startYear: number,
 ) {
-    const referenceDate =
-        couple.hasItEnded && couple.endDate
-            ? new Date(
-                  couple.endDate.endYear,
-                  couple.endDate.endMonth - 1,
-                  couple.endDate.endDay,
-                  couple.endDate.endHour ?? 0,
-                  couple.endDate.endMinute ?? 0,
-                  couple.endDate.endSecond ?? 0,
-              )
-            : new Date();
+    const now = new Date();
 
     const startSeason = getSeason(startDay, startMonth);
 
     const currentSeason = getSeason(
-        referenceDate.getDate(),
-        referenceDate.getMonth() + 1,
+        now.getDate(),
+        now.getMonth() + 1,
     );
 
     const seasonOrder: Record<Season, number> = {
@@ -333,8 +317,7 @@ function getSeasonsTogether(
         startYear * 4 + seasonOrder[startSeason];
 
     const currentIndex =
-        referenceDate.getFullYear() * 4 +
-        seasonOrder[currentSeason];
+        now.getFullYear() * 4 + seasonOrder[currentSeason];
 
     return Math.max(1, currentIndex - startIndex + 1);
 }

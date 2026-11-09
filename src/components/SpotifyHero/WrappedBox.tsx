@@ -1,21 +1,12 @@
-
 import { motion } from "motion/react";
-import { Sparkles, Archive } from "lucide-react";
+import { Sparkles, Timer } from "lucide-react";
 import { useState } from "react";
 
-import { couple } from "../../data/couple";
 import { StoriesScreen } from "../Stories/StoriesScreen";
 import { SideRibbon } from "../SideRibbon/SideRibbon";
 
 export function WrappedBox() {
     const [isOpen, setIsOpen] = useState(false);
-    const isEnded = couple.hasItEnded;
-
-    const colors = {
-        background: isEnded ? "#17171d" : "#0b0b2b",
-        text: isEnded ? "#d0ced5" : "#fff3c7",
-        accent: isEnded ? "#88838f" : "#a875ff",
-    };
 
     function openWrapped() {
         setIsOpen(true);
@@ -32,12 +23,9 @@ export function WrappedBox() {
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={openWrapped}
-                className="relative cursor-pointer overflow-hidden rounded-[28px] border-2 bg-white/[0.025] p-6 text-center"
-                style={{
-                    borderColor: `${colors.text}15`,
-                    color: colors.text,
-                }}
+                className="relative cursor-pointer overflow-hidden rounded-[28px] border-2 border-[#fff3c7]/10 bg-white/[0.04] p-6 text-center text-[#fff3c7] shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur-sm"
             >
+                {/* Faixa */}
                 <div className="absolute right-0 top-16">
                     <SideRibbon
                         text="Wrapped"
@@ -53,50 +41,39 @@ export function WrappedBox() {
                         delay: 0.25,
                         type: "spring",
                     }}
-                    className="mx-auto flex h-14 w-14 rotate-3 items-center justify-center rounded-[18px] border-2"
-                    style={{
-                        borderColor: `${colors.accent}50`,
-                        backgroundColor: `${colors.accent}15`,
-                    }}
+                    className="mx-auto flex h-14 w-14 rotate-3 items-center justify-center rounded-[18px] border-2 border-[#a875ff]/30 bg-[#a875ff]/10"
                 >
-                    <Archive
+                    <Timer
                         size={25}
-                        style={{ color: colors.accent }}
+                        className="text-[#a875ff]"
                     />
                 </motion.div>
 
                 <div className="mt-5">
                     <div className="flex items-center justify-center gap-2">
-                        {!isEnded && (
-                            <Sparkles
-                                size={13}
-                                fill={colors.accent}
-                                style={{ color: colors.accent }}
-                            />
-                        )}
+                        <Sparkles
+                            size={13}
+                            fill="#a875ff"
+                            className="text-[#a875ff]"
+                        />
 
-                        {!isEnded && (
-                            <Sparkles
-                                size={13}
-                                fill={colors.accent}
-                                style={{ color: colors.accent }}
-                            />
-                        )}
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#a875ff]">
+                            nossa retrospectiva
+                        </span>
+
+                        <Sparkles
+                            size={13}
+                            fill="#a875ff"
+                            className="text-[#a875ff]"
+                        />
                     </div>
 
                     <h2 className="mt-3 text-2xl font-black tracking-[-0.04em]">
-                        {isEnded
-                            ? "Uma história em retrospectiva"
-                            : "Seu Relacionamento Wrapped"}
+                        Seu Relacionamento Wrapped
                     </h2>
 
-                    <p
-                        className="mt-2 text-sm font-medium"
-                        style={{ color: `${colors.text}75` }}
-                    >
-                        {isEnded
-                            ? "Relembre os momentos que fizeram parte dessa história."
-                            : "Explore o nosso tempo juntos."}
+                    <p className="mt-2 text-sm font-medium text-[#fff3c7]/45">
+                        Explore o nosso tempo juntos.
                     </p>
                 </div>
 
@@ -108,15 +85,9 @@ export function WrappedBox() {
                     }}
                     whileTap={{ scale: 0.96 }}
                     whileHover={{ scale: 1.02 }}
-                    className="mt-8 w-full rounded-full px-6 py-3.5 text-sm font-black"
-                    style={{
-                        backgroundColor: colors.accent,
-                        color: colors.background,
-                    }}
+                    className="mt-8 w-full rounded-full bg-[#fff3c7] px-6 py-3.5 text-sm font-black text-[#0b0b2b]"
                 >
-                    {isEnded
-                        ? "Revisitar momentos"
-                        : "Mostrar Wrapped"}
+                    Mostrar Wrapped
                 </motion.button>
             </motion.div>
 
