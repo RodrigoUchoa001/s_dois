@@ -562,7 +562,7 @@ export const couple = {
         places: [
             "Dom Bistrô",
             "Beco da Picanha",
-            "Pizza Quadrada",
+            // "Pizza Quadrada",
             "Mirante da Arara",
             "Estação Villa",
             "Pizzaria do gordinho",
