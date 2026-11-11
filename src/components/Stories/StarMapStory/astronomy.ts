@@ -1,6 +1,10 @@
 
 import starsData from "../../../data/astronomy/stars.json";
-import constellationsData from "../../../data/astronomy/constellations.json";
+import westernData from "../../../data/astronomy/western.json";
+
+/* =========================================================
+   TIPOS
+========================================================= */
 
 export type RealStar = {
     id: number | string;
@@ -38,26 +42,23 @@ type StarFeatureCollection = {
     features: StarFeature[];
 };
 
-type ConstellationFeature = {
-    type: "Feature";
+type WesternConstellation = {
     id: string;
-    properties: {
-        rank?: string;
-    };
-    geometry: {
-        type: "MultiLineString";
-        coordinates: [number, number][][];
-    };
+    iau: string;
+    lines: (number | "thin")[][];
 };
 
-type ConstellationFeatureCollection = {
-    type: "FeatureCollection";
-    features: ConstellationFeature[];
+type WesternData = {
+    constellations: WesternConstellation[];
 };
+
+/* =========================================================
+   CATÁLOGO DE ESTRELAS
+========================================================= */
 
 const stars = starsData as StarFeatureCollection;
-const constellations =
-    constellationsData as ConstellationFeatureCollection;
+
+const western = westernData as WesternData;
 
 export const REAL_STARS: RealStar[] =
     stars.features.map((feature) => ({
@@ -66,6 +67,10 @@ export const REAL_STARS: RealStar[] =
         dec: feature.geometry.coordinates[1],
         magnitude: feature.properties.mag,
     }));
+
+/* =========================================================
+   ESTRELAS CONHECIDAS
+========================================================= */
 
 /*
  * Catálogo de estrelas conhecidas.
@@ -76,6 +81,7 @@ export const REAL_STARS: RealStar[] =
  * labelDx e labelDy controlam o deslocamento dos nomes
  * em relação à posição real de cada estrela no mapa.
  */
+
 export const NAMED_STARS: NamedStar[] = [
     {
         id: "sirius",
@@ -241,29 +247,105 @@ export const NAMED_STARS: NamedStar[] = [
     },
 ];
 
+/* =========================================================
+   ESTRELAS VISÍVEIS
+========================================================= */
 
 export const VISIBLE_STARS: RealStar[] = REAL_STARS
-  .filter(
-    (star) =>
-      Number.isFinite(star.ra) &&
-      Number.isFinite(star.dec) &&
-      Number.isFinite(star.magnitude) &&
-      star.magnitude <= 4.7,
-  )
-  .sort((a, b) => a.magnitude - b.magnitude)
-  .slice(0, 1800);
+    .filter(
+        (star) =>
+            Number.isFinite(star.ra) &&
+            Number.isFinite(star.dec) &&
+            Number.isFinite(star.magnitude) &&
+            star.magnitude <= 4.7,
+    )
+    .sort((a, b) => a.magnitude - b.magnitude)
+    .slice(0, 1800);
 
+/* =========================================================
+   CONSTELAÇÕES — STELLARIUM WESTERN
+========================================================= */
+
+const westernConstellations = western.constellations;
+
+/*
+ * Índice das estrelas pelo identificador HIP.
+ *
+ * Os IDs do catálogo stars.json correspondem aos
+ * identificadores HIP utilizados pelo Stellarium.
+ */
+
+const starsByHip = new Map(
+    REAL_STARS.map((star) => [
+        Number(star.id),
+        star,
+    ]),
+);
+
+/*
+ * Converte as linhas do Stellarium para coordenadas RA/DEC.
+ *
+ * O Stellarium utiliza identificadores HIP nas linhas
+ * das constelações, enquanto o restante do mapa trabalha
+ * com coordenadas equatoriais.
+ *
+ * O modificador "thin" é ignorado nesta implementação.
+ *
+ * Quando uma estrela não existe no catálogo, o segmento
+ * atual é finalizado para evitar ligações incorretas.
+ */
 
 export const REAL_CONSTELLATIONS: ConstellationLine[] =
-    constellations.features.map((feature) => ({
-        id: feature.id,
-        lines: feature.geometry.coordinates,
-    }));
+    westernConstellations.map((constellation) => {
+        const lines: [number, number][][] = [];
+
+        for (const originalLine of constellation.lines) {
+            const hipIds = originalLine.filter(
+                (value): value is number =>
+                    typeof value === "number",
+            );
+
+            let currentSegment: [number, number][] = [];
+
+            const finishSegment = () => {
+                if (currentSegment.length >= 2) {
+                    lines.push(currentSegment);
+                }
+
+                currentSegment = [];
+            };
+
+            for (const hipId of hipIds) {
+                const star = starsByHip.get(hipId);
+
+                if (!star) {
+                    finishSegment();
+                    continue;
+                }
+
+                currentSegment.push([
+                    star.ra,
+                    star.dec,
+                ]);
+            }
+
+            finishSegment();
+        }
+
+        return {
+            id: constellation.iau || constellation.id,
+            lines,
+        };
+    });
 
 export function getVisibleConstellations(): ConstellationLine[] {
-    // Preserva os segmentos originais das constelações.
-    // A visibilidade é determinada durante a projeção
-    // de cada segmento no mapa.
+    /*
+     * Preserva os segmentos originais das constelações.
+     *
+     * A visibilidade é determinada durante a projeção
+     * de cada segmento no mapa.
+     */
+
     return REAL_CONSTELLATIONS;
 }
 
@@ -323,6 +405,7 @@ function getGreenwichSiderealTime(date: Date) {
  *
  * RA e DEC em graus.
  */
+
 export function equatorialToHorizontal(
     ra: number,
     dec: number,
@@ -359,6 +442,7 @@ export function equatorialToHorizontal(
      * 180 = Sul
      * 270 = Oeste
      */
+
     const azimuth = normalizeDegrees(
         toDegrees(
             Math.atan2(
@@ -407,6 +491,7 @@ export function projectToSkyMap(
      * Leste: esquerda
      * Oeste: direita
      */
+
     const x =
         center - normalizedRadius * Math.sin(azimuthRad);
 

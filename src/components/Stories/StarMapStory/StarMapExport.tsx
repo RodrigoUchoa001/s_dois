@@ -258,9 +258,9 @@ function buildMeridianLines(
     );
   }
 
-  // Meridianos: ascensão reta a cada 30°.
-  const meridians = Array.from({ length: 12 }, (_, index) => {
-    const ra = index * 30;
+  // Meridianos: ascensão reta a cada 15°.
+  const meridians = Array.from({ length: 24 }, (_, index) => {
+    const ra = index * 15;
 
     return buildLine(
       `ra-${ra}`,
@@ -272,9 +272,10 @@ function buildMeridianLines(
     );
   }).flat();
 
-  // Paralelos: declinação a cada 15°.
+  // Paralelos: declinação a cada 15°,
+  // incluindo os círculos próximos ao polo sul.
   const parallels = [
-    -75, -60, -45, -30, -15,
+    -85, -80, -75, -60, -45, -30, -15,
     0,
     15, 30, 45, 60, 75,
   ].flatMap((dec) =>
@@ -291,6 +292,24 @@ function buildMeridianLines(
   return [...meridians, ...parallels].join("");
 }
 
+
+function getStarRadius(magnitude: number) {
+  const normalized = Math.max(
+    0,
+    Math.min(1, (magnitude + 1.5) / 6.2)
+  );
+
+  return 2.3 - normalized * 1.45;
+}
+
+function getStarOpacity(magnitude: number) {
+  const normalized = Math.max(
+    0,
+    Math.min(1, (magnitude + 1.5) / 6.2)
+  );
+
+  return 1 - normalized * 0.55;
+}
 
 function buildPosterSvg({
   date,
@@ -347,12 +366,38 @@ function buildPosterSvg({
       MAP_SIZE,
       RADIUS,
     );
+
     if (!position) return "";
 
-    const radius = Math.max(0.45, Math.min(2.4, 2.8 - star.magnitude * 0.35));
-    const opacity = Math.max(0.25, Math.min(1, 1.15 - star.magnitude * 0.12));
+    const radius = getStarRadius(star.magnitude);
+    const opacity = getStarOpacity(star.magnitude);
 
-    return `<circle cx="${position.x}" cy="${position.y}" r="${radius}" fill="${theme.ink}" opacity="${opacity}"/>`;
+    // Halo discreto apenas para estrelas mais brilhantes.
+    const halo =
+      star.magnitude <= 1.5
+        ? `
+          <circle
+            cx="${position.x}"
+            cy="${position.y}"
+            r="${radius * 2.5}"
+            fill="${theme.ink}"
+            opacity="${opacity * 0.12}"
+          />
+        `
+        : "";
+
+    return `
+      <g>
+        ${halo}
+        <circle
+          cx="${position.x}"
+          cy="${position.y}"
+          r="${radius}"
+          fill="${theme.ink}"
+          opacity="${opacity}"
+        />
+      </g>
+    `;
   }).join("");
 
   
@@ -365,9 +410,33 @@ function buildPosterSvg({
     ? getVisibleConstellations()
         .map((constellation) =>
           constellation.lines
-            .flatMap((line) => getVisibleLineSegments(line, date, location))
+            .flatMap((line) =>
+              getVisibleLineSegments(line, date, location)
+            )
             .map(
-              (points) => `<polyline points="${points}" fill="none" stroke="${theme.lilac}" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>`,
+              (points) => `
+                <!-- Brilho externo -->
+                <polyline
+                  points="${points}"
+                  fill="none"
+                  stroke="${theme.lilac}"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  opacity="0.13"
+                />
+
+                <!-- Linha principal -->
+                <polyline
+                  points="${points}"
+                  fill="none"
+                  stroke="${theme.lilac}"
+                  stroke-width="1.15"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  opacity="0.88"
+                />
+              `,
             )
             .join(""),
         )
@@ -459,8 +528,8 @@ function buildPosterSvg({
     <circle cx="${CENTER}" cy="${CENTER}" r="${RADIUS}" fill="url(#sky-gradient)" stroke="${theme.ink}" stroke-opacity="0.35" stroke-width="1.2"/>
     <g clip-path="url(#map-clip)">
       ${meridianLines}
-      ${stars}
       ${constellationLines}
+      ${stars}
       ${namedStars}
     </g>
     <g font-family="Arial, sans-serif" font-size="10" font-weight="800" fill="${theme.ink}" opacity="0.8" text-anchor="middle">

@@ -33,6 +33,8 @@ type ProjectedStar = {
     y: number;
     radius: number;
     opacity: number;
+    haloRadius?: number;
+    haloOpacity?: number;
 };
 
 type ProjectedNamedStar = {
@@ -112,6 +114,24 @@ function formatTime(date: Date) {
     });
 }
 
+function getStarRadius(magnitude: number) {
+    const normalized = Math.max(
+        0,
+        Math.min(1, (magnitude + 1.5) / 6.2)
+    );
+
+    return 2.3 - normalized * 1.45;
+}
+
+function getStarOpacity(magnitude: number) {
+    const normalized = Math.max(
+        0,
+        Math.min(1, (magnitude + 1.5) / 6.2)
+    );
+
+    return 1 - normalized * 0.55;
+}
+
 /* =========================================================
    GRADE ASTRONÔMICA — MERIDIANOS E PARALELOS
 
@@ -179,9 +199,9 @@ function MeridianLines({ date }: { date: Date }) {
 
         // Meridianos: ascensão reta constante.
         const meridians = Array.from(
-            { length: 12 },
+            { length: 24 },
             (_, index) => {
-                const ra = index * 30;
+                const ra = index * 15;
 
                 return buildLine(
                     `ra-${ra}`,
@@ -196,7 +216,7 @@ function MeridianLines({ date }: { date: Date }) {
 
         // Paralelos: declinação constante.
         const parallels = [
-            -75, -60, -45, -30, -15,
+            -85, -80, -75, -60, -45, -30, -15,
             0,
             15, 30, 45, 60, 75,
         ].flatMap((dec) =>
@@ -285,18 +305,12 @@ function StarMap({
                 RADIUS,
             );
 
-            // Ignora estrelas abaixo do horizonte.
             if (!position) return [];
 
-            const radius = Math.max(
-                0.45,
-                Math.min(2.4, 2.8 - star.magnitude * 0.35),
-            );
+            const radius = getStarRadius(star.magnitude);
+            const opacity = getStarOpacity(star.magnitude);
 
-            const opacity = Math.max(
-                0.25,
-                Math.min(1, 1.15 - star.magnitude * 0.12),
-            );
+            const hasHalo = star.magnitude <= 1.5;
 
             return [{
                 id: star.id,
@@ -304,6 +318,8 @@ function StarMap({
                 y: position.y,
                 radius,
                 opacity,
+                haloRadius: hasHalo ? radius * 2.5 : undefined,
+                haloOpacity: hasHalo ? opacity * 0.18 : undefined,
             }];
         });
     }, [skyTimestamp, latitude, longitude]);
@@ -409,28 +425,38 @@ function StarMap({
                     <MeridianLines date={skyDate} />
                 )}
 
-                {/* ESTRELAS COMUNS
-                    Não cria mais um componente React por estrela. */}
-
-                <g>
-                    {projectedStars.map((star) => (
-                        <circle
-                            key={star.id}
-                            cx={star.x}
-                            cy={star.y}
-                            r={star.radius}
-                            fill={COLORS.warmWhite}
-                            opacity={star.opacity}
-                        />
-                    ))}
-                </g>
-
                 {/* CONSTELAÇÕES */}
 
                 <ConstellationLines
                     date={skyDate}
                     arrival={arrival}
                 />
+
+                {/* ESTRELAS COMUNS */}
+
+                <g>
+                    {projectedStars.map((star) => (
+                        <g key={star.id}>
+                            {star.haloRadius !== undefined && (
+                                <circle
+                                    cx={star.x}
+                                    cy={star.y}
+                                    r={star.haloRadius}
+                                    fill={COLORS.warmWhite}
+                                    opacity={star.haloOpacity}
+                                />
+                            )}
+
+                            <circle
+                                cx={star.x}
+                                cy={star.y}
+                                r={star.radius}
+                                fill={COLORS.warmWhite}
+                                opacity={star.opacity}
+                            />
+                        </g>
+                    ))}
+                </g>
 
                 {/* NOMES DAS ESTRELAS CONHECIDAS */}
 
@@ -616,28 +642,55 @@ function ConstellationLines({
     return (
         <>
             {segments.map((segment) => (
-                <motion.polyline
-                    key={segment.key}
-                    points={segment.points}
-                    fill="none"
-                    stroke={COLORS.lilac}
-                    strokeWidth="0.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    initial={{
-                        pathLength: 0,
-                        opacity: 0,
-                    }}
-                    animate={{
-                        pathLength: arrival ? 1 : 0,
-                        opacity: arrival ? 0.8 : 0,
-                    }}
-                    transition={{
-                        delay: segment.delay,
-                        duration: 0.9,
-                        ease: "easeInOut",
-                    }}
-                />
+                <g key={segment.key}>
+                    {/* BRILHO EXTERNO */}
+
+                    <motion.polyline
+                        points={segment.points}
+                        fill="none"
+                        stroke={COLORS.lilac}
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{
+                            pathLength: 0,
+                            opacity: 0,
+                        }}
+                        animate={{
+                            pathLength: arrival ? 1 : 0,
+                            opacity: arrival ? 0.13 : 0,
+                        }}
+                        transition={{
+                            delay: segment.delay,
+                            duration: 0.9,
+                            ease: "easeInOut",
+                        }}
+                    />
+
+                    {/* LINHA PRINCIPAL */}
+
+                    <motion.polyline
+                        points={segment.points}
+                        fill="none"
+                        stroke={COLORS.lilac}
+                        strokeWidth="1.15"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{
+                            pathLength: 0,
+                            opacity: 0,
+                        }}
+                        animate={{
+                            pathLength: arrival ? 1 : 0,
+                            opacity: arrival ? 0.88 : 0,
+                        }}
+                        transition={{
+                            delay: segment.delay,
+                            duration: 0.9,
+                            ease: "easeInOut",
+                        }}
+                    />
+                </g>
             ))}
         </>
     );
