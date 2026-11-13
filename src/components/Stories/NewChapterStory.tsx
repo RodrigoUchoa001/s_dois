@@ -560,7 +560,7 @@ export function NextChapterStory({
                                 </p>
 
                                 <p className="mt-0.5 text-[8px] text-[#fff3c7]/35">
-                                    {formatDate(START_DATE)}
+                                    {formatDate(milestone.previousDate)}
                                 </p>
                             </div>
                         </div>
